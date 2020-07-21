@@ -1,0 +1,402 @@
+Land,Bundesland,Landkreis Typ,Landkreis Name 1,Landkreis Name 2,Landkreis Name 3,Cca 2,NUTS3,IBM Cognos Name,RKI Name
+0,Germany,Schleswig-Holstein,Kreisfreie Stadt,Flensburg,Flensburg,Flensburg,1001,DEF01,Kreisfreie Stadt Flensburg,SK Flensburg
+1,Germany,Schleswig-Holstein,Kreisfreie Stadt,Kiel,Kiel,Kiel,1002,DEF02,Stadt Kiel,SK Kiel
+2,Germany,Schleswig-Holstein,Kreisfreie Stadt,Lübeck,Lübeck,Lübeck,1003,DEF03,Hansestadt Luebeck,SK Lübeck
+3,Germany,Schleswig-Holstein,Kreisfreie Stadt,Neumünster,Neumünster,Neumünster,1004,DEF04,Kreisfreie Stadt Neumünster,SK Neumünster
+4,Germany,Schleswig-Holstein,Kreis,Dithmarschen,Dithmarschen,Dithmarschen,1051,DEF05,Landkreis Dithmarschen,LK Dithmarschen
+5,Germany,Schleswig-Holstein,Kreis,Herzogtum Lauenburg,Herzogtum Lauenburg,Herzogtum Lauenburg,1053,DEF06,Landkreis Herzogtum Lauenburg,LK Herzogtum Lauenburg
+6,Germany,Schleswig-Holstein,Kreis,Nordfriesland,Nordfriesland,Nordfriesland,1054,DEF07,Landkreis Nordfriesland,LK Nordfriesland
+7,Germany,Schleswig-Holstein,Kreis,Ostholstein,Ostholstein,Ostholstein,1055,DEF08,Landkreis Ostholstein,LK Ostholstein
+8,Germany,Schleswig-Holstein,Kreis,Pinneberg,Pinneberg,Pinneberg,1056,DEF09,Landkreis Pinneberg,LK Pinneberg
+9,Germany,Schleswig-Holstein,Kreis,Plön,Plön,Plön,1057,DEF0A,Landkreis Plön,LK Plön
+10,Germany,Schleswig-Holstein,Kreis,Rendsburg-Eckernförde,Rendsburg-Eckernförde,Rendsburg-Eckernförde,1058,DEF0B,Landkreis Rendsburg-Eckernförde,LK Rendsburg-Eckernförde
+11,Germany,Schleswig-Holstein,Kreis,Schleswig-Flensburg,Schleswig-Flensburg,Schleswig-Flensburg,1059,DEF0C,Landkreis Schleswig-Flensburg,LK Schleswig-Flensburg
+12,Germany,Schleswig-Holstein,Kreis,Segeberg,Segeberg,Segeberg,1060,DEF0D,Landkreis Segeberg,LK Segeberg
+13,Germany,Schleswig-Holstein,Kreis,Steinburg,Steinburg,Steinburg,1061,DEF0E,Landkreis Steinburg,LK Steinburg
+14,Germany,Schleswig-Holstein,Kreis,Stormarn,Stormarn,Stormarn,1062,DEF0F,Landkreis Stormarn,LK Stormarn
+15,Germany,Hamburg,Kreisfreie Stadt,Hamburg,Hamburg,Hamburg,2000,DE600,Stadt Hamburg,SK Hamburg
+16,Germany,Niedersachsen,Kreisfreie Stadt,Braunschweig,Braunschweig,Braunschweig,3101,DE911,Kreisfreie Stadt Braunschweig,SK Braunschweig
+17,Germany,Niedersachsen,Kreisfreie Stadt,Salzgitter,Salzgitter,Salzgitter,3102,DE912,Kreisfreie Stadt Salzgitter,SK Salzgitter
+18,Germany,Niedersachsen,Kreisfreie Stadt,Wolfsburg,Wolfsburg,Wolfsburg,3103,DE913,Kreisfreie Stadt Wolfsburg,SK Wolfsburg
+19,Germany,Niedersachsen,Landkreis,Gifhorn,Gifhorn,Gifhorn,3151,DE914,Landkreis Gifhorn,LK Gifhorn
+20,Germany,Niedersachsen,Landkreis,Goslar,Goslar,Goslar,3153,DE916,Landkreis Goslar,LK Goslar
+21,Germany,Niedersachsen,Landkreis,Helmstedt,Helmstedt,Helmstedt,3154,DE917,Landkreis Helmstedt,LK Helmstedt
+22,Germany,Niedersachsen,Landkreis,Northeim,Northeim,Northeim,3155,DE918,Landkreis Northeim,LK Northeim
+23,Germany,Niedersachsen,Landkreis,Peine,Peine,Peine,3157,DE91A,Landkreis Peine,LK Peine
+24,Germany,Niedersachsen,Landkreis,Wolfenbüttel,Wolfenbüttel,Wolfenbüttel,3158,DE91B,Landkreis Wolfenbüttel,LK Wolfenbüttel
+25,Germany,Niedersachsen,Landkreis,Göttingen,Göttingen,Göttingen,3159,DE91C,Landkreis Göttingen,LK Göttingen
+26,Germany,Niedersachsen,Landkreis,Region Hannover,Region Hannover,Region Hannover,3241,DE929,Landkreis Region Hannover,Region Hannover
+27,Germany,Niedersachsen,Landkreis,Diepholz,Diepholz,Diepholz,3251,DE922,Landkreis Diepholz,LK Diepholz
+28,Germany,Niedersachsen,Landkreis,Hameln-Pyrmont,Hameln-Pyrmont,Hameln-Pyrmont,3252,DE923,Landkreis Hameln-Pyrmont,LK Hameln-Pyrmont
+29,Germany,Niedersachsen,Landkreis,Hildesheim,Hildesheim,Hildesheim,3254,DE925,Landkreis Hildesheim,LK Hildesheim
+30,Germany,Niedersachsen,Landkreis,Holzminden,Holzminden,Holzminden,3255,DE926,Landkreis Holzminden,LK Holzminden
+31,Germany,Niedersachsen,Landkreis,Nienburg (Weser),Nienburg (Weser),Nienburg (Weser),3256,DE927,Landkreis Nienburg (Weser),LK Nienburg (Weser)
+32,Germany,Niedersachsen,Landkreis,Schaumburg,Schaumburg,Schaumburg,3257,DE928,Landkreis Schaumburg,LK Schaumburg
+33,Germany,Niedersachsen,Landkreis,Celle,Celle,Celle,3351,DE931,Landkreis Celle,LK Celle
+34,Germany,Niedersachsen,Landkreis,Cuxhaven,Cuxhaven,Cuxhaven,3352,DE932,Landkreis Cuxhaven,LK Cuxhaven
+35,Germany,Niedersachsen,Landkreis,Harburg,Harburg,Harburg,3353,DE933,Landkreis Harburg,LK Harburg
+36,Germany,Niedersachsen,Landkreis,Lüchow-Dannenberg,Lüchow-Dannenberg,Lüchow-Dannenberg,3354,DE934,Landkreis Lüchow-Dannenberg,LK Lüchow-Dannenberg
+37,Germany,Niedersachsen,Landkreis,Lüneburg,Lüneburg,Lüneburg,3355,DE935,Landkreis Lüneburg,LK Lüneburg
+38,Germany,Niedersachsen,Landkreis,Osterholz,Osterholz,Osterholz,3356,DE936,Landkreis Osterholz,LK Osterholz
+39,Germany,Niedersachsen,Landkreis,Rotenburg (Wümme),Rotenburg (Wümme),Rotenburg (Wümme),3357,DE937,Landkreis Rotenburg (Wümme),LK Rotenburg (Wümme)
+40,Germany,Niedersachsen,Landkreis,Heidekreis,Heidekreis,Heidekreis,3358,DE938,Landkreis Heidekreis,LK Heidekreis
+41,Germany,Niedersachsen,Landkreis,Stade,Stade,Stade,3359,DE939,Landkreis Stade,LK Stade
+42,Germany,Niedersachsen,Landkreis,Uelzen,Uelzen,Uelzen,3360,DE93A,Landkreis Uelzen,LK Uelzen
+43,Germany,Niedersachsen,Landkreis,Verden,Verden,Verden,3361,DE93B,Landkreis Verden,LK Verden
+44,Germany,Niedersachsen,Kreisfreie Stadt,Delmenhorst,Delmenhorst,Delmenhorst,3401,DE941,Kreisfreie Stadt Delmenhorst,SK Delmenhorst
+45,Germany,Niedersachsen,Kreisfreie Stadt,Emden,Emden,Emden,3402,DE942,Kreisfreie Stadt Emden,SK Emden
+46,Germany,Niedersachsen,Kreisfreie Stadt,"Oldenburg, Landkreis",Landkreis Oldenburg,Landkreis Oldenburg,3403,DE943,Kreisfreie Stadt Oldenburg,SK Oldenburg
+47,Germany,Niedersachsen,Kreisfreie Stadt,"Osnabrück, Landkreis",Landkreis Osnabrück,Landkreis Osnabrück,3404,DE944,Kreisfreie Stadt Osnabrück,SK Osnabrück
+48,Germany,Niedersachsen,Kreisfreie Stadt,Wilhelmshaven,Wilhelmshaven,Wilhelmshaven,3405,DE945,Kreisfreie Stadt Wilhelmshaven,SK Wilhelmshaven
+49,Germany,Niedersachsen,Landkreis,Ammerland,Ammerland,Ammerland,3451,DE946,Landkreis Ammerland,LK Ammerland
+50,Germany,Niedersachsen,Landkreis,Aurich,Aurich,Aurich,3452,DE947,Landkreis Aurich,LK Aurich
+51,Germany,Niedersachsen,Landkreis,Cloppenburg,Cloppenburg,Cloppenburg,3453,DE948,Landkreis Cloppenburg,LK Cloppenburg
+52,Germany,Niedersachsen,Landkreis,Emsland,Emsland,Emsland,3454,DE949,Landkreis Emsland,LK Emsland
+53,Germany,Niedersachsen,Landkreis,Friesland,Friesland,Friesland,3455,DE94A,Landkreis Friesland,LK Friesland
+54,Germany,Niedersachsen,Landkreis,Grafschaft Bentheim,Grafschaft Bentheim,Grafschaft Bentheim,3456,DE94B,Landkreis Grafschaft Bentheim,LK Grafschaft Bentheim
+55,Germany,Niedersachsen,Landkreis,Leer,Leer,Leer,3457,DE94C,Landkreis Leer,LK Leer
+56,Germany,Niedersachsen,Landkreis,Oldenburg,Oldenburg,Oldenburg,3458,DE94D,Landkreis Oldenburg,LK Oldenburg
+57,Germany,Niedersachsen,Landkreis,Osnabrück,Osnabrück,Osnabrück,3459,DE94E,Landkreis Osnabrück,LK Osnabrück
+58,Germany,Niedersachsen,Landkreis,Vechta,Vechta,Vechta,3460,DE94F,Landkreis Vechta,LK Vechta
+59,Germany,Niedersachsen,Landkreis,Wesermarsch,Wesermarsch,Wesermarsch,3461,DE94G,Landkreis Wesermarsch,LK Wesermarsch
+60,Germany,Niedersachsen,Landkreis,Wittmund,Wittmund,Wittmund,3462,DE94H,Landkreis Wittmund,LK Wittmund
+61,Germany,Bremen,Kreisfreie Stadt,Bremen,Bremen,Bremen,4011,DE501,Kreisfreie Stadt Bremen,SK Bremen
+62,Germany,Bremen,Kreisfreie Stadt,Bremerhaven,Bremerhaven,Bremerhaven,4012,DE502,Kreisfreie Stadt Bremerhaven,SK Bremerhaven
+63,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Düsseldorf,Düsseldorf,Düsseldorf,5111,DEA11,Kreisfreie Stadt Düsseldorf,SK Düsseldorf
+64,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Duisburg,Duisburg,Duisburg,5112,DEA12,Kreisfreie Stadt Duisburg,SK Duisburg
+65,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Essen,Essen,Essen,5113,DEA13,Kreisfreie Stadt Essen,SK Essen
+66,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Kronach,Kronach,Kronach,5114,DEA14,Kreisfreie Stadt Krefeld,SK Krefeld
+67,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Mönchengladbach,Mönchengladbach,Mönchengladbach,5116,DEA15,Kreisfreie Stadt Mönchengladbach,SK Mönchengladbach
+68,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Mülheim an der Ruhr,Mülheim an der Ruhr,Mülheim an der Ruhr,5117,DEA16,Kreisfreie Stadt Mülheim an der Ruhr,SK Mülheim a.d.Ruhr
+69,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Oberhausen,Oberhausen,Oberhausen,5119,DEA17,Kreisfreie Stadt Oberhausen,SK Oberhausen
+70,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Remscheid,Remscheid,Remscheid,5120,DEA18,Kreisfreie Stadt Remscheid,SK Remscheid
+71,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Solingen,Solingen,Solingen,5122,DEA19,Kreisfreie Stadt Solingen,SK Solingen
+72,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Wuppertal,Wuppertal,Wuppertal,5124,DEA1A,Kreisfreie Stadt Wuppertal,SK Wuppertal
+73,Germany,Nordrhein-Westfalen,Kreis,Kleve,Kleve,Kleve,5154,DEA1B,Landkreis Kleve,LK Kleve
+74,Germany,Nordrhein-Westfalen,Kreis,Mettmann,Mettmann,Mettmann,5158,DEA1C,Landkreis Mettmann,LK Mettmann
+75,Germany,Nordrhein-Westfalen,Kreis,Rhein-Kreis Neuss,Rhein-Kreis Neuss,Rhein-Kreis Neuss,5162,DEA1D,Landkreis Rhein-Kreis Neuss,LK Rhein-Kreis Neuss
+76,Germany,Nordrhein-Westfalen,Kreis,Viersen,Viersen,Viersen,5166,DEA1E,Landkreis Viersen,LK Viersen
+77,Germany,Nordrhein-Westfalen,Kreis,Wesel,Wesel,Wesel,5170,DEA1F,Landkreis Wesel,LK Wesel
+78,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Bonn,Bonn,Bonn,5314,DEA22,Kreisfreie Stadt Bonn,SK Bonn
+79,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Konstanz,Konstanz,Konstanz,5315,DEA23,Kreisfreie Stadt Köln,SK Köln
+80,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Leverkusen,Leverkusen,Leverkusen,5316,DEA24,Kreisfreie Stadt Leverkusen,SK Leverkusen
+81,Germany,Nordrhein-Westfalen,Kreis,Städteregion Aachen,Städteregion Aachen,Städteregion Aachen,5334,DEA2D,Staedteregion Aachen,StadtRegion Aachen
+82,Germany,Nordrhein-Westfalen,Kreis,Düren,Düren,Düren,5358,DEA26,Landkreis Düren,LK Düren
+83,Germany,Nordrhein-Westfalen,Kreis,Rhein-Erft-Kreis,Rhein-Erft-Kreis,Rhein-Erft-Kreis,5362,DEA27,Landkreis Rhein-Erft-Kreis,LK Rhein-Erft-Kreis
+84,Germany,Nordrhein-Westfalen,Kreis,Euskirchen,Euskirchen,Euskirchen,5366,DEA28,Landkreis Euskirchen,LK Euskirchen
+85,Germany,Nordrhein-Westfalen,Kreis,Heinsberg,Heinsberg,Heinsberg,5370,DEA29,Landkreis Heinsberg,LK Heinsberg
+86,Germany,Nordrhein-Westfalen,Kreis,Oberbergischer Kreis,Oberbergischer Kreis,Oberbergischer Kreis,5374,DEA2A,Landkreis Oberbergischer Kreis,LK Oberbergischer Kreis
+87,Germany,Nordrhein-Westfalen,Kreis,Rheinisch-Bergischer Kreis,Rheinisch-Bergischer Kreis,Rheinisch-Bergischer Kreis,5378,DEA2B,Landkreis Rheinisch-Bergischer Kreis,LK Rheinisch-Bergischer Kreis
+88,Germany,Nordrhein-Westfalen,Kreis,Rhein-Sieg-Kreis,Rhein-Sieg-Kreis,Rhein-Sieg-Kreis,5382,DEA2C,Landkreis Rhein-Sieg-Kreis,LK Rhein-Sieg-Kreis
+89,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Bottrop,Bottrop,Bottrop,5512,DEA31,Kreisfreie Stadt Bottrop,SK Bottrop
+90,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Gelsenkirchen,Gelsenkirchen,Gelsenkirchen,5513,DEA32,Kreisfreie Stadt Gelsenkirchen,SK Gelsenkirchen
+91,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Münster,Münster,Münster,5515,DEA33,Kreisfreie Stadt Münster,SK Münster
+92,Germany,Nordrhein-Westfalen,Kreis,Borken,Borken,Borken,5554,DEA34,Landkreis Borken,LK Borken
+93,Germany,Nordrhein-Westfalen,Kreis,Coesfeld,Coesfeld,Coesfeld,5558,DEA35,Landkreis Coesfeld,LK Coesfeld
+94,Germany,Nordrhein-Westfalen,Kreis,Recklinghausen,Recklinghausen,Recklinghausen,5562,DEA36,Landkreis Recklinghausen,LK Recklinghausen
+95,Germany,Nordrhein-Westfalen,Kreis,Steinfurt,Steinfurt,Steinfurt,5566,DEA37,Landkreis Steinfurt,LK Steinfurt
+96,Germany,Nordrhein-Westfalen,Kreis,Warendorf,Warendorf,Warendorf,5570,DEA38,Landkreis Warendorf,LK Warendorf
+97,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Bielefeld,Bielefeld,Bielefeld,5711,DEA41,Kreisfreie Stadt Bielefeld,SK Bielefeld
+98,Germany,Nordrhein-Westfalen,Kreis,Gütersloh,Gütersloh,Gütersloh,5754,DEA42,Landkreis Gütersloh,LK Gütersloh
+99,Germany,Nordrhein-Westfalen,Kreis,Herford,Herford,Herford,5758,DEA43,Landkreis Herford,LK Herford
+100,Germany,Nordrhein-Westfalen,Kreis,Höxter,Höxter,Höxter,5762,DEA44,Landkreis Höxter,LK Höxter
+101,Germany,Nordrhein-Westfalen,Kreis,Lippe,Lippe,Lippe,5766,DEA45,Landkreis Lippe,LK Lippe
+102,Germany,Nordrhein-Westfalen,Kreis,Minden-Lübbecke,Minden-Lübbecke,Minden-Lübbecke,5770,DEA46,Landkreis Minden-Lübbecke,LK Minden-Lübbecke
+103,Germany,Nordrhein-Westfalen,Kreis,Paderborn,Paderborn,Paderborn,5774,DEA47,Landkreis Paderborn,LK Paderborn
+104,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Bochum,Bochum,Bochum,5911,DEA51,Kreisfreie Stadt Bochum,SK Bochum
+105,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Dortmund,Dortmund,Dortmund,5913,DEA52,Kreisfreie Stadt Dortmund,SK Dortmund
+106,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Hagen,Hagen,Hagen,5914,DEA53,Kreisfreie Stadt Hagen,SK Hagen
+107,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Hamm,Hamm,Hamm,5915,DEA54,Kreisfreie Stadt Hamm,SK Hamm
+108,Germany,Nordrhein-Westfalen,Kreisfreie Stadt,Herne,Herne,Herne,5916,DEA55,Kreisfreie Stadt Herne,SK Herne
+109,Germany,Nordrhein-Westfalen,Kreis,Ennepe-Ruhr-Kreis,Ennepe-Ruhr-Kreis,Ennepe-Ruhr-Kreis,5954,DEA56,Landkreis Ennepe-Ruhr-Kreis,LK Ennepe-Ruhr-Kreis
+110,Germany,Nordrhein-Westfalen,Kreis,Hochsauerlandkreis,Hochsauerlandkreis,Hochsauerlandkreis,5958,DEA57,Landkreis Hochsauerlandkreis,LK Hochsauerlandkreis
+111,Germany,Nordrhein-Westfalen,Kreis,Märkischer Kreis,Märkischer Kreis,Märkischer Kreis,5962,DEA58,Landkreis Märkischer Kreis,LK Märkischer Kreis
+112,Germany,Nordrhein-Westfalen,Kreis,Olpe,Olpe,Olpe,5966,DEA59,Landkreis Olpe,LK Olpe
+113,Germany,Nordrhein-Westfalen,Kreis,Siegen-Wittgenstein,Siegen-Wittgenstein,Siegen-Wittgenstein,5970,DEA5A,Landkreis Siegen-Wittgenstein,LK Siegen-Wittgenstein
+114,Germany,Nordrhein-Westfalen,Kreis,Soest,Soest,Soest,5974,DEA5B,Landkreis Soest,LK Soest
+115,Germany,Nordrhein-Westfalen,Kreis,Unna,Unna,Unna,5978,DEA5C,Landkreis Unna,LK Unna
+116,Germany,Hessen,Kreisfreie Stadt,Darmstadt,Darmstadt,Darmstadt,6411,DE711,Stadt Darmstadt,SK Darmstadt
+117,Germany,Hessen,Kreisfreie Stadt,Frankfurt am Main,Frankfurt am Main,Frankfurt am Main,6412,DE712,Kreisfreie Stadt Frankfurt am Main,SK Frankfurt am Main
+118,Germany,Hessen,Kreisfreie Stadt,"Offenbach, Landkreis",Landkreis Offenbach,Landkreis Offenbach,6413,DE713,Kreisfreie Stadt Offenbach am Main,SK Offenbach
+119,Germany,Hessen,Kreisfreie Stadt,Wiesbaden,Wiesbaden,Wiesbaden,6414,DE714,Stadt Wiesbaden,SK Wiesbaden
+120,Germany,Hessen,Landkreis,Bergstraße,Bergstraße,Bergstraße,6431,DE715,Landkreis Bergstraße,LK Bergstraße
+121,Germany,Hessen,Landkreis,Darmstadt-Dieburg,Darmstadt-Dieburg,Darmstadt-Dieburg,6432,DE716,Landkreis Darmstadt-Dieburg,LK Darmstadt-Dieburg
+122,Germany,Hessen,Landkreis,Groß-Gerau,Groß-Gerau,Groß-Gerau,6433,DE717,Landkreis Groß-Gerau,LK Groß-Gerau
+123,Germany,Hessen,Landkreis,Hochtaunuskreis,Hochtaunuskreis,Hochtaunuskreis,6434,DE718,Landkreis Hochtaunuskreis,LK Hochtaunuskreis
+124,Germany,Hessen,Landkreis,Main-Kinzig-Kreis,Main-Kinzig-Kreis,Main-Kinzig-Kreis,6435,DE719,Landkreis Main-Kinzig-Kreis,LK Main-Kinzig-Kreis
+125,Germany,Hessen,Landkreis,Main-Taunus-Kreis,Main-Taunus-Kreis,Main-Taunus-Kreis,6436,DE71A,Landkreis Main-Taunus-Kreis,LK Main-Taunus-Kreis
+126,Germany,Hessen,Landkreis,Odenwaldkreis,Odenwaldkreis,Odenwaldkreis,6437,DE71B,Landkreis Odenwaldkreis,LK Odenwaldkreis
+127,Germany,Hessen,Landkreis,Offenbach am Main,Offenbach am Main,Offenbach am Main,6438,DE71C,"Offenbach, Landkreis",LK Offenbach
+128,Germany,Hessen,Landkreis,Rheingau-Taunus-Kreis,Rheingau-Taunus-Kreis,Rheingau-Taunus-Kreis,6439,DE71D,Landkreis Rheingau-Taunus-Kreis,LK Rheingau-Taunus-Kreis
+129,Germany,Hessen,Landkreis,Wetteraukreis,Wetteraukreis,Wetteraukreis,6440,DE71E,Landkreis Wetteraukreis,LK Wetteraukreis
+130,Germany,Hessen,Landkreis,Gießen,Gießen,Gießen,6531,DE721,Landkreis Gießen,LK Gießen
+131,Germany,Hessen,Landkreis,Lahn-Dill-Kreis,Lahn-Dill-Kreis,Lahn-Dill-Kreis,6532,DE722,Landkreis Lahn-Dill-Kreis,LK Lahn-Dill-Kreis
+132,Germany,Hessen,Landkreis,Limburg-Weilburg,Limburg-Weilburg,Limburg-Weilburg,6533,DE723,Landkreis Limburg-Weilburg,LK Limburg-Weilburg
+133,Germany,Hessen,Landkreis,Marburg-Biedenkopf,Marburg-Biedenkopf,Marburg-Biedenkopf,6534,DE724,Landkreis Marburg-Biedenkopf,LK Marburg-Biedenkopf
+134,Germany,Hessen,Landkreis,Vogelsbergkreis,Vogelsbergkreis,Vogelsbergkreis,6535,DE725,Landkreis Vogelsbergkreis,LK Vogelsbergkreis
+135,Germany,Hessen,Kreisfreie Stadt,"Kassel, Landkreis",Landkreis Kassel,Landkreis Kassel,6611,DE731,Stadt Kassel,SK Kassel
+136,Germany,Hessen,Landkreis,Fulda,Fulda,Fulda,6631,DE732,Landkreis Fulda,LK Fulda
+137,Germany,Hessen,Landkreis,Hersfeld-Rotenburg,Hersfeld-Rotenburg,Hersfeld-Rotenburg,6632,DE733,Landkreis Hersfeld-Rotenburg,LK Hersfeld-Rotenburg
+138,Germany,Hessen,Landkreis,Kassel,Kassel,Kassel,6633,DE734,Landkreis Kassel,LK Kassel
+139,Germany,Hessen,Landkreis,Schwalm-Eder-Kreis,Schwalm-Eder-Kreis,Schwalm-Eder-Kreis,6634,DE735,Landkreis Schwalm-Eder-Kreis,LK Schwalm-Eder-Kreis
+140,Germany,Hessen,Landkreis,Waldeck-Frankenberg,Waldeck-Frankenberg,Waldeck-Frankenberg,6635,DE736,Landkreis Waldeck-Frankenberg,LK Waldeck-Frankenberg
+141,Germany,Hessen,Landkreis,Werra-Meißner-Kreis,Werra-Meißner-Kreis,Werra-Meißner-Kreis,6636,DE737,Landkreis Werra-Meißner-Kreis,LK Werra-Meißner-Kreis
+142,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Koblenz,Koblenz,Koblenz,7111,DEB11,Kreisfreie Stadt Koblenz,SK Koblenz
+143,Germany,Rheinland-Pfalz,Landkreis,Ahrweiler,Ahrweiler,Ahrweiler,7131,DEB12,Landkreis Ahrweiler,LK Ahrweiler
+144,Germany,Rheinland-Pfalz,Landkreis,Altenkirchen (Westerwald),Altenkirchen (Westerwald),Altenkirchen (Westerwald),7132,DEB13,Landkreis Altenkirchen (Westerwald),LK Altenkirchen
+145,Germany,Rheinland-Pfalz,Landkreis,Bad Kreuznach,Bad Kreuznach,Bad Kreuznach,7133,DEB14,Landkreis Bad Kreuznach,LK Bad Kreuznach
+146,Germany,Rheinland-Pfalz,Landkreis,Birkenfeld,Birkenfeld,Birkenfeld,7134,DEB15,Landkreis Birkenfeld,LK Birkenfeld
+147,Germany,Rheinland-Pfalz,Landkreis,Cochem-Zell,Cochem-Zell,Cochem-Zell,7135,DEB1C,Landkreis Cochem-Zell,LK Cochem-Zell
+148,Germany,Rheinland-Pfalz,Landkreis,Mayen-Koblenz,Mayen-Koblenz,Mayen-Koblenz,7137,DEB17,Landkreis Mayen-Koblenz,LK Mayen-Koblenz
+149,Germany,Rheinland-Pfalz,Landkreis,Neuwied,Neuwied,Neuwied,7138,DEB18,Landkreis Neuwied,LK Neuwied
+150,Germany,Rheinland-Pfalz,Landkreis,Rhein-Hunsrück-Kreis,Rhein-Hunsrück-Kreis,Rhein-Hunsrück-Kreis,7140,DEB1D,Landkreis Rhein-Hunsrück-Kreis,LK Rhein-Hunsrück-Kreis
+151,Germany,Rheinland-Pfalz,Landkreis,Rhein-Lahn-Kreis,Rhein-Lahn-Kreis,Rhein-Lahn-Kreis,7141,DEB1A,Landkreis Rhein-Lahn-Kreis,LK Rhein-Lahn-Kreis
+152,Germany,Rheinland-Pfalz,Landkreis,Westerwaldkreis,Westerwaldkreis,Westerwaldkreis,7143,DEB1B,Landkreis Westerwaldkreis,LK Westerwaldkreis
+153,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Trier,Trier,Trier,7211,DEB21,Kreisfreie Stadt Trier,SK Trier
+154,Germany,Rheinland-Pfalz,Landkreis,Bernkastel-Wittlich,Bernkastel-Wittlich,Bernkastel-Wittlich,7231,DEB22,Landkreis Bernkastel-Wittlich,LK Bernkastel-Wittlich
+155,Germany,Rheinland-Pfalz,Landkreis,Eifelkreis Bitburg-Prüm,Eifelkreis Bitburg-Prüm,Eifelkreis Bitburg-Prüm,7232,DEB23,Landkreis Eifelkreis Bitburg-Prüm,LK Bitburg-Prüm
+156,Germany,Rheinland-Pfalz,Landkreis,Vulkaneifel,Vulkaneifel,Vulkaneifel,7233,DEB24,Landkreis Vulkaneifel,LK Vulkaneifel
+157,Germany,Rheinland-Pfalz,Landkreis,Trier-Saarburg,Trier-Saarburg,Trier-Saarburg,7235,DEB25,Landkreis Trier-Saarburg,LK Trier-Saarburg
+158,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Frankenthal (Pfalz),Frankenthal (Pfalz),Frankenthal (Pfalz),7311,DEB31,Kreisfreie Stadt Frankenthal (Pfalz),SK Frankenthal
+159,Germany,Rheinland-Pfalz,Kreisfreie Stadt,"Kaiserslautern, Landkreis",Landkreis Kaiserslautern,Landkreis Kaiserslautern,7312,DEB32,"Kaiserslautern, kreisfreie Stadt ",SK Kaiserslautern
+160,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Landau in der Pfalz,Landau in der Pfalz,Landau in der Pfalz,7313,DEB33,Kreisfreie Stadt Landau in der Pfalz,SK Landau i.d.Pfalz
+161,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Ludwigshafen am Rhein,Ludwigshafen am Rhein,Ludwigshafen am Rhein,7314,DEB34,Kreisfreie Stadt Ludwigshafen am Rhein,SK Ludwigshafen
+162,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Mainz,Mainz,Mainz,7315,DEB35,Kreisfreie Stadt Mainz,SK Mainz
+163,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Neustadt an der Weinstraße,Neustadt an der Weinstraße,Neustadt an der Weinstraße,7316,DEB36,Kreisfreie Stadt Neustadt an der Weinstraße,SK Neustadt a.d.Weinstraße
+164,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Pirmasens,Pirmasens,Pirmasens,7317,DEB37,Kreisfreie Stadt Pirmasens,SK Pirmasens
+165,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Speyer,Speyer,Speyer,7318,DEB38,Kreisfreie Stadt Speyer,SK Speyer
+166,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Worms,Worms,Worms,7319,DEB39,Kreisfreie Stadt Worms,SK Worms
+167,Germany,Rheinland-Pfalz,Kreisfreie Stadt,Zweibrücken,Zweibrücken,Zweibrücken,7320,DEB3A,Kreisfreie Stadt Zweibrücken,SK Zweibrücken
+168,Germany,Rheinland-Pfalz,Landkreis,Alzey-Worms,Alzey-Worms,Alzey-Worms,7331,DEB3B,Landkreis Alzey-Worms,LK Alzey-Worms
+169,Germany,Rheinland-Pfalz,Landkreis,Bad Dürkheim,Bad Dürkheim,Bad Dürkheim,7332,DEB3C,Landkreis Bad Dürkheim,LK Bad Dürkheim
+170,Germany,Rheinland-Pfalz,Landkreis,Donnersbergkreis,Donnersbergkreis,Donnersbergkreis,7333,DEB3D,Landkreis Donnersbergkreis,LK Donnersbergkreis
+171,Germany,Rheinland-Pfalz,Landkreis,Germersheim,Germersheim,Germersheim,7334,DEB3E,Landkreis Germersheim,LK Germersheim
+172,Germany,Rheinland-Pfalz,Landkreis,Kaiserslautern,Kaiserslautern,Kaiserslautern,7335,DEB3F,"Kaiserslautern, Landkreis",LK Kaiserslautern
+173,Germany,Rheinland-Pfalz,Landkreis,Kyffhäuserkreis,Kyffhäuserkreis,Kyffhäuserkreis,7336,DEB3G,Landkreis Kusel,LK Kusel
+174,Germany,Rheinland-Pfalz,Landkreis,Südliche Weinstraße,Südliche Weinstraße,Südliche Weinstraße,7337,DEB3H,Landkreis Südliche Weinstraße,LK Südliche Weinstraße
+175,Germany,Rheinland-Pfalz,Landkreis,Rhein-Pfalz-Kreis,Rhein-Pfalz-Kreis,Rhein-Pfalz-Kreis,7338,DEB3I,Landkreis Rhein-Pfalz-Kreis,LK Rhein-Pfalz-Kreis
+176,Germany,Rheinland-Pfalz,Landkreis,Mainz-Bingen,Mainz-Bingen,Mainz-Bingen,7339,DEB3J,Landkreis Mainz-Bingen,LK Mainz-Bingen
+177,Germany,Rheinland-Pfalz,Landkreis,Südwestpfalz,Südwestpfalz,Südwestpfalz,7340,DEB3K,Landkreis Südwestpfalz,LK Südwestpfalz
+178,Germany,Baden-Württemberg,Stadtkreis,Stuttgart,Stuttgart,Stuttgart,8111,DE111,Stadt Stuttgart,SK Stuttgart
+179,Germany,Baden-Württemberg,Landkreis,Böblingen,Böblingen,Böblingen,8115,DE112,Landkreis Böblingen,LK Böblingen
+180,Germany,Baden-Württemberg,Landkreis,Esslingen,Esslingen,Esslingen,8116,DE113,Landkreis Esslingen,LK Esslingen
+181,Germany,Baden-Württemberg,Landkreis,Göppingen,Göppingen,Göppingen,8117,DE114,Landkreis Göppingen,LK Göppingen
+182,Germany,Baden-Württemberg,Landkreis,Ludwigsburg,Ludwigsburg,Ludwigsburg,8118,DE115,Landkreis Ludwigsburg,LK Ludwigsburg
+183,Germany,Baden-Württemberg,Landkreis,Rems-Murr-Kreis,Rems-Murr-Kreis,Rems-Murr-Kreis,8119,DE116,Landkreis Rems-Murr-Kreis,LK Rems-Murr-Kreis
+184,Germany,Baden-Württemberg,Stadtkreis,"Heilbronn, Landkreis",Landkreis Heilbronn,Landkreis Heilbronn,8121,DE117,Stadt Heilbronn,SK Heilbronn
+185,Germany,Baden-Württemberg,Landkreis,Heilbronn,Heilbronn,Heilbronn,8125,DE118,Landkreis Heilbronn,LK Heilbronn
+186,Germany,Baden-Württemberg,Landkreis,Hohenlohekreis,Hohenlohekreis,Hohenlohekreis,8126,DE119,Landkreis Hohenlohekreis,LK Hohenlohekreis
+187,Germany,Baden-Württemberg,Landkreis,Schwäbisch Hall,Schwäbisch Hall,Schwäbisch Hall,8127,DE11A,Landkreis Schwäbisch Hall,LK Schwäbisch Hall
+188,Germany,Baden-Württemberg,Landkreis,Main-Tauber-Kreis,Main-Tauber-Kreis,Main-Tauber-Kreis,8128,DE11B,Landkreis Main-Tauber-Kreis,LK Main-Tauber-Kreis
+189,Germany,Baden-Württemberg,Landkreis,Heidenheim,Heidenheim,Heidenheim,8135,DE11C,Landkreis Heidenheim,LK Heidenheim
+190,Germany,Baden-Württemberg,Landkreis,Ostalbkreis,Ostalbkreis,Ostalbkreis,8136,DE11D,Landkreis Ostalbkreis,LK Ostalbkreis
+191,Germany,Baden-Württemberg,Stadtkreis,Baden-Baden,Baden-Baden,Baden-Baden,8211,DE121,Stadt Baden-Baden,SK Baden-Baden
+192,Germany,Baden-Württemberg,Stadtkreis,"Karlsruhe, Landkreis",Landkreis Karlsruhe,Landkreis Karlsruhe,8212,DE122,Stadt Karlsruhe,SK Karlsruhe
+193,Germany,Baden-Württemberg,Landkreis,Karlsruhe,Karlsruhe,Karlsruhe,8215,DE123,"Karlsruhe, Landkreis",LK Karlsruhe
+194,Germany,Baden-Württemberg,Landkreis,Rastatt,Rastatt,Rastatt,8216,DE124,Landkreis Rastatt,LK Rastatt
+195,Germany,Baden-Württemberg,Stadtkreis,Heidelberg,Heidelberg,Heidelberg,8221,DE125,Stadt Heidelberg,SK Heidelberg
+196,Germany,Baden-Württemberg,Stadtkreis,Mannheim,Mannheim,Mannheim,8222,DE126,Stadt Mannheim,SK Mannheim
+197,Germany,Baden-Württemberg,Landkreis,Neckar-Odenwald-Kreis,Neckar-Odenwald-Kreis,Neckar-Odenwald-Kreis,8225,DE127,Landkreis Neckar-Odenwald-Kreis,LK Neckar-Odenwald-Kreis
+198,Germany,Baden-Württemberg,Landkreis,Rhein-Neckar-Kreis,Rhein-Neckar-Kreis,Rhein-Neckar-Kreis,8226,DE128,Landkreis Rhein-Neckar-Kreis,LK Rhein-Neckar-Kreis
+199,Germany,Baden-Württemberg,Stadtkreis,Pforzheim,Pforzheim,Pforzheim,8231,DE129,Stadt Pforzheim,SK Pforzheim
+200,Germany,Baden-Württemberg,Landkreis,Calw,Calw,Calw,8235,DE12A,Landkreis Calw,LK Calw
+201,Germany,Baden-Württemberg,Landkreis,Enzkreis,Enzkreis,Enzkreis,8236,DE12B,Landkreis Enzkreis,LK Enzkreis
+202,Germany,Baden-Württemberg,Landkreis,Freudenstadt,Freudenstadt,Freudenstadt,8237,DE12C,Landkreis Freudenstadt,LK Freudenstadt
+203,Germany,Baden-Württemberg,Stadtkreis,Freiburg im Breisgau,Freiburg im Breisgau,Freiburg im Breisgau,8311,DE131,Stadt Freiburg im Breisgau,SK Freiburg i.Breisgau
+204,Germany,Baden-Württemberg,Landkreis,Breisgau-Hochschwarzwald,Breisgau-Hochschwarzwald,Breisgau-Hochschwarzwald,8315,DE132,Landkreis Breisgau-Hochschwarzwald,LK Breisgau-Hochschwarzwald
+205,Germany,Baden-Württemberg,Landkreis,Emmendingen,Emmendingen,Emmendingen,8316,DE133,Landkreis Emmendingen,LK Emmendingen
+206,Germany,Baden-Württemberg,Landkreis,Ortenaukreis,Ortenaukreis,Ortenaukreis,8317,DE134,Landkreis Ortenaukreis,LK Ortenaukreis
+207,Germany,Baden-Württemberg,Landkreis,Rottweil,Rottweil,Rottweil,8325,DE135,Landkreis Rottweil,LK Rottweil
+208,Germany,Baden-Württemberg,Landkreis,Schwarzwald-Baar-Kreis,Schwarzwald-Baar-Kreis,Schwarzwald-Baar-Kreis,8326,DE136,Landkreis Schwarzwald-Baar-Kreis,LK Schwarzwald-Baar-Kreis
+209,Germany,Baden-Württemberg,Landkreis,Tuttlingen,Tuttlingen,Tuttlingen,8327,DE137,Landkreis Tuttlingen,LK Tuttlingen
+210,Germany,Baden-Württemberg,Landkreis,Krefeld,Krefeld,Krefeld,8335,DE138,Landkreis Konstanz,LK Konstanz
+211,Germany,Baden-Württemberg,Landkreis,Lörrach,Lörrach,Lörrach,8336,DE139,Landkreis Lörrach,LK Lörrach
+212,Germany,Baden-Württemberg,Landkreis,Waldshut,Waldshut,Waldshut,8337,DE13A,Landkreis Waldshut,LK Waldshut
+213,Germany,Baden-Württemberg,Landkreis,Reutlingen,Reutlingen,Reutlingen,8415,DE141,Landkreis Reutlingen,LK Reutlingen
+214,Germany,Baden-Württemberg,Landkreis,Tübingen,Tübingen,Tübingen,8416,DE142,Landkreis Tübingen,LK Tübingen
+215,Germany,Baden-Württemberg,Landkreis,Zollernalbkreis,Zollernalbkreis,Zollernalbkreis,8417,DE143,Landkreis Zollernalbkreis,LK Zollernalbkreis
+216,Germany,Baden-Württemberg,Stadtkreis,Ulm,Ulm,Ulm,8421,DE144,Stadt Ulm,SK Ulm
+217,Germany,Baden-Württemberg,Landkreis,Alb-Donau-Kreis,Alb-Donau-Kreis,Alb-Donau-Kreis,8425,DE145,Landkreis Alb-Donau-Kreis,LK Alb-Donau-Kreis
+218,Germany,Baden-Württemberg,Landkreis,Biberach,Biberach,Biberach,8426,DE146,Landkreis Biberach,LK Biberach
+219,Germany,Baden-Württemberg,Landkreis,Bodenseekreis,Bodenseekreis,Bodenseekreis,8435,DE147,Landkreis Bodenseekreis,LK Bodenseekreis
+220,Germany,Baden-Württemberg,Landkreis,Ravensburg,Ravensburg,Ravensburg,8436,DE148,Landkreis Ravensburg,LK Ravensburg
+221,Germany,Baden-Württemberg,Landkreis,Sigmaringen,Sigmaringen,Sigmaringen,8437,DE149,Landkreis Sigmaringen,LK Sigmaringen
+222,Germany,Bayern,Kreisfreie Stadt,Ingolstadt,Ingolstadt,Ingolstadt,9161,DE211,Kreisfreie Stadt Ingolstadt,SK Ingolstadt
+223,Germany,Bayern,Kreisfreie Stadt,"München, Landkreis",Landkreis München,Landkreis München,9162,DE212,Kreisfreie Stadt München,SK München
+224,Germany,Bayern,Kreisfreie Stadt,Rosenheim,Rosenheim,Rosenheim,9163,DE213,Kreisfreie Stadt Rosenheim,SK Rosenheim
+225,Germany,Bayern,Landkreis,Altötting,Altötting,Altötting,9171,DE214,Landkreis Altötting,LK Altötting
+226,Germany,Bayern,Landkreis,Berchtesgadener Land,Berchtesgadener Land,Berchtesgadener Land,9172,DE215,Landkreis Berchtesgadener Land,LK Berchtesgadener Land
+227,Germany,Bayern,Landkreis,Bad Tölz-Wolfratshausen,Bad Tölz-Wolfratshausen,Bad Tölz-Wolfratshausen,9173,DE216,Landkreis Bad Tölz-Wolfratshausen,LK Bad Tölz-Wolfratshausen
+228,Germany,Bayern,Landkreis,Dachau,Dachau,Dachau,9174,DE217,Landkreis Dachau,LK Dachau
+229,Germany,Bayern,Landkreis,Ebersberg,Ebersberg,Ebersberg,9175,DE218,Landkreis Ebersberg,LK Ebersberg
+230,Germany,Bayern,Landkreis,Eichstätt,Eichstätt,Eichstätt,9176,DE219,Landkreis Eichstätt,LK Eichstätt
+231,Germany,Bayern,Landkreis,Erding,Erding,Erding,9177,DE21A,Landkreis Erding,LK Erding
+232,Germany,Bayern,Landkreis,Freising,Freising,Freising,9178,DE21B,Landkreis Freising,LK Freising
+233,Germany,Bayern,Landkreis,Fürstenfeldbruck,Fürstenfeldbruck,Fürstenfeldbruck,9179,DE21C,Landkreis Fürstenfeldbruck,LK Fürstenfeldbruck
+234,Germany,Bayern,Landkreis,Garmisch-Partenkirchen,Garmisch-Partenkirchen,Garmisch-Partenkirchen,9180,DE21D,Landkreis Garmisch-Partenkirchen,LK Garmisch-Partenkirchen
+235,Germany,Bayern,Landkreis,Landsberg am Lech,Landsberg am Lech,Landsberg am Lech,9181,DE21E,Landkreis Landsberg am Lech,LK Landsberg a.Lech
+236,Germany,Bayern,Landkreis,Miesbach,Miesbach,Miesbach,9182,DE21F,Landkreis Miesbach,LK Miesbach
+237,Germany,Bayern,Landkreis,Mühldorf am Inn,Mühldorf am Inn,Mühldorf am Inn,9183,DE21G,"Mühldorf a.Inn, Landkreis",LK Mühldorf a.Inn
+238,Germany,Bayern,Landkreis,München,München,München,9184,DE21H,Landkreis München,LK München
+239,Germany,Bayern,Landkreis,Neuburg-Schrobenhausen,Neuburg-Schrobenhausen,Neuburg-Schrobenhausen,9185,DE21I,Landkreis Neuburg-Schrobenhausen,LK Neuburg-Schrobenhausen
+240,Germany,Bayern,Landkreis,Pfaffenhofen an der Ilm,Pfaffenhofen an der Ilm,Pfaffenhofen an der Ilm,9186,DE21J,Landkreis Pfaffenhofen an der Ilm,LK Pfaffenhofen a.d.Ilm
+241,Germany,Bayern,Landkreis,"Rosenheim, Landkreis",Landkreis Rosenheim,Landkreis Rosenheim,9187,DE21K,Landkreis Rosenheim,LK Rosenheim
+242,Germany,Bayern,Landkreis,Starnberg,Starnberg,Starnberg,9188,DE21L,Landkreis Starnberg,LK Starnberg
+243,Germany,Bayern,Landkreis,Traunstein,Traunstein,Traunstein,9189,DE21M,Landkreis Traunstein,LK Traunstein
+244,Germany,Bayern,Landkreis,Weilheim-Schongau,Weilheim-Schongau,Weilheim-Schongau,9190,DE21N,Landkreis Weilheim-Schongau,LK Weilheim-Schongau
+245,Germany,Bayern,Kreisfreie Stadt,"Landshut, Landkreis",Landkreis Landshut,Landkreis Landshut,9261,DE221,Kreisfreie Stadt Landshut,SK Landshut
+246,Germany,Bayern,Kreisfreie Stadt,Passau,Passau,Passau,9262,DE222,Kreisfreie Stadt Passau,SK Passau
+247,Germany,Bayern,Kreisfreie Stadt,Straubing,Straubing,Straubing,9263,DE223,Kreisfreie Stadt Straubing,SK Straubing
+248,Germany,Bayern,Landkreis,Deggendorf,Deggendorf,Deggendorf,9271,DE224,Landkreis Deggendorf,LK Deggendorf
+249,Germany,Bayern,Landkreis,Freyung-Grafenau,Freyung-Grafenau,Freyung-Grafenau,9272,DE225,Landkreis Freyung-Grafenau,LK Freyung-Grafenau
+250,Germany,Bayern,Landkreis,Kelheim,Kelheim,Kelheim,9273,DE226,Landkreis Kelheim,LK Kelheim
+251,Germany,Bayern,Landkreis,Landshut,Landshut,Landshut,9274,DE227,Landkreis Landshut,LK Landshut
+252,Germany,Bayern,Landkreis,"Passau, Landkreis",Landkreis Passau,Landkreis Passau,9275,DE228,Landkreis Passau,LK Passau
+253,Germany,Bayern,Landkreis,Regen,Regen,Regen,9276,DE229,Landkreis Regen,LK Regen
+254,Germany,Bayern,Landkreis,Rottal-Inn,Rottal-Inn,Rottal-Inn,9277,DE22A,Landkreis Rottal-Inn,LK Rottal-Inn
+255,Germany,Bayern,Landkreis,Straubing-Bogen,Straubing-Bogen,Straubing-Bogen,9278,DE22B,Landkreis Straubing-Bogen,LK Straubing-Bogen
+256,Germany,Bayern,Landkreis,Dingolfing-Landau,Dingolfing-Landau,Dingolfing-Landau,9279,DE22C,Landkreis Dingolfing-Landau,LK Dingolfing-Landau
+257,Germany,Bayern,Kreisfreie Stadt,Amberg,Amberg,Amberg,9361,DE231,Kreisfreie Stadt Amberg,SK Amberg
+258,Germany,Bayern,Kreisfreie Stadt,"Regensburg, Landkreis",Landkreis Regensburg,Landkreis Regensburg,9362,DE232,Kreisfreie Stadt Regensburg,SK Regensburg
+259,Germany,Bayern,Kreisfreie Stadt,Weiden in der Oberpfalz,Weiden in der Oberpfalz,Weiden in der Oberpfalz,9363,DE233,Kreisfreie Stadt Weiden in der Oberpfalz,SK Weiden i.d.OPf.
+260,Germany,Bayern,Landkreis,Amberg-Sulzbach,Amberg-Sulzbach,Amberg-Sulzbach,9371,DE234,Landkreis Amberg-Sulzbach,LK Amberg-Sulzbach
+261,Germany,Bayern,Landkreis,Cham,Cham,Cham,9372,DE235,Landkreis Cham,LK Cham
+262,Germany,Bayern,Landkreis,Neumarkt in der Oberpfalz,Neumarkt in der Oberpfalz,Neumarkt in der Oberpfalz,9373,DE236,Landkreis Neumarkt i.d.OPf,LK Neumarkt i.d.OPf.
+263,Germany,Bayern,Landkreis,Neustadt an der Waldnaab,Neustadt an der Waldnaab,Neustadt an der Waldnaab,9374,DE237,Landkreis Neustadt a.d. Waldnaab,LK Neustadt a.d.Waldnaab
+264,Germany,Bayern,Landkreis,Regensburg,Regensburg,Regensburg,9375,DE238,Landkreis Regensburg,LK Regensburg
+265,Germany,Bayern,Landkreis,Schwandorf,Schwandorf,Schwandorf,9376,DE239,Landkreis Schwandorf,LK Schwandorf
+266,Germany,Bayern,Landkreis,Tirschenreuth,Tirschenreuth,Tirschenreuth,9377,DE23A,Landkreis Tirschenreuth,LK Tirschenreuth
+267,Germany,Bayern,Kreisfreie Stadt,Bamberg,Bamberg,Bamberg,9461,DE241,Kreisfreie Stadt Bamberg,SK Bamberg
+268,Germany,Bayern,Kreisfreie Stadt,Bayreuth,Bayreuth,Bayreuth,9462,DE242,Kreisfreie Stadt Bayreuth,SK Bayreuth
+269,Germany,Bayern,Kreisfreie Stadt,Coburg,Coburg,Coburg,9463,DE243,Kreisfreie Stadt Coburg,SK Coburg
+270,Germany,Bayern,Kreisfreie Stadt,"Hof, Landkreis",Landkreis Hof,Landkreis Hof,9464,DE244,Kreisfreie Stadt Hof,SK Hof
+271,Germany,Bayern,Landkreis,"Bamberg, Landkreis",Landkreis Bamberg,Landkreis Bamberg,9471,DE245,Landkreis Bamberg,LK Bamberg
+272,Germany,Bayern,Landkreis,"Bayreuth, Landkreis",Landkreis Bayreuth,Landkreis Bayreuth,9472,DE246,Landkreis Bayreuth,LK Bayreuth
+273,Germany,Bayern,Landkreis,"Coburg, Landkreis",Landkreis Coburg,Landkreis Coburg,9473,DE247,Landkreis Coburg,LK Coburg
+274,Germany,Bayern,Landkreis,Forchheim,Forchheim,Forchheim,9474,DE248,Landkreis Forchheim,LK Forchheim
+275,Germany,Bayern,Landkreis,Hof,Hof,Hof,9475,DE249,Landkreis Hof,LK Hof
+276,Germany,Bayern,Landkreis,Kulmbach,Kulmbach,Kulmbach,9476,DE24A,Landkreis Kronach,LK Kronach
+277,Germany,Bayern,Landkreis,Kusel,Kusel,Kusel,9477,DE24B,Landkreis Kulmbach,LK Kulmbach
+278,Germany,Bayern,Landkreis,Lichtenfels,Lichtenfels,Lichtenfels,9478,DE24C,Landkreis Lichtenfels,LK Lichtenfels
+279,Germany,Bayern,Landkreis,Wunsiedel im Fichtelgebirge,Wunsiedel im Fichtelgebirge,Wunsiedel im Fichtelgebirge,9479,DE24D,Landkreis Wunsiedel im Fichtelgebirge,LK Wunsiedel i.Fichtelgebirge
+280,Germany,Bayern,Kreisfreie Stadt,"Ansbach, Landkreis",Landkreis Ansbach,Landkreis Ansbach,9561,DE251,Kreisfreie Stadt Ansbach,SK Ansbach
+281,Germany,Bayern,Kreisfreie Stadt,Erlangen,Erlangen,Erlangen,9562,DE252,Kreisfreie Stadt Erlangen,SK Erlangen
+282,Germany,Bayern,Kreisfreie Stadt,"Fürth, Landkreis",Landkreis Fürth,Landkreis Fürth,9563,DE253,Kreisfreie Stadt Fürth,SK Fürth
+283,Germany,Bayern,Kreisfreie Stadt,Nürnberg,Nürnberg,Nürnberg,9564,DE254,Kreisfreie Stadt Nürnberg,SK Nürnberg
+284,Germany,Bayern,Kreisfreie Stadt,Schwabach,Schwabach,Schwabach,9565,DE255,Kreisfreie Stadt Schwabach,SK Schwabach
+285,Germany,Bayern,Landkreis,Ansbach,Ansbach,Ansbach,9571,DE256,Landkreis Ansbach,LK Ansbach
+286,Germany,Bayern,Landkreis,Erlangen-Höchstadt,Erlangen-Höchstadt,Erlangen-Höchstadt,9572,DE257,Landkreis Erlangen-Höchstadt,LK Erlangen-Höchstadt
+287,Germany,Bayern,Landkreis,Fürth,Fürth,Fürth,9573,DE258,Landkreis Fürth,LK Fürth
+288,Germany,Bayern,Landkreis,Nürnberger Land,Nürnberger Land,Nürnberger Land,9574,DE259,Landkreis Nürnberger Land,LK Nürnberger Land
+289,Germany,Bayern,Landkreis,Neustadt an der Aisch,Neustadt an der Aisch,Neustadt an der Aisch,9575,DE25A,Landkreis Neustadt an der Aisch-Bad Windsheim,LK Neustadt a.d.Aisch-Bad Windsheim
+290,Germany,Bayern,Landkreis,Roth,Roth,Roth,9576,DE25B,Landkreis Roth,LK Roth
+291,Germany,Bayern,Landkreis,Weißenburg-Gunzenhausen,Weißenburg-Gunzenhausen,Weißenburg-Gunzenhausen,9577,DE25C,Landkreis Weißenburg-Gunzenhausen,LK Weißenburg-Gunzenhausen
+292,Germany,Bayern,Kreisfreie Stadt,"Aschaffenburg, Landkreis",Landkreis Aschaffenburg,Landkreis Aschaffenburg,9661,DE261,Kreisfreie Stadt Aschaffenburg,SK Aschaffenburg
+293,Germany,Bayern,Kreisfreie Stadt,"Schweinfurt, Landkreis",Landkreis Schweinfurt,Landkreis Schweinfurt,9662,DE262,Kreisfreie Stadt Schweinfurt,SK Schweinfurt
+294,Germany,Bayern,Kreisfreie Stadt,"Würzburg, Landkreis",Landkreis Würzburg,Landkreis Würzburg,9663,DE263,Kreisfreie Stadt Würzburg,SK Würzburg
+295,Germany,Bayern,Landkreis,Aschaffenburg,Aschaffenburg,Aschaffenburg,9671,DE264,Landkreis Aschaffenburg,LK Aschaffenburg
+296,Germany,Bayern,Landkreis,Bad Kissingen,Bad Kissingen,Bad Kissingen,9672,DE265,Landkreis Bad Kissingen,LK Bad Kissingen
+297,Germany,Bayern,Landkreis,Rhön-Grabfeld,Rhön-Grabfeld,Rhön-Grabfeld,9673,DE266,Landkreis Rhön-Grabfeld,LK Rhön-Grabfeld
+298,Germany,Bayern,Landkreis,Haßberge,Haßberge,Haßberge,9674,DE267,Landkreis Haßberge,LK Haßberge
+299,Germany,Bayern,Landkreis,Kitzingen,Kitzingen,Kitzingen,9675,DE268,Landkreis Kitzingen,LK Kitzingen
+300,Germany,Bayern,Landkreis,Miltenberg,Miltenberg,Miltenberg,9676,DE269,Landkreis Miltenberg,LK Miltenberg
+301,Germany,Bayern,Landkreis,Main-Spessart,Main-Spessart,Main-Spessart,9677,DE26A,Landkreis Main-Spessart,LK Main-Spessart
+302,Germany,Bayern,Landkreis,Schweinfurt,Schweinfurt,Schweinfurt,9678,DE26B,Landkreis Schweinfurt,LK Schweinfurt
+303,Germany,Bayern,Landkreis,Würzburg,Würzburg,Würzburg,9679,DE26C,Landkreis Würzburg,LK Würzburg
+304,Germany,Bayern,Kreisfreie Stadt,Augsburg,Augsburg,Augsburg,9761,DE271,Kreisfreie Stadt Augsburg,SK Augsburg
+305,Germany,Bayern,Kreisfreie Stadt,Kaufbeuren,Kaufbeuren,Kaufbeuren,9762,DE272,Kreisfreie Stadt Kaufbeuren,SK Kaufbeuren
+306,Germany,Bayern,Kreisfreie Stadt,Kempten (Allgäu),Kempten (Allgäu),Kempten (Allgäu),9763,DE273,Kreisfreie Stadt Kempten (Allgäu),SK Kempten
+307,Germany,Bayern,Kreisfreie Stadt,Memmingen,Memmingen,Memmingen,9764,DE274,Kreisfreie Stadt Memmingen,SK Memmingen
+308,Germany,Bayern,Landkreis,Aichach-Friedberg,Aichach-Friedberg,Aichach-Friedberg,9771,DE275,Landkreis Aichach-Friedberg,LK Aichach-Friedberg
+309,Germany,Bayern,Landkreis,"Augsburg, Landkreis",Landkreis Augsburg,Landkreis Augsburg,9772,DE276,Landkreis Augsburg,LK Augsburg
+310,Germany,Bayern,Landkreis,Dillingen an der Donau,Dillingen an der Donau,Dillingen an der Donau,9773,DE277,Landkreis Dillingen a. d. Donau,LK Dillingen a.d.Donau
+311,Germany,Bayern,Landkreis,Günzburg,Günzburg,Günzburg,9774,DE278,Landkreis Günzburg,LK Günzburg
+312,Germany,Bayern,Landkreis,Neu-Ulm,Neu-Ulm,Neu-Ulm,9775,DE279,Landkreis Neu-Ulm,LK Neu-Ulm
+313,Germany,Bayern,Landkreis,Lindau (Bodensee),Lindau (Bodensee),Lindau (Bodensee),9776,DE27A,Landkreis Lindau (Bodensee),LK Lindau
+314,Germany,Bayern,Landkreis,Ostallgäu,Ostallgäu,Ostallgäu,9777,DE27B,Landkreis Ostallgäu,LK Ostallgäu
+315,Germany,Bayern,Landkreis,Unterallgäu,Unterallgäu,Unterallgäu,9778,DE27C,Landkreis Unterallgäu,LK Unterallgäu
+316,Germany,Bayern,Landkreis,Donau-Ries,Donau-Ries,Donau-Ries,9779,DE27D,Landkreis Donau-Ries,LK Donau-Ries
+317,Germany,Bayern,Landkreis,Oberallgäu,Oberallgäu,Oberallgäu,9780,DE27E,Landkreis Oberallgäu,LK Oberallgäu
+318,Germany,Saarland,Regionalverband,Regionalverband Saarbrücken,Regionalverband Saarbrücken,Regionalverband Saarbrücken,10041,DEC01,Regionalverband Saarbrücken,LK Stadtverband Saarbrücken
+319,Germany,Saarland,Landkreis,Merzig-Wadern,Merzig-Wadern,Merzig-Wadern,10042,DEC02,Landkreis Merzig-Wadern,LK Merzig-Wadern
+320,Germany,Saarland,Landkreis,Neunkirchen,Neunkirchen,Neunkirchen,10043,DEC03,Landkreis Neunkirchen,LK Neunkirchen
+321,Germany,Saarland,Landkreis,Saarlouis,Saarlouis,Saarlouis,10044,DEC04,Landkreis Saarlouis,LK Saarlouis
+322,Germany,Saarland,Landkreis,Saarpfalz-Kreis,Saarpfalz-Kreis,Saarpfalz-Kreis,10045,DEC05,Landkreis Saarpfalz-Kreis,LK Saar-Pfalz-Kreis
+323,Germany,Saarland,Landkreis,St. Wendel,St. Wendel,St. Wendel,10046,DEC06,Landkreis St. Wendel,LK Sankt Wendel
+324,Germany,Brandenburg,Kreisfreie Stadt,Brandenburg an der Havel,Brandenburg an der Havel,Brandenburg an der Havel,12051,DE401,Kreisfreie Stadt Brandenburg an der Havel,SK Brandenburg a.d.Havel
+325,Germany,Brandenburg,Kreisfreie Stadt,Cottbus,Cottbus,Cottbus,12052,DE402,Kreisfreie Stadt Cottbus,SK Cottbus
+326,Germany,Brandenburg,Kreisfreie Stadt,Frankfurt (Oder),Frankfurt (Oder),Frankfurt (Oder),12053,DE403,Kreisfreie Stadt Frankfurt (Oder),SK Frankfurt (Oder)
+327,Germany,Brandenburg,Kreisfreie Stadt,Potsdam,Potsdam,Potsdam,12054,DE404,Kreisfreie Stadt Potsdam,SK Potsdam
+328,Germany,Brandenburg,Landkreis,Barnim,Barnim,Barnim,12060,DE405,Landkreis Barnim,LK Barnim
+329,Germany,Brandenburg,Landkreis,Dahme-Spreewald,Dahme-Spreewald,Dahme-Spreewald,12061,DE406,Landkreis Dahme-Spreewald,LK Dahme-Spreewald
+330,Germany,Brandenburg,Landkreis,Elbe-Elster,Elbe-Elster,Elbe-Elster,12062,DE407,Landkreis Elbe-Elster,LK Elbe-Elster
+331,Germany,Brandenburg,Landkreis,Havelland,Havelland,Havelland,12063,DE408,Landkreis Havelland,LK Havelland
+332,Germany,Brandenburg,Landkreis,Märkisch-Oderland,Märkisch-Oderland,Märkisch-Oderland,12064,DE409,Landkreis Märkisch-Oderland,LK Märkisch-Oderland
+333,Germany,Brandenburg,Landkreis,Oberhavel,Oberhavel,Oberhavel,12065,DE40A,Landkreis Oberhavel,LK Oberhavel
+334,Germany,Brandenburg,Landkreis,Oberspreewald-Lausitz,Oberspreewald-Lausitz,Oberspreewald-Lausitz,12066,DE40B,Landkreis Oberspreewald-Lausitz,LK Oberspreewald-Lausitz
+335,Germany,Brandenburg,Landkreis,Oder-Spree,Oder-Spree,Oder-Spree,12067,DE40C,Landkreis Oder-Spree,LK Oder-Spree
+336,Germany,Brandenburg,Landkreis,Ostprignitz-Ruppin,Ostprignitz-Ruppin,Ostprignitz-Ruppin,12068,DE40D,Landkreis Ostprignitz-Ruppin,LK Ostprignitz-Ruppin
+337,Germany,Brandenburg,Landkreis,Potsdam-Mittelmark,Potsdam-Mittelmark,Potsdam-Mittelmark,12069,DE40E,Landkreis Potsdam-Mittelmark,LK Potsdam-Mittelmark
+338,Germany,Brandenburg,Landkreis,Prignitz,Prignitz,Prignitz,12070,DE40F,Landkreis Prignitz,LK Prignitz
+339,Germany,Brandenburg,Landkreis,Spree-Neiße,Spree-Neiße,Spree-Neiße,12071,DE40G,Landkreis Spree-Neiße,LK Spree-Neiße
+340,Germany,Brandenburg,Landkreis,Teltow-Fläming,Teltow-Fläming,Teltow-Fläming,12072,DE40H,Landkreis Teltow-Fläming,LK Teltow-Fläming
+341,Germany,Brandenburg,Landkreis,Uckermark,Uckermark,Uckermark,12073,DE40I,Landkreis Uckermark,LK Uckermark
+342,Germany,Mecklenburg-Vorpommern,Kreisfreie Stadt,Rostock,Rostock,Rostock,13003,DE803,Kreisfreie Stadt Rostock,SK Rostock
+343,Germany,Mecklenburg-Vorpommern,Kreisfreie Stadt,Schwerin,Schwerin,Schwerin,13004,DE804,Kreisfreie Stadt Schwerin,SK Schwerin
+344,Germany,Mecklenburg-Vorpommern,Landkreis,Mecklenburgische Seenplatte,Mecklenburgische Seenplatte,Mecklenburgische Seenplatte,13071,DE80J,Landkreis Mecklenburgische Seenplatte,LK Mecklenburgische Seenplatte
+345,Germany,Mecklenburg-Vorpommern,Landkreis,"Rostock, Landkreis",Landkreis Rostock,Landkreis Rostock,13072,DE80K,Landkreis Rostock,LK Rostock
+346,Germany,Mecklenburg-Vorpommern,Landkreis,Vorpommern-Rügen,Vorpommern-Rügen,Vorpommern-Rügen,13073,DE80L,Landkreis Vorpommern-Rügen,LK Vorpommern-Rügen
+347,Germany,Mecklenburg-Vorpommern,Landkreis,Nordwestmecklenburg,Nordwestmecklenburg,Nordwestmecklenburg,13074,DE80M,Landkreis Nordwestmecklenburg,LK Nordwestmecklenburg
+348,Germany,Mecklenburg-Vorpommern,Landkreis,Vorpommern-Greifswald,Vorpommern-Greifswald,Vorpommern-Greifswald,13075,DE80N,Landkreis Vorpommern-Greifswald,LK Vorpommern-Greifswald
+349,Germany,Mecklenburg-Vorpommern,Landkreis,Ludwigslust-Parchim,Ludwigslust-Parchim,Ludwigslust-Parchim,13076,DE80O,Landkreis Ludwigslust-Parchim,LK Ludwigslust-Parchim
+350,Germany,Sachsen,Kreisfreie Stadt,Chemnitz,Chemnitz,Chemnitz,14511,DED41,Kreisfreie Stadt Chemnitz,SK Chemnitz
+351,Germany,Sachsen,Landkreis,Erzgebirgskreis,Erzgebirgskreis,Erzgebirgskreis,14521,DED42,Landkreis Erzgebirgskreis,LK Erzgebirgskreis
+352,Germany,Sachsen,Landkreis,Mittelsachsen,Mittelsachsen,Mittelsachsen,14522,DED43,Landkreis Mittelsachsen,LK Mittelsachsen
+353,Germany,Sachsen,Landkreis,Vogtlandkreis,Vogtlandkreis,Vogtlandkreis,14523,DED44,Landkreis Vogtlandkreis,LK Vogtlandkreis
+354,Germany,Sachsen,Landkreis,Zwickau,Zwickau,Zwickau,14524,DED45,Landkreis Zwickau,LK Zwickau
+355,Germany,Sachsen,Kreisfreie Stadt,Dresden,Dresden,Dresden,14612,DED21,Kreisfreie Stadt Dresden,SK Dresden
+356,Germany,Sachsen,Landkreis,Bautzen,Bautzen,Bautzen,14625,DED2C,Landkreis Bautzen,LK Bautzen
+357,Germany,Sachsen,Landkreis,Görlitz,Görlitz,Görlitz,14626,DED2D,Landkreis Görlitz,LK Görlitz
+358,Germany,Sachsen,Landkreis,Meißen,Meißen,Meißen,14627,DED2E,Landkreis Meißen,LK Meißen
+359,Germany,Sachsen,Landkreis,Sächsische Schweiz-Osterzgebirge,Sächsische Schweiz-Osterzgebirge,Sächsische Schweiz-Osterzgebirge,14628,DED2F,Landkreis Sächsische Schweiz-Osterzgebirge,LK Sächsische Schweiz-Osterzgebirge
+360,Germany,Sachsen,Kreisfreie Stadt,"Leipzig, Landkreis",Landkreis Leipzig,Landkreis Leipzig,14713,DED51,Kreisfreie Stadt Leipzig,SK Leipzig
+361,Germany,Sachsen,Landkreis,Leipzig,Leipzig,Leipzig,14729,DED52,Landkreis Leipzig,LK Leipzig
+362,Germany,Sachsen,Landkreis,Nordsachsen,Nordsachsen,Nordsachsen,14730,DED53,Landkreis Nordsachsen,LK Nordsachsen
+363,Germany,Sachsen-Anhalt,Kreisfreie Stadt,Dessau-Roßlau,Dessau-Roßlau,Dessau-Roßlau,15001,DEE01,Stadt Dessau-Roßlau,SK Dessau-Roßlau
+364,Germany,Sachsen-Anhalt,Kreisfreie Stadt,Halle (Saale),Halle (Saale),Halle (Saale),15002,DEE02,Kreisfreie Stadt Halle (Saale),SK Halle
+365,Germany,Sachsen-Anhalt,Kreisfreie Stadt,Magdeburg,Magdeburg,Magdeburg,15003,DEE03,Stadt Magdeburg,SK Magdeburg
+366,Germany,Sachsen-Anhalt,Landkreis,Altmarkkreis Salzwedel,Altmarkkreis Salzwedel,Altmarkkreis Salzwedel,15081,DEE04,Landkreis Altmarkkreis Salzwedel,LK Altmarkkreis Salzwedel
+367,Germany,Sachsen-Anhalt,Landkreis,Anhalt-Bitterfeld,Anhalt-Bitterfeld,Anhalt-Bitterfeld,15082,DEE05,Landkreis Anhalt-Bitterfeld,LK Anhalt-Bitterfeld
+368,Germany,Sachsen-Anhalt,Landkreis,Börde,Börde,Börde,15083,DEE07,Landkreis Börde,LK Börde
+369,Germany,Sachsen-Anhalt,Landkreis,Burgenlandkreis,Burgenlandkreis,Burgenlandkreis,15084,DEE08,Landkreis Burgenlandkreis,LK Burgenlandkreis
+370,Germany,Sachsen-Anhalt,Landkreis,Harz,Harz,Harz,15085,DEE09,Landkreis Harz,LK Harz
+371,Germany,Sachsen-Anhalt,Landkreis,Jerichower Land,Jerichower Land,Jerichower Land,15086,DEE06,Landkreis Jerichower Land,LK Jerichower Land
+372,Germany,Sachsen-Anhalt,Landkreis,Mansfeld-Südharz,Mansfeld-Südharz,Mansfeld-Südharz,15087,DEE0A,Landkreis Mansfeld-Südharz,LK Mansfeld-Südharz
+373,Germany,Sachsen-Anhalt,Landkreis,Saalekreis,Saalekreis,Saalekreis,15088,DEE0B,Landkreis Saalekreis,LK Saalekreis
+374,Germany,Sachsen-Anhalt,Landkreis,Salzlandkreis,Salzlandkreis,Salzlandkreis,15089,DEE0C,Landkreis Salzlandkreis,LK Salzlandkreis
+375,Germany,Sachsen-Anhalt,Landkreis,Stendal,Stendal,Stendal,15090,DEE0D,Landkreis Stendal,LK Stendal
+376,Germany,Sachsen-Anhalt,Landkreis,Wittenberg,Wittenberg,Wittenberg,15091,DEE0E,Landkreis Wittenberg,LK Wittenberg
+377,Germany,Thüringen,Kreisfreie Stadt,Erfurt,Erfurt,Erfurt,16051,DEG01,Kreisfreie Stadt Erfurt,SK Erfurt
+378,Germany,Thüringen,Kreisfreie Stadt,Gera,Gera,Gera,16052,DEG02,Kreisfreie Stadt Gera,SK Gera
+379,Germany,Thüringen,Kreisfreie Stadt,Jena,Jena,Jena,16053,DEG03,Kreisfreie Stadt Jena,SK Jena
+380,Germany,Thüringen,Kreisfreie Stadt,Suhl,Suhl,Suhl,16054,DEG04,Kreisfreie Stadt Suhl,SK Suhl
+381,Germany,Thüringen,Kreisfreie Stadt,Weimar,Weimar,Weimar,16055,DEG05,Kreisfreie Stadt Weimar,SK Weimar
+382,Germany,Thüringen,Kreisfreie Stadt,Eisenach,Eisenach,Eisenach,16056,DEG0N,Kreisfreie Stadt Eisenach,SK Eisenach
+383,Germany,Thüringen,Landkreis,Eichsfeld,Eichsfeld,Eichsfeld,16061,DEG06,Landkreis Eichsfeld,LK Eichsfeld
+384,Germany,Thüringen,Landkreis,Nordhausen,Nordhausen,Nordhausen,16062,DEG07,Landkreis Nordhausen,LK Nordhausen
+385,Germany,Thüringen,Landkreis,Wartburgkreis,Wartburgkreis,Wartburgkreis,16063,DEG0P,Landkreis Wartburgkreis,LK Wartburgkreis
+386,Germany,Thüringen,Landkreis,Unstrut-Hainich-Kreis,Unstrut-Hainich-Kreis,Unstrut-Hainich-Kreis,16064,DEG09,Landkreis Unstrut-Hainich-Kreis,LK Unstrut-Hainich-Kreis
+387,Germany,Thüringen,Landkreis,Köln,Köln,Köln,16065,DEG0A,Landkreis Kyffhäuserkreis,LK Kyffhäuserkreis
+388,Germany,Thüringen,Landkreis,Schmalkalden-Meiningen,Schmalkalden-Meiningen,Schmalkalden-Meiningen,16066,DEG0B,Landkreis Schmalkalden-Meiningen,LK Schmalkalden-Meiningen
+389,Germany,Thüringen,Landkreis,Gotha,Gotha,Gotha,16067,DEG0C,Landkreis Gotha,LK Gotha
+390,Germany,Thüringen,Landkreis,Sömmerda,Sömmerda,Sömmerda,16068,DEG0D,Landkreis Sömmerda,LK Sömmerda
+391,Germany,Thüringen,Landkreis,Hildburghausen,Hildburghausen,Hildburghausen,16069,DEG0E,Landkreis Hildburghausen,LK Hildburghausen
+392,Germany,Thüringen,Landkreis,Ilm-Kreis,Ilm-Kreis,Ilm-Kreis,16070,DEG0F,Landkreis Ilm-Kreis,LK Ilm-Kreis
+393,Germany,Thüringen,Landkreis,Weimarer Land,Weimarer Land,Weimarer Land,16071,DEG0G,Landkreis Weimarer Land,LK Weimarer Land
+394,Germany,Thüringen,Landkreis,Sonneberg,Sonneberg,Sonneberg,16072,DEG0H,Landkreis Sonneberg,LK Sonneberg
+395,Germany,Thüringen,Landkreis,Saalfeld-Rudolstadt,Saalfeld-Rudolstadt,Saalfeld-Rudolstadt,16073,DEG0I,Landkreis Saalfeld-Rudolstadt,LK Saalfeld-Rudolstadt
+396,Germany,Thüringen,Landkreis,Saale-Holzland-Kreis,Saale-Holzland-Kreis,Saale-Holzland-Kreis,16074,DEG0J,Landkreis Saale-Holzland-Kreis,LK Saale-Holzland-Kreis
+397,Germany,Thüringen,Landkreis,Saale-Orla-Kreis,Saale-Orla-Kreis,Saale-Orla-Kreis,16075,DEG0K,Landkreis Saale-Orla-Kreis,LK Saale-Orla-Kreis
+398,Germany,Thüringen,Landkreis,Greiz,Greiz,Greiz,16076,DEG0L,Landkreis Greiz,LK Greiz
+399,Germany,Thüringen,Landkreis,Altenburger Land,Altenburger Land,Altenburger Land,16077,DEG0M,Landkreis Altenburger Land,LK Altenburger Land
+400,Germany,Berlin,Kreisfreie Stadt,Berlin,Berlin,Berlin,11000,DE300,"Berlin, Stadt","Berlin, Stadt"
