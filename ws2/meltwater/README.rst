@@ -6,16 +6,14 @@ Note that not all the endpoints have been implemented at this point.
 
 To test the package, simply do::
 
-```Python
-import meltwater
-meltwater = MeltWaterClient({
-    "user_key": <user_key>,
-    "client_id": <client_id>,
-    "client_secret": <client_secret>,
-    "version": 1
-})
-meltwater.searches.get()
-```
+    >>>> import meltwater
+    >>>> meltwater = MeltWaterClient({
+            "user_key": <user_key>,
+            "client_id": <client_id>,
+            "client_secret": <client_secret>,
+            "version": 1
+    >>>> })
+    >>>> meltwater.searches.get()
 
 If you already have an access token, you can re-use it by simply doing::
 
