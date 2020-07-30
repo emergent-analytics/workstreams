@@ -48,7 +48,7 @@ Endpoints:
 Test the Searches API with the client:
 --------
 
-- Get a list of all your searches:
+#### Get a list of all your searches:
 
     >>>> meltwater.searches.get()
 
