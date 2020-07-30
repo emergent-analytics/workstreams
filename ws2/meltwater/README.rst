@@ -48,11 +48,11 @@ Endpoints:
 Test the Searches API with the client:
 --------
 
-#### Get a list of all your searches:
+Get a list of all your searches:
 
     >>>> meltwater.searches.get()
 
-- Create a new search
+Create a new search
 
     >>>> new_search_obj = {
             "search": {
@@ -64,21 +64,21 @@ Test the Searches API with the client:
                     "boolean": "Tesla OR (Volvo NEAR electric)"
                 },
                 "name": "TEST SEARCH 123"
-            }
-        }
+             }
+         }
     >>>> new_search = meltwater.searches.create(new_search_obj)
     >>>> print("New search:", new_search)
     >>>> new_search_id = new_search["search"]["id"]
 
-- Get an individual search
+Get an individual search
 
     >>>> meltwater.searches.get(new_search_id)
 
-- Get an approximate count of results for the search over a particual period
+Get an approximate count of results for the search over a particual period
 
     >>>> meltwater.searches.count(new_search_id)
 
-- Update an individual search
+Update an individual search
 
     >>>> updated_search_obj ={
             "search": {
