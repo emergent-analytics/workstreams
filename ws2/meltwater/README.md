@@ -3,7 +3,7 @@
 This package provides an interface to access the export API of Meltwater. 
 Note that not all the endpoints have been implemented at this point.
 
-To test the package, simply do::
+To test the package, simply do
 
 ```python
 import meltwater
@@ -16,7 +16,7 @@ meltwater = MeltWaterClient({
 meltwater.searches.get()
 ```
 
-If you already have an access token, you can re-use it by simply doing::
+If you already have an access token, you can re-use it by simply doing
 
 ```python
 import meltwater
@@ -30,7 +30,7 @@ meltwater = MeltWaterClient({
 meltwater.searches.get()
 ```
 
-## Endpoints:
+## Endpoints
 
 - Searches API
     - meltwater.searches.get()
@@ -46,9 +46,9 @@ meltwater.searches.get()
     - meltwater.exports.load()
 
 
-## Test the Searches API with the client:
+## Test the Searches API with the client
 
-Get a list of all your searches:
+Get a list of all your searches
 
 ```python
 meltwater.searches.get()
@@ -108,7 +108,7 @@ Delete an individual search
 meltwater.searches.delete(new_search_id)
 ```
 
-## Test the One-Time Export API with the client:
+## Test the One-Time Export API with the client
 
 Get a list of all your one-time exports
 
@@ -117,6 +117,7 @@ meltwater.exports.get()
 ```
 
 Creates a new one-time export
+
 ```python
 from datetime import datetime, timedelta
 now = datetime.now().isoformat()
