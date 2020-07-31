@@ -10,3 +10,4 @@ The meltwater folder is a Python package that provides a client to access the Ex
 
 ## Airbnb analysis
 
+The Airbnb folder contains the analysis done on the InsideAirbnb data: http://insideairbnb.com/get-the-data.html. A predictive model using FBProphet characterizes the expected Airbnb demand if Covid-19 pandemic did not happen. The user can see the effect created by the pandemic. Additionally, a geo distribution of the Airbnb demand in cities around the world provides insights into the new trends in hospitality. The following blog post can provide more information. 
