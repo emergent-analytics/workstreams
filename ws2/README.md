@@ -39,9 +39,11 @@ The Airbnb folder contains the analysis done on the InsideAirbnb data: http://in
 ## Our Results
 The following blog post can provide more information:
 
-[Topic modeling of newspapers](https://emergentalliance.org/?p=1628)
-[Sentiment analysis of newspapers](https://emergentalliance.org/?p=1638)
-[Covid-19 News Classification](https://emergentalliance.org/?p=1669)
+* [Topic modeling of newspapers](https://emergentalliance.org/?p=1628)
+
+* [Sentiment analysis of newspapers](https://emergentalliance.org/?p=1638)
+
+* [Covid-19 News Classification](https://emergentalliance.org/?p=1669)
  
 ## Team
 
