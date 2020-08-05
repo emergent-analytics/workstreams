@@ -18,4 +18,9 @@ The folder - airport_restrictions contain the analysis done on NOTAM data to ext
 
 ## Airbnb analysis
 
-The Airbnb folder contains the analysis done on the InsideAirbnb data: http://insideairbnb.com/get-the-data.html. A predictive model using FBProphet characterizes the expected Airbnb demand if Covid-19 pandemic did not happen. The user can see the effect created by the pandemic. Additionally, a geo distribution of the Airbnb demand in cities around the world provides insights into the new trends in hospitality. The following blog post can provide more information. 
+The Airbnb folder contains the analysis done on the InsideAirbnb data: http://insideairbnb.com/get-the-data.html. The aim of this analysis is to offer data-driven insights into the new trends in tourism and hospitality. The following summarises the content of Airbnb notebooks.
+
+* Predictive_Model.ipynb - Predictive model using FBProphet that characterizes the expected Airbnb demand if Covid-19 pandemic did not happen. 
+* Geo_Distribution_Tourism.ipynb - Geo distribution of the Airbnb demand in cities around the world
+
+The following blog post can provide more information. 
