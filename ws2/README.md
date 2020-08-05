@@ -1,6 +1,19 @@
-# Results from Workstream 2
+# Code from Workstream 2: Emergent Pulse 
+
+The aim of this workstream is to create a series of index that can describe the status of a region, for example; What is the sentiment of the population of that region? How are they behaving? How the news and Media changing? How is the tourism industry being affected?
+
+The following sections present the code published for analysing different datasets within our workstream: 
 
 ## News analysis
+
+The News-analysis folder contain the analysis done on a corpus of news articles to understand the trends of frequency and sentiment of articles over time, and to perform binary classification on a topic of interest. Please note that this folder contains only code and the news data need to be provided by the user.  The following provides a brief overview of the different notebooks available in the folder:
+
+* ws2_1_data_preparation.ipynb - preprocessing of textual data in English.
+* ws2_1_2_data_preparation_language.ipynb - preprocessing of textual data, German and French languages are added.
+* ws2_2_topic_modelling.ipynb - topic modelling of articles.
+* ws2_3_sentiment_analysis.ipynb - sentiment analysis of articles.
+* ws2_4_heatmaps.ipynb - creating heatmaps of frequency and sentiment of articles over time.
+* ws2_5_text_classification.ipynb - binary classification pipeline.
 
 ## Meltwater python client
 
@@ -23,4 +36,21 @@ The Airbnb folder contains the analysis done on the InsideAirbnb data: http://in
 * Predictive_Model.ipynb - Predictive model using FBProphet that characterizes the expected Airbnb demand if Covid-19 pandemic did not happen. 
 * Geo_Distribution_Tourism.ipynb - Geo distribution of the Airbnb demand in cities around the world
 
-The following blog post can provide more information. 
+## Our Results
+The following blog post can provide more information:
+
+[Topic modeling of newspapers](https://emergentalliance.org/?p=1628)
+[Sentiment analysis of newspapers](https://emergentalliance.org/?p=1638)
+[Covid-19 News Classification](https://emergentalliance.org/?p=1669)
+ 
+## Team
+
+IBM:
+* Mehrnoosh Vahdat is Data Scientist with Data Science & AI Elite team where she specializes in Data Science, Analytics platforms, and Machine Learning solutions.
+* Vincent Nelis is Senior Data Scientist with Data Science & AI Elite team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.
+* Anthony Ayanwale is Data Scientist with CPAT team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.
+    
+
+Rolls Royce:
+* Shri Nishanth Rajendran - AI Development Specialist, R² Data Labs, Rolls Royce
+* Maria Ivanciu is AI Developer in R2 Data Labs, Rolls-Royce. 
