@@ -2,7 +2,7 @@
 
 The aim of this workstream is to create a series of index that can describe the status of a region, for example; What is the sentiment of the population of that region? How are they behaving? How the news and Media changing? How is the tourism industry being affected?
 
-The following sections present the code published for analysing different datasets within our workstream: 
+The following sections present the code published for analyzing different datasets within our workstream: 
 
 ## News analysis
 
@@ -10,7 +10,7 @@ The News-analysis folder contain the analysis done on a corpus of news articles 
 
 * ws2_1_data_preparation.ipynb - preprocessing of textual data in English.
 * ws2_1_2_data_preparation_language.ipynb - preprocessing of textual data, German and French languages are added.
-* ws2_2_topic_modelling.ipynb - topic modelling of articles.
+* ws2_2_topic_modelling.ipynb - topic modeling of articles.
 * ws2_3_sentiment_analysis.ipynb - sentiment analysis of articles.
 * ws2_4_heatmaps.ipynb - creating heatmaps of frequency and sentiment of articles over time.
 * ws2_5_text_classification.ipynb - binary classification pipeline.
@@ -24,7 +24,7 @@ The meltwater folder is a Python package that provides a client to access the Ex
 The folder - airport_restrictions contain the analysis done on NOTAM data to extract quarantine and country restrictions. Please note that this folder contains only code and the NOTAM data will have to be downloaded manually. The following provides a brief overview of the different notebooks available in the folder:
 
 * ws2_snr_NOTAMs_1_data_preparation.ipynb - Basic preprocessing of NOTAM - removing special characters, expanding abbreviations, removing stop words
-* ws2_snr_NOTAMs_2_topic_modeling.ipynb -  Identification of differnt topics present in the NOTAM
+* ws2_snr_NOTAMs_2_topic_modeling.ipynb -  Identification of different topics present in the NOTAM
 * WS2_snr_notams_3_quarantine_text.ipynb -  Extraction of quarantine duration from NOTAM using Named Entity Recognition (NER) and regex
 * ws2_snr_NOTAMs_1_data_preparation_mulitple files.ipynb - Similar to the first notebook on data preparation. Iteration of data preprocessing to multiple files
 * ws2_snr_NOTAMs_country_level_restrictions_timeline.ipynb - Information extraction of restriction on foreigners using NER, Part of speech tagging and dependency parser.
@@ -50,8 +50,7 @@ The following blog post can provide more information:
 IBM:
 * Mehrnoosh Vahdat is Data Scientist with Data Science & AI Elite team where she specializes in Data Science, Analytics platforms, and Machine Learning solutions.
 * Vincent Nelis is Senior Data Scientist with Data Science & AI Elite team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.
-* Anthony Ayanwale is Data Scientist with CPAT team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.
-    
+* Anthony Ayanwale is Data Scientist with CPAT team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.   
 
 Rolls Royce:
 * Shri Nishanth Rajendran - AI Development Specialist, R² Data Labs, Rolls Royce
