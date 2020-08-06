@@ -44,6 +44,8 @@ The following blog posts can provide more information on the analysis and result
 * [Sentiment analysis of newspapers](https://emergentalliance.org/?p=1638)
 
 * [Covid-19 News Classification](https://emergentalliance.org/?p=1669)
+
+* [Impact of COVID-19 on tourism](https://emergentalliance.org/?p=1680)
  
 ## Team
 
