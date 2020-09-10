@@ -1,0 +1,105 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 600px;
+            height: 600px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": 82, "iso_a2": "DE", "iso_a3": "DEU", "kind": "country", "label": "Germany", "name": "Germany", "shape": "dot", "size": 10, "sov_a3": "DEU"}, {"adm1_code": "DEU-1601", "fips": "GM13", "id": 416, "iso_3": "DEU", "kind": "state", "label": "Sachsen", "name": "Sachsen", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1591", "fips": "GM02", "id": 419, "iso_3": "DEU", "kind": "state", "label": "Bayern", "name": "Bayern", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1580", "fips": "GM08", "id": 494, "iso_3": "DEU", "kind": "state", "label": "Rheinland-Pfalz", "name": "Rheinland-Pfalz", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1581", "fips": "GM09", "id": 497, "iso_3": "DEU", "kind": "state", "label": "Saarland", "name": "Saarland", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1579", "fips": "GM10", "id": 567, "iso_3": "DEU", "kind": "state", "label": "Schleswig-Holstein", "name": "Schleswig-Holstein", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1576", "fips": "GM06", "id": 707, "iso_3": "DEU", "kind": "state", "label": "Niedersachsen", "name": "Niedersachsen", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1572", "fips": "GM07", "id": 710, "iso_3": "DEU", "kind": "state", "label": "Nordrhein-Westfalen", "name": "Nordrhein-Westfalen", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1573", "fips": "GM01", "id": 1091, "iso_3": "DEU", "kind": "state", "label": "Baden-W\u00fcrttemberg", "name": "Baden-W\u00fcrttemberg", "shape": "dot", "size": 10}, {"adm1_code": "DEU-3487", "fips": "GM11", "id": 1182, "iso_3": "DEU", "kind": "state", "label": "Brandenburg", "name": "Brandenburg", "shape": "dot", "size": 10}, {"adm1_code": "DEU-3488", "fips": "GM12", "id": 1184, "iso_3": "DEU", "kind": "state", "label": "Mecklenburg-Vorpommern", "name": "Mecklenburg-Vorpommern", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1575", "fips": "GM03", "id": 2824, "iso_3": "DEU", "kind": "state", "label": "Bremen", "name": "Bremen", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1578", "fips": "GM04", "id": 2825, "iso_3": "DEU", "kind": "state", "label": "Hamburg", "name": "Hamburg", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1574", "fips": "GM05", "id": 4020, "iso_3": "DEU", "kind": "state", "label": "Hessen", "name": "Hessen", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1577", "fips": "GM15", "id": 4021, "iso_3": "DEU", "kind": "state", "label": "Th\u00fcringen", "name": "Th\u00fcringen", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1600", "fips": "GM14", "id": 4022, "iso_3": "DEU", "kind": "state", "label": "Sachsen-Anhalt", "name": "Sachsen-Anhalt", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1599", "fips": "GM16", "id": 4023, "iso_3": "DEU", "kind": "state", "label": "Berlin", "name": "Berlin", "shape": "dot", "size": 10}]);
+        edges = new vis.DataSet([{"from": 82, "kind": "containsPlace", "to": 416, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 419, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 494, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 497, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 567, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 707, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 710, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 1091, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 1182, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 1184, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 2824, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 2825, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 4020, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 4021, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 4022, "weight": 1.0}, {"from": 82, "kind": "containsPlace", "to": 4023, "weight": 1.0}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>

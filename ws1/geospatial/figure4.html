@@ -1,0 +1,105 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 600px;
+            height: 600px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": 103, "iso_a2": "DK", "iso_a3": "DNK", "kind": "country", "label": "Denmark", "name": "Denmark", "shape": "dot", "size": 10, "sov_a3": "DN1"}, {"id": 82, "iso_a2": "DE", "iso_a3": "DEU", "kind": "country", "label": "Germany", "name": "Germany", "shape": "dot", "size": 10, "sov_a3": "DEU"}, {"id": 109, "iso_a2": "PL", "iso_a3": "POL", "kind": "country", "label": "Poland", "name": "Poland", "shape": "dot", "size": 10, "sov_a3": "POL"}, {"id": 81, "iso_a2": "CZ", "iso_a3": "CZE", "kind": "country", "label": "Czechia", "name": "Czechia", "shape": "dot", "size": 10, "sov_a3": "CZE"}, {"id": 124, "iso_a2": "CH", "iso_a3": "CHE", "kind": "country", "label": "Switzerland", "name": "Switzerland", "shape": "dot", "size": 10, "sov_a3": "CHE"}, {"id": 54, "iso_a2": "FR", "iso_a3": "FRA", "kind": "country", "label": "France", "name": "France", "shape": "dot", "size": 10, "sov_a3": "FR1"}, {"id": 121, "iso_a2": "AT", "iso_a3": "AUT", "kind": "country", "label": "Austria", "name": "Austria", "shape": "dot", "size": 10, "sov_a3": "AUT"}, {"id": 90, "iso_a2": "LU", "iso_a3": "LUX", "kind": "country", "label": "Luxembourg", "name": "Luxembourg", "shape": "dot", "size": 10, "sov_a3": "LUX"}, {"id": 92, "iso_a2": "BE", "iso_a3": "BEL", "kind": "country", "label": "Belgium", "name": "Belgium", "shape": "dot", "size": 10, "sov_a3": "BEL"}, {"id": 126, "iso_a2": "NL", "iso_a3": "NLD", "kind": "country", "label": "Netherlands", "name": "Netherlands", "shape": "dot", "size": 10, "sov_a3": "NL1"}]);
+        edges = new vis.DataSet([{"from": 103, "kind": "geoTouches", "to": 82, "weight": 1}, {"from": 109, "kind": "geoTouches", "to": 81, "weight": 1}, {"from": 109, "kind": "geoTouches", "to": 82, "weight": 1}, {"from": 124, "kind": "geoTouches", "to": 54, "weight": 1}, {"from": 124, "kind": "geoTouches", "to": 82, "weight": 1}, {"from": 124, "kind": "geoTouches", "to": 121, "weight": 1}, {"from": 81, "kind": "geoTouches", "to": 82, "weight": 1}, {"from": 81, "kind": "geoTouches", "to": 121, "weight": 1}, {"from": 82, "kind": "geoTouches", "to": 54, "weight": 1}, {"from": 82, "kind": "geoTouches", "to": 90, "weight": 1}, {"from": 82, "kind": "geoTouches", "to": 92, "weight": 1}, {"from": 82, "kind": "geoTouches", "to": 121, "weight": 1}, {"from": 82, "kind": "geoTouches", "to": 126, "weight": 1}, {"from": 54, "kind": "geoTouches", "to": 90, "weight": 1}, {"from": 54, "kind": "geoTouches", "to": 92, "weight": 1}, {"from": 90, "kind": "geoTouches", "to": 92, "weight": 1}, {"from": 92, "kind": "geoTouches", "to": 126, "weight": 1}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>

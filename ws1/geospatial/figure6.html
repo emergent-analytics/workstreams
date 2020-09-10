@@ -1,0 +1,105 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 500px;
+            height: 500;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"adm1_code": "DEU-1601", "fips": "GM13", "id": 416, "iso_3": "DEU", "kind": "state", "label": "Sachsen", "name": "Sachsen", "shape": "dot", "size": 10}, {"adm1_code": "CZE-1590", "fips": "EZ81", "id": 418, "iso_3": "CZE", "kind": "state", "label": "Karlovarsk\u00fd", "name": "Karlovarsk\u00fd", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1591", "fips": "GM02", "id": 419, "iso_3": "DEU", "kind": "state", "label": "Bayern", "name": "Bayern", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1577", "fips": "GM15", "id": 4021, "iso_3": "DEU", "kind": "state", "label": "Th\u00fcringen", "name": "Th\u00fcringen", "shape": "dot", "size": 10}, {"adm1_code": "CZE-10369", "fips": null, "id": 420, "iso_3": "CZE", "kind": "state", "label": "Plze\u0148sk\u00fd", "name": "Plze\u0148sk\u00fd", "shape": "dot", "size": 10}, {"adm1_code": "CZE-1593", "fips": "EZ79", "id": 421, "iso_3": "CZE", "kind": "state", "label": "Jiho\u010desk\u00fd", "name": "Jiho\u010desk\u00fd", "shape": "dot", "size": 10}, {"adm1_code": "AUT-2326", "fips": "AU04", "id": 678, "iso_3": "AUT", "kind": "state", "label": "Ober\u00f6sterreich", "name": "Ober\u00f6sterreich", "shape": "dot", "size": 10}, {"adm1_code": "AUT-2320", "fips": "AU08", "id": 696, "iso_3": "AUT", "kind": "state", "label": "Vorarlberg", "name": "Vorarlberg", "shape": "dot", "size": 10}, {"adm1_code": "AUT-2329", "fips": "AU07", "id": 697, "iso_3": "AUT", "kind": "state", "label": "Tirol", "name": "Tirol", "shape": "dot", "size": 10}, {"adm1_code": "AUT-2327", "fips": "AU05", "id": 917, "iso_3": "AUT", "kind": "state", "label": "Salzburg", "name": "Salzburg", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1573", "fips": "GM01", "id": 1091, "iso_3": "DEU", "kind": "state", "label": "Baden-W\u00fcrttemberg", "name": "Baden-W\u00fcrttemberg", "shape": "dot", "size": 10}, {"adm1_code": "DEU-1574", "fips": "GM05", "id": 4020, "iso_3": "DEU", "kind": "state", "label": "Hessen", "name": "Hessen", "shape": "dot", "size": 10}]);
+        edges = new vis.DataSet([{"from": 416, "kind": "geoTouches", "to": 418, "weight": 1}, {"from": 416, "kind": "geoTouches", "to": 419, "weight": 1}, {"from": 416, "kind": "geoTouches", "to": 4021, "weight": 1}, {"from": 418, "kind": "geoTouches", "to": 419, "weight": 1}, {"from": 418, "kind": "geoTouches", "to": 420, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 420, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 421, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 678, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 696, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 697, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 917, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 1091, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 4020, "weight": 1}, {"from": 419, "kind": "geoTouches", "to": 4021, "weight": 1}, {"from": 420, "kind": "geoTouches", "to": 421, "weight": 1}, {"from": 421, "kind": "geoTouches", "to": 678, "weight": 1}, {"from": 678, "kind": "geoTouches", "to": 917, "weight": 1}, {"from": 1091, "kind": "geoTouches", "to": 696, "weight": 1}, {"from": 1091, "kind": "geoTouches", "to": 4020, "weight": 1}, {"from": 4020, "kind": "geoTouches", "to": 4021, "weight": 1}, {"from": 917, "kind": "geoTouches", "to": 697, "weight": 1}, {"from": 696, "kind": "geoTouches", "to": 697, "weight": 1}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>

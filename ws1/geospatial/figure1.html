@@ -1,0 +1,105 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 600px;
+            height: 600px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": 0, "kind": "root", "label": "Earth", "name": "Earth", "shape": "dot", "size": 10}, {"id": 1, "kind": "continent", "label": "Asia", "name": "Asia", "shape": "dot", "size": 10}, {"id": 2, "kind": "continent", "label": "Americas", "name": "Americas", "shape": "dot", "size": 10}, {"id": 3, "kind": "continent", "label": "Africa", "name": "Africa", "shape": "dot", "size": 10}, {"id": 4, "kind": "continent", "label": "Europe", "name": "Europe", "shape": "dot", "size": 10}, {"id": 5, "kind": "continent", "label": "Oceania", "name": "Oceania", "shape": "dot", "size": 10}, {"id": 6, "kind": "continent", "label": "Antarctica", "name": "Antarctica", "shape": "dot", "size": 10}, {"id": 7, "kind": "continent", "label": "Seven seas (open ocean)", "name": "Seven seas (open ocean)", "shape": "dot", "size": 10}, {"id": 8, "kind": "subregion", "label": "South-Eastern Asia", "name": "South-Eastern Asia", "shape": "dot", "size": 10}, {"id": 10, "kind": "subregion", "label": "Western Asia", "name": "Western Asia", "shape": "dot", "size": 10}, {"id": 11, "kind": "subregion", "label": "Southern Asia", "name": "Southern Asia", "shape": "dot", "size": 10}, {"id": 12, "kind": "subregion", "label": "Eastern Asia", "name": "Eastern Asia", "shape": "dot", "size": 10}, {"id": 21, "kind": "subregion", "label": "Central Asia", "name": "Central Asia", "shape": "dot", "size": 10}, {"id": 9, "kind": "subregion", "label": "South America", "name": "South America", "shape": "dot", "size": 10}, {"id": 16, "kind": "subregion", "label": "Central America", "name": "Central America", "shape": "dot", "size": 10}, {"id": 20, "kind": "subregion", "label": "Caribbean", "name": "Caribbean", "shape": "dot", "size": 10}, {"id": 25, "kind": "subregion", "label": "Northern America", "name": "Northern America", "shape": "dot", "size": 10}, {"id": 13, "kind": "subregion", "label": "Eastern Africa", "name": "Eastern Africa", "shape": "dot", "size": 10}, {"id": 15, "kind": "subregion", "label": "Northern Africa", "name": "Northern Africa", "shape": "dot", "size": 10}, {"id": 17, "kind": "subregion", "label": "Middle Africa", "name": "Middle Africa", "shape": "dot", "size": 10}, {"id": 19, "kind": "subregion", "label": "Southern Africa", "name": "Southern Africa", "shape": "dot", "size": 10}, {"id": 24, "kind": "subregion", "label": "Western Africa", "name": "Western Africa", "shape": "dot", "size": 10}, {"id": 14, "kind": "subregion", "label": "Western Europe", "name": "Western Europe", "shape": "dot", "size": 10}, {"id": 18, "kind": "subregion", "label": "Eastern Europe", "name": "Eastern Europe", "shape": "dot", "size": 10}, {"id": 22, "kind": "subregion", "label": "Northern Europe", "name": "Northern Europe", "shape": "dot", "size": 10}, {"id": 23, "kind": "subregion", "label": "Southern Europe", "name": "Southern Europe", "shape": "dot", "size": 10}, {"id": 26, "kind": "subregion", "label": "Melanesia", "name": "Melanesia", "shape": "dot", "size": 10}, {"id": 28, "kind": "subregion", "label": "Australia and New Zealand", "name": "Australia and New Zealand", "shape": "dot", "size": 10}, {"id": 29, "kind": "subregion", "label": "Polynesia", "name": "Polynesia", "shape": "dot", "size": 10}, {"id": 31, "kind": "subregion", "label": "Micronesia", "name": "Micronesia", "shape": "dot", "size": 10}, {"id": 27, "kind": "subregion", "label": "Antarctica", "name": "Antarctica", "shape": "dot", "size": 10}, {"id": 30, "kind": "subregion", "label": "Seven seas (open ocean)", "name": "Seven seas (open ocean)", "shape": "dot", "size": 10}]);
+        edges = new vis.DataSet([{"from": 0, "kind": "containsPlace", "to": 1, "weight": 1}, {"from": 0, "kind": "containsPlace", "to": 2, "weight": 1}, {"from": 0, "kind": "containsPlace", "to": 3, "weight": 1}, {"from": 0, "kind": "containsPlace", "to": 4, "weight": 1}, {"from": 0, "kind": "containsPlace", "to": 5, "weight": 1}, {"from": 0, "kind": "containsPlace", "to": 6, "weight": 1}, {"from": 0, "kind": "containsPlace", "to": 7, "weight": 1}, {"from": 1, "kind": "containsPlace", "to": 8, "weight": 1}, {"from": 1, "kind": "containsPlace", "to": 10, "weight": 1}, {"from": 1, "kind": "containsPlace", "to": 11, "weight": 1}, {"from": 1, "kind": "containsPlace", "to": 12, "weight": 1}, {"from": 1, "kind": "containsPlace", "to": 21, "weight": 1}, {"from": 2, "kind": "containsPlace", "to": 9, "weight": 1}, {"from": 2, "kind": "containsPlace", "to": 16, "weight": 1}, {"from": 2, "kind": "containsPlace", "to": 20, "weight": 1}, {"from": 2, "kind": "containsPlace", "to": 25, "weight": 1}, {"from": 3, "kind": "containsPlace", "to": 13, "weight": 1}, {"from": 3, "kind": "containsPlace", "to": 15, "weight": 1}, {"from": 3, "kind": "containsPlace", "to": 17, "weight": 1}, {"from": 3, "kind": "containsPlace", "to": 19, "weight": 1}, {"from": 3, "kind": "containsPlace", "to": 24, "weight": 1}, {"from": 4, "kind": "containsPlace", "to": 14, "weight": 1}, {"from": 4, "kind": "containsPlace", "to": 18, "weight": 1}, {"from": 4, "kind": "containsPlace", "to": 22, "weight": 1}, {"from": 4, "kind": "containsPlace", "to": 23, "weight": 1}, {"from": 5, "kind": "containsPlace", "to": 26, "weight": 1}, {"from": 5, "kind": "containsPlace", "to": 28, "weight": 1}, {"from": 5, "kind": "containsPlace", "to": 29, "weight": 1}, {"from": 5, "kind": "containsPlace", "to": 31, "weight": 1}, {"from": 6, "kind": "containsPlace", "to": 27, "weight": 1}, {"from": 7, "kind": "containsPlace", "to": 30, "weight": 1}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
