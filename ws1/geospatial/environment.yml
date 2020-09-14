@@ -1,0 +1,18 @@
+name: geographs
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - bokeh=2.0.1
+  - fiona=1.8.13
+  - geopandas=0.7.0
+  - matplotlib=3.2.1
+  - matplotlib-base=3.2.1
+  - numpy=1.18.4
+  - pyarrow=0.17.1
+  - python=3.8.2
+  - scipy=1.4.1
+  - seaborn=0.10.1
+  - tqdm=4.47.0
+  - pip:
+    - pyvis==0.1.8.1.11
