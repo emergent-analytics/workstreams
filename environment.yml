@@ -16,5 +16,6 @@ dependencies:
   - scipy=1.4.1
   - seaborn=0.10.1
   - tqdm=4.47.0
+  - pip=20.2
   - pip:
-    - pyvis==0.1.8.1.11
+    - pyvis=0.1.8.2
