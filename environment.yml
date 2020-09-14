@@ -18,4 +18,4 @@ dependencies:
   - tqdm=4.47.0
   - pip=20.2
   - pip:
-    - pyvis=0.1.8.2
+    - pyvis==0.1.8.2
