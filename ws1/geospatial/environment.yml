@@ -1,6 +1,7 @@
 name: geographs
 channels:
   - conda-forge
+  - bokeh
   - defaults
 dependencies:
   - bokeh=2.0.1
@@ -8,6 +9,7 @@ dependencies:
   - geopandas=0.7.0
   - matplotlib=3.2.1
   - matplotlib-base=3.2.1
+  - networkx=2.4
   - numpy=1.18.4
   - pyarrow=0.17.1
   - python=3.8.2
