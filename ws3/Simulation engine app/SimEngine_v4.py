@@ -1,5 +1,4 @@
 # TITLE: SIMULATION ENGINE APP
-# AUTHOR: Alvaro Corrales Cano
 # DESCRIPTION: This code outputs the Emergent Alliance's Simulation Engine to an app that can be interacted with using a web browser.  
 
 # IMPORTS
@@ -393,3 +392,6 @@ st.markdown("We are a team of data scientists from [IBM's Data Science & AI Elit
          Have a look at our [challenge statement](https://emergentalliance.org/?page_id=1659)!")
 st.write("\n")
 st.image(combined_logos, width = 700)
+
+
+# Copyright © IBM Corp. 2020. Licensed under the Apache License, Version 2.0. Released as licensed Sample Materials.
