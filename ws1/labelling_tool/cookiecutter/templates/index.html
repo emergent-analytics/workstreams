@@ -1,0 +1,189 @@
+{% extends base %}
+
+<title>{% block title %}iEmergent Cookie Cutter{% endblock %}</title>
+
+{% block preamble %}
+<style>
+  @font-face {
+    font-family: 'NotoSans';
+    src: local('☺'), url('/cookiecutter/static/NotoSans-Regular.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+  }
+  body {
+    /* font-family: "Ostrich Sans"  !important; */
+    font-family: "NotoSans"  !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    color: #fff;
+    background: #00498F;
+  }
+  body.fade {
+    opacity: 0.5;
+  }
+  * {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  .bk-widget-form-input {
+    background: #00498F !important;
+    color: white !important;
+    border-top-color: #00498F !important;
+    border-right-color: #00498F !important;
+    border-left-color: #00498F !important;
+    border-bottom-color: #00498F !important;
+  }
+.bk-data-table {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #00498F !important;
+    color: #f3f3f3 !important;
+    border-top-color: #00498F !important;
+    border-right-color: #00498F !important;
+    border-left-color: #00498F !important;
+    border-bottom-color: #00498F !important;
+  }
+  .slick-header-column {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #00498F !important;
+    color: #FFFFFF !important;
+    border-top-color: #00498F !important;
+    border-right-color: #00498F !important;
+    border-left-color: #00498F !important;
+    border-bottom-color: #00498F !important;
+  }
+  .slick-viewport {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #00498F !important;
+    color: #00498F !important;
+    border-top-color: #00498F !important;
+    border-right-color: #00498F !important;
+    border-left-color: #00498F !important;
+    border-bottom-color: #00498F !important;
+  }
+  div[class^="slick-row"],div[class*=" even"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #00498F !important;
+    color: #FFFFFF !important;
+    border-top-color: #00498F !important;
+    border-right-color: #00498F !important;
+    border-left-color: #00498F !important;
+    border-bottom-color: #00498F !important;
+  }
+  div[class^="slick-row"],div[class*=" even"],div[class*=" selected"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #525252 !important;
+    color: #FFFFFF !important;
+    border-top-color: #000000 !important;
+    border-right-color: #000000 !important;
+    border-left-color: #000000!important;
+    border-bottom-color: #000000 !important;
+  }
+  div[class^="slick-row"],div[class*=" odd"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #00498F !important;
+    color: #FFFFFF !important;
+    border-top-color: #00498F !important;
+    border-right-color: #00498F !important;
+    border-left-color: #00498F !important;
+    border-bottom-color: #00498F !important;
+  }
+  div[class^="slick-row"],div[class*=" odd"],div[class*=" selected"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #5E5E5E !important;
+    color: #FFFFFF !important;
+    border-top-color: #000000 !important;
+    border-right-color: #000000 !important;
+    border-left-color: #000000 !important;
+    border-bottom-color: #000000 !important;
+  }
+  div[class^="slick-cell"],div[class*="cell-selected"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #00498F !important;
+    color: #FFFFFF !important;
+    border-top-color: #000000 !important;
+    border-right-color: #000000 !important;
+    border-left-color: #000000 !important;
+    border-bottom-color: #000000 !important;
+  }
+  div[class^="ui-widget-content"],div[class*="active"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    border-top-color: #00FF00 !important;
+    border-right-color: #00FF00 !important;
+    border-left-color: #00FF00 !important;
+    border-bottom-color: #00FF00 !important;
+  }
+  div[class^="bk-widget"],div[class*="slickgrid"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #00498F !important;
+    color: #FFFFFF !important;
+    border-top-color: #000000 !important;
+    border-right-color: #000000 !important;
+    border-left-color: #000000 !important;
+    border-bottom-color: #000000 !important;
+  }
+  div[class*="bk-tab"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #00498F !important;
+    background-color: #00498F !important;
+    color: #00498F !important;
+  }
+  div[class*="bk-tab"],div[class*=" bk-active"] {
+    font-family: "NotoSans" !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    background: #5E5E5E !important;
+    color: #FFFFFF !important;
+  }
+.scarecrow-chart:hover,
+.chart:focus {
+  .bar {
+    fill: #FFFFFF;
+  }
+}
+
+.scarecrow-bar:hover,
+.scarecrow-bar:focus {
+  fill: #ff4136 !important;
+  
+  text {
+    fill: #ff4136;
+  }
+}
+</style>
+<script>
+  console.log(document.cookie);
+</script>
+{% endblock %}
+
+{#{% block body %}
+
+{% endblock %}#}
+
+{% block contents %}
+  {{ super() }}
+{% endblock %}
