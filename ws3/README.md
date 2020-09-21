@@ -8,4 +8,4 @@ These set of notebooks provide some useful code to work with Input-Output tables
 ### Simulation engine app
 We have created a web browser app provides a visual interface to our Simulation Engine. To launch the app, you need the Python package `streamlit`. You can learn more about it in its [docs](https://docs.streamlit.io/en/stable/). Once you have installed the package, run in your terminal the following command: `streamlit run SimEngine_v4.py`. The app should automatically launch in your default web browser. 
 
-As of the last update of the app (17/09/2020), the part about countermeasuring the shock is purely illustrational/experimental - this section is work in progress and numbers do not have any meaning. You can use the deployed version of the app in this [link](http://shock-dashboard.emergent.ml/)
+As of the last update of the app (17/09/2020), the part about countermeasuring the shock is purely illustrational/experimental - this section is work in progress and numbers do not have any meaning. You can use the deployed version of the app in this [link](http://shock-dashboard.emergent.ml/).
