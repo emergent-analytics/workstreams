@@ -391,7 +391,6 @@ st.markdown("We are a team of data scientists from [IBM's Data Science & AI Elit
          working on Regional Risk-Pulse Index: forecasting and simulation within [Emergent Alliance](https://emergentalliance.org/). \
          Have a look at our [challenge statement](https://emergentalliance.org/?page_id=1659)!")
 st.write("\n")
-st.image(combined_logos, width = 700)
 
 
 # Copyright © IBM Corp. 2020. Licensed under the Apache License, Version 2.0. Released as licensed Sample Materials.
