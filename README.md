@@ -9,6 +9,10 @@ The ALOHA subproject comprises three workstreams
 
 Create a composed regional Risk Index that takes into account the level of infection rate, % of vulnerable population, and many other factors to assess the ‘riskiness’ of a specific region. How can we help local authorities to decide when is the right time to intervene? 
 
+Also contains
+* [geospatial knowledge of the world with respect to neighbourhood relationships at country and sub-country level](ws1/geospatial)
+* [a tagging tool for humans to annotate infection waves](ws1/labelling_tool)
+
 # Workstream 2 - Emergent Pulse
 
 Create a series of index that can we describe the status of a region, for example; What is the sentiment of the population of that region? How are they behaving? How the news and Media changing? How is the tourism industry being affected?
