@@ -1,0 +1,30 @@
+version: '3'
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    #restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - cookiecutter
+    links:
+      - "cookiecutter"
+
+  cookiecutter:
+    build:
+      context: .
+      dockerfile: Dockerfile-cookiecutter
+      #args:
+      #  USER_ID: ${USER_ID}
+      #  GROUP_ID: ${GROUP_ID}     
+    environment:
+      AM_I_IN_A_DOCKER_CONTAINER: "True"
+    ports:
+      - 5006  
+    volumes:
+      - ./data:/app/cookiecutter/data  
+    #extra_hosts:
+    #  - localhostmachine:${HOST_IP}
+  

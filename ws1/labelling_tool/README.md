@@ -21,6 +21,33 @@ Clone the repository. You will need the python bokeh package, best installed usi
 it is part of any [anaconda distribution](https://www.anaconda.com/products/individual). Also ensure you have 
 [`statsmodels`](https://pypi.org/project/statsmodels/) installed.
 
+## Running
+
+If deploying in standalone mode, change into this directory, then, in a console
+```
+bokeh serve cookiecutter --allow-websocket-origin"*" -address 0.0.0.0
+```
+then, from a web browser, enter
+```
+http://<machine_name>:5006/cookiecutter
+```
+
+## Docker
+
+Change into this directory, then
+```
+docker-compose build
+docker-compose up
+```
+If you want to run this in the background, use `docker-compuse up -d`.
+
+The app is now available on
+```
+http://<machine_name>
+```
+
+TODO add how to mount persistent volumes locally
+
 ## UI
 
 ![Screenshot](Screenshot1.JPG)

@@ -1,0 +1,14 @@
+#FROM continuumio/miniconda3:4.8.2
+FROM python:3.8-slim
+#RUN conda install -c defaults -c anaconda statsmodels bokeh pandas numpy tornado=5.0.2
+RUN pip install --no-cache-dir statsmodels bokeh pandas numpy
+WORKDIR /app/cookiecutter
+COPY cookiecutter/main.py .
+WORKDIR /app/cookiecutter/static
+COPY cookiecutter/static .
+WORKDIR /app/cookiecutter/templates
+COPY cookiecutter/templates/index.html .
+WORKDIR /app/data
+WORKDIR /app
+#ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT bokeh serve cookiecutter --allow-websocket-origin="*" --address 0.0.0.0

@@ -1,0 +1,11 @@
+FROM nginx:1.17-alpine
+
+# Remove default nginx config gile
+RUN rm -v /etc/nginx/nginx.conf
+RUN mkdir -p /var/log/nginx/logs
+
+# copy a config file from current dir
+ADD nginx.conf /etc/nginx/
+RUN mkdir -p /www/data/cookiecutter/static
+ADD index.html /www/data
+ADD cookiecutter/static/NotoSans-Regular.ttf /www/data/cookiecutter/static
