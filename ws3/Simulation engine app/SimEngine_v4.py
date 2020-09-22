@@ -222,7 +222,7 @@ if st.sidebar.checkbox(label = 'Add another sector', key = 'sect2'):
         if st.sidebar.checkbox(label = 'Add another sector', key = 'sect4'):
             st.sidebar.markdown("### Sector 4")
             sector_4 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect4')
-            shock_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -1.0, max_value = 1.0, value = 1.00, key = 'sect4')
+            shock_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.00, key = 'sect4')
             start_sector_4, end_sector_4 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect4')
             shocked_sectors.append(sector_4)
 
