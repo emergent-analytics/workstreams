@@ -12,7 +12,7 @@ from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh.models.widgets import Select
 from bokeh.layouts import row, column, layout
 from bokeh.models import Range1d, HoverTool, LinearAxis, Label, NumeralTickFormatter, PrintfTickFormatter, Div, LinearColorMapper, ColorBar, BasicTicker
-from bokeh.models import BoxAnnotation, DataTable, DateFormatter, TableColumn
+from bokeh.models import BoxAnnotation, DataTable, DateFormatter, TableColumn, RadioGroup, Spinner, Paragraph, RadioButtonGroup
 from bokeh.palettes import Category20, Category10, RdYlBu3, Greys4
 from bokeh.client.session import push_session, show_session
 from bokeh.events import SelectionGeometry, ButtonClick
@@ -322,8 +322,12 @@ class GUI():
         # Save selection
         df = self.cds.to_df().iloc[self.cds.selected.indices]
         ADM0_A3 = self.dfMapping[self.dfMapping.name == self.country_select.value].ADM0_A3.values[0]
-        filename = "data/{}.{}.{}.{:%Y%m%d}.{:%Y%m%d}.csv".format(ADM0_A3,self.scenario_name.value.replace(" ","_"),
-                self.country_select.value.replace(" ","_"),pd.to_datetime(df.date.values[0]),
+        #filename = "data/{}.{}.{}.{:%Y%m%d}.{:%Y%m%d}.csv".format(ADM0_A3,self.scenario_name.value.replace(" ","_"),
+        #        self.country_select.value.replace(" ","_"),pd.to_datetime(df.date.values[0]),
+        #        pd.to_datetime(df.date.values[-1]))
+        filename = "data/{}.{}.{}.{}.{:%Y%m%d}.{:%Y%m%d}.csv".format(ADM0_A3,self.country_select.value,
+                self.scenario_type.labels[self.scenario_type.active],self.scenario_number.value,
+                pd.to_datetime(df.date.values[0]),
                 pd.to_datetime(df.date.values[-1]))
         df.to_csv(filename,index=False)
         # reset selection
@@ -353,7 +357,9 @@ class GUI():
                 newdata[column] = np.nan_to_num(self.adfCountryData[new][column])
         self.cds.data = newdata # overwrite
         # reset scenario text with country name
-        self.scenario_name.value = new+" wave calm #"
+        #self.scenario_name.value = new+" wave calm #"
+        self.scenario_number.value = 1
+        self.scenario_type.active = 0
         # rescale the y axes that require it
         df = self.cds.to_df()
         self.p_top.extra_y_ranges["active"].end = df.active.dropna().values.max()*1.1
@@ -410,6 +416,8 @@ class GUI():
             self.wave_boxes[box_no].fill_color = "#00FF00"
             self.wave_boxes[box_no].fill_alpha = 0.05
 
+        self.cds.selected.indices = []
+
 
     def create(self):
         """The main GUI magic happens here, where the widgets are created and attached to ColumnDataSources, which in turn
@@ -432,12 +440,18 @@ class GUI():
         self.progress_bar.add_layout(self.progress_bar_info_message)
 
         # the buttons and dropdowns, connecting them to callbacks as required
-        self.refresh_data = Button(label="Load Data",disabled=False)
+        self.blank = Paragraph(text=" ",width=175)
+        self.refresh_data = Button(label="Load Data",disabled=False,width=150)
         self.refresh_data.on_event(ButtonClick, self.refresh_data_callback)
         self.country_select = Select(options=[""])
         self.country_select.on_change("value",self.change_country)
         self.scenario_name = TextInput(value="country wave 2")
-        self.save = Button(label="Save",disabled=True)
+        self.scenario_type_label = Paragraph(text="Select Class")
+        #self.scenario_type = RadioGroup(labels=["Wave","Calm"],width=100)
+        self.scenario_type = RadioButtonGroup(labels=["Wave","Calm"],width=100,active=0)
+        self.scenario_number_label = Paragraph(text=" Occurence #")
+        self.scenario_number = Spinner(low=1, step=1, value=1,width=50)
+        self.save = Button(label="Save",disabled=True,width=150)
         self.save.on_event(ButtonClick, self.save_callback)
         
         # the main time series data source, created empty initially
@@ -565,9 +579,14 @@ class GUI():
 
         # The return value is a row/column/widget array that defines the arrangement of the various elements.
         return(row([column([self.progress_bar,
-                            row([self.refresh_data,
+                            row([self.blank,
+                                self.refresh_data,
                                 self.country_select,
-                                self.scenario_name,
+                                #self.scenario_name,
+                                self.scenario_type_label,
+                                self.scenario_type,
+                                self.scenario_number_label,
+                                self.scenario_number,
                                 self.save]),
                         #self.pn,
                         #self.p_stringency,
@@ -881,7 +900,7 @@ class GUI():
             for c in self.dfVotes.columns:
                 newdata[c] = self.dfVotes[c].values
             self.cds_votes.data = newdata
-            #print(self.dfVotes)
+            print(self.dfVotes)
         pass
 
 # just to be safe
