@@ -7,7 +7,7 @@
 # quality is write-once, reuse only if deemed necessary
 #
 from bokeh.models import Button, Plot, TextInput
-from bokeh.palettes import RdYlBu3
+from bokeh.palettes import RdYlBu3, RdYlBu11, Turbo256, Plasma256
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh.models.widgets import Select
 from bokeh.layouts import row, column, layout
@@ -28,6 +28,9 @@ import numpy as np
 from statsmodels.tsa.seasonal import seasonal_decompose
 import base64
 from pathlib import Path
+import pycountry
+import socket
+import random
 
 
 class GUI():
@@ -313,6 +316,41 @@ class GUI():
             i += 1
         self.cds_OxCGRTHeatmap.selected.indices = selection
 
+    def compute_metrics(self,bins=25):
+        """using self.dfVotesContent, this computes stats for display
+        """
+        if len(self.dfVotesContent) > 1:
+            ddf = self.dfVotesContent[["from","to","user","kind","filename","rel_peak_new_cases","duration"]].drop_duplicates()
+
+            sWaveDurations = ddf[ddf["kind"] == "Wave"].duration
+            y, x_tmp = np.histogram(sWaveDurations,bins=bins)
+            width = np.diff(x_tmp)
+            x = [x_tmp[0]+i*width[i] for i in range(len(y))]
+            self.cds_wave_duration_histogram.data = {"x":x,"y":y,"color":["tomato" for i in x],"width":width}
+
+            sCalmDurations = ddf[ddf["kind"] == "Calm"].duration
+            y, x_tmp = np.histogram(sCalmDurations,bins=bins)
+            width = np.diff(x_tmp)
+            x = [x_tmp[0]+i*width[i] for i in range(len(y))]
+            self.cds_calm_duration_histogram.data = {"x":x,"y":y,"color":["mediumseagreen" for i in x],"width":width}
+
+            peak_cutoff = np.quantile(ddf.rel_peak_new_cases,0.95)
+            ddf = ddf[ddf["kind"] == "Wave"]
+            dfHeatmap_tmp = ddf[ddf.rel_peak_new_cases < peak_cutoff][["rel_peak_new_cases","duration"]].copy()
+            dfHeatmap_tmp["n"] = 1
+            try:
+                dfTmp = dfHeatmap_tmp.groupby([pd.cut(dfHeatmap_tmp.rel_peak_new_cases, bins),pd.cut(dfHeatmap_tmp.duration, bins)]).n.sum().unstack()
+                dfHeatmapData = dfTmp.stack().reset_index().rename(columns={0:"n"})
+                dfHeatmapData["rpc"] = [i.mid for i in dfHeatmapData.rel_peak_new_cases.values]
+                dfHeatmapData["d"] = [i.mid for i in dfHeatmapData.duration.values]
+                h = dfHeatmapData.loc[0].duration.length
+                w = dfHeatmapData.loc[0].rel_peak_new_cases.length
+                self.cds_votes_heatmap.data = {"n":dfHeatmapData.n.values,"rpc":dfHeatmapData.rpc.values,"d":dfHeatmapData.d.values,
+                                                "h":[h for i in dfHeatmapData.index],"w":[w for i in dfHeatmapData.index]}    
+            except:
+                pass
+           
+
 
     def save_callback(self,event):
         """Saves the currently made selection in a csv file, updates the status bar
@@ -321,14 +359,21 @@ class GUI():
         """
         # Save selection
         df = self.cds.to_df().iloc[self.cds.selected.indices]
+        df["rel_peak_new_cases"] = max(df["new_cases_rel"])
+        df["kind"] = self.scenario_type.labels[self.scenario_type.active]
+        df["kind_counter"] = int(self.scenario_number.value)
+        df["from"] = df.date.min()
+        df["to"] = df.date.max()
+        df["duration"] = (pd.to_datetime(df.date.max())-pd.to_datetime(df.date.min())).total_seconds()/86400
+        df["user"] = self.user_id.value
         ADM0_A3 = self.dfMapping[self.dfMapping.name == self.country_select.value].ADM0_A3.values[0]
-        #filename = "data/{}.{}.{}.{:%Y%m%d}.{:%Y%m%d}.csv".format(ADM0_A3,self.scenario_name.value.replace(" ","_"),
-        #        self.country_select.value.replace(" ","_"),pd.to_datetime(df.date.values[0]),
-        #        pd.to_datetime(df.date.values[-1]))
-        filename = "data/{}.{}.{}.{}.{:%Y%m%d}.{:%Y%m%d}.csv".format(ADM0_A3,self.country_select.value,
+        df["ADM0_A3"] = ADM0_A3
+        filename = "data/{}.{}.{}.{}.{:%Y%m%d}.{:%Y%m%d}.{}.csv".format(ADM0_A3,
+                self.country_select.value.replace("*","").replace("'","_"), # Taiwan* Cote d'Ivoire
                 self.scenario_type.labels[self.scenario_type.active],self.scenario_number.value,
                 pd.to_datetime(df.date.values[0]),
-                pd.to_datetime(df.date.values[-1]))
+                pd.to_datetime(df.date.values[-1]),
+                self.user_id.value)
         df.to_csv(filename,index=False)
         # reset selection
         self.cds.selected.indices = []
@@ -337,6 +382,13 @@ class GUI():
         self.progress_bar_data.data["color"] = ["#389c6b"]
         # reset scenario field
         self.scenario_name.value = self.country_select.value + " wave calm #"
+
+        self.dfVotesContent = self.dfVotesContent.append(df)
+        #self.dfVotesContent[self.dfVotesContent.infection_rate_7 > 1000.] = 0.
+        self.dfVotesContent["filename"] = filename
+        self.dfVotesContent.to_pickle("./data/votes.pickle",protocol=3)
+        #print(self.dfVotesContent)
+        self.compute_metrics()
 
 
     def change_country(self,attr,old,new):
@@ -409,14 +461,30 @@ class GUI():
             self.wave_boxes[box_no].visible = True
             self.wave_boxes[box_no].fill_color = "#FF0000"
             self.wave_boxes[box_no].fill_alpha = 0.05
-        else:
+        elif last == "end":
             self.wave_boxes[box_no].left = right
             self.wave_boxes[box_no].right = None
             self.wave_boxes[box_no].visible = True
             self.wave_boxes[box_no].fill_color = "#00FF00"
             self.wave_boxes[box_no].fill_alpha = 0.05
 
+        # Ensure possible previous selection is reset
         self.cds.selected.indices = []
+
+        # Compute previous votes
+        if len(self.dfVotesContent)>0:
+            ADM0_A3 = self.dfMapping[self.dfMapping.name == new].ADM0_A3.values[0]
+            ddf = self.dfVotesContent[self.dfVotesContent.ADM0_A3 == ADM0_A3][["from","duration","kind"]].copy().drop_duplicates()
+            ddf["d"] = ddf.duration*86400*1000
+            ddf["from"] = pd.to_datetime(ddf["from"])
+            ddf["color"] = None
+            ddf.loc[ddf["kind"] == "Wave","color"] = "tomato"
+            ddf.loc[ddf["kind"] == "Calm","color"] = "mediumseagreen"
+            ddf["height"] = [random.random()/3+0.1 for i in ddf.index]
+            ddf["top"] = 0.5+ddf["height"]/2
+            ddf["bottom"] = 0.5-ddf["height"]/2
+            self.cds_votes_ranges.data = {"from":ddf["from"].values,"top":ddf.top.values,"bottom":ddf.bottom.values,
+                                            "width":ddf.d.values,"color":ddf.color.values}
 
 
     def create(self):
@@ -454,11 +522,6 @@ class GUI():
         self.save = Button(label="Save",disabled=True,width=150)
         self.save.on_event(ButtonClick, self.save_callback)
         
-        # the main time series data source, created empty initially
-        self.cds = ColumnDataSource(pd.DataFrame({'date':[], 'confirmed':[], 'deaths':[], 'recovered':[], 'active':[], 'new_cases':[],
-               'trend':[], 'stringency_index':[],'infection_rate_7':[],
-               }))
-
         # fields of the OxCGRT dataset we actually use
         self.fields_of_interest = ['C1_School closing','C2_Workplace closing','C3_Cancel public events','C4_Restrictions on gatherings',
                               'C6_Stay at home requirements','C7_Restrictions on internal movement',
@@ -467,14 +530,33 @@ class GUI():
                               'H4_Emergency investment in healthcare', 'H5_Investment in vaccines']
         self.cds_OxCGRTHeatmap = ColumnDataSource(pd.DataFrame({"date":[],"class":[],"level":[]}))
 
+        # the main time series data source, created empty initially
+        empty_data = dict(zip(self.fields_of_interest,[[] for i in range(len(self.fields_of_interest))]))
+        for c in ['date','confirmed','deaths','recovered','active','new_cases','trend','stringency_index','infection_rate_7','new_cases_rel']: 
+            empty_data[c] = []
+        #self.cds = ColumnDataSource(pd.DataFrame({'date':[], 'confirmed':[], 'deaths':[], 'recovered':[], 'active':[], 'new_cases':[],
+        #       'trend':[], 'stringency_index':[],'infection_rate_7':[], 'new_cases_rel':[], 
+        #       }))
+        self.cds = ColumnDataSource(empty_data)
+
         # May need a different name for "votes", this is the data structure that captures the labelling activity
         self.cds_votes = ColumnDataSource({"country":[],"waves":[],"complete":[],"votes":[],"need_vote":[]})
 
         # The backdrops
         self.wave_boxes = [BoxAnnotation(left=None,right=None,visible=False,fill_alpha=0.1,fill_color="#FFFFFF") for i in range(10)]
 
+        # Previous votes
+        self.cds_votes_ranges = ColumnDataSource({"from":[],"top":[],"bottom":[],"width":[],"color":[]})
+
+        # The wave and calm histograms
+        self.cds_wave_duration_histogram = ColumnDataSource({"x":[],"y":[],"color":[],"width":[]})
+        self.cds_calm_duration_histogram = ColumnDataSource({"x":[],"y":[],"color":[],"width":[]})
+
+        # Heatmap
+        self.cds_votes_heatmap = ColumnDataSource({"n":[],"rpc":[],"d":[],"h":[],"w":[]})
+
         # The top time series vbar and line plots
-        self.p_top = figure(plot_width=1200, plot_height=200,x_axis_type='datetime',
+        self.p_top = figure(plot_width=1200, plot_height=225,x_axis_type='datetime',title="Select Wave/Calm regions here",
             tools="pan,box_zoom,box_select,reset",active_drag="box_select",
             output_backend="webgl")
         self.p_top.toolbar.logo=None
@@ -483,13 +565,13 @@ class GUI():
         self.p_top.extra_y_ranges = {"new_cases": Range1d(start=0,end=100),
                                      "active": Range1d(start=0,end=100)}
         self.p_top.vbar(x="date",top="new_cases",source=self.cds,y_range_name="new_cases",
-            width=86400*750,alpha=0.75,color='#ffbb78',legend="New Cases")
+            width=86400*750,alpha=0.75,color='#ffbb78',legend_label="New Cases")
         self.p_top.cross(x="date",y="trend",source=self.cds,y_range_name="new_cases",
-                            alpha=0.75,color="#a85232",legend="Trend")
+                            alpha=0.75,color="#a85232",legend_label="Trend")
         self.p_top.add_layout(LinearAxis(y_range_name="new_cases"), 'left')
 
         self.p_top.line(x="date",y="active",source=self.cds,y_range_name="active",
-            color="#1f77b4",legend="Active Cases")
+            color="#1f77b4",legend_label="Active Cases")
         self.p_top.add_layout(LinearAxis(y_range_name="active"), 'left')
         self.p_top.legend.location="top_left"
         self.p_top.legend.click_policy="hide"
@@ -512,14 +594,14 @@ class GUI():
             self.p_top.add_layout(self.wave_boxes[i])
 
         # The centre OxCGRT stringency-for-display line plot
-        self.p_stringency = figure(plot_width=1200, plot_height=200,x_axis_type='datetime',
+        self.p_stringency = figure(plot_width=1200, plot_height=200,x_axis_type='datetime',title="Summary Stringency Index",
             tools="pan,box_zoom,box_select,reset",active_drag="box_select",
             x_range = self.p_top.x_range,y_range=(0,100.),
             output_backend="webgl")
         self.p_stringency.toolbar.logo = None
         self.p_stringency.step(x="date",y="stringency_index",source=self.cds,color="#000000",legend_label="Stringency Index")
-        self.p_stringency.legend.location = "top_left"
-        self.p_stringency.legend.label_text_font="NotoSans"
+        #self.p_stringency.legend.location = "top_left"
+        #self.p_stringency.legend.label_text_font="NotoSans"
         self.p_stringency.add_tools(hover_top)
 
         for i in range(len(self.wave_boxes)):
@@ -528,9 +610,9 @@ class GUI():
         # The OxCGRT detail heatmap
         colors = list(reversed(Greys4)) 
         mapper = LinearColorMapper(palette=colors, low=0, high=4)
-        self.p_hmap = figure(plot_width=1200, plot_height=300, x_axis_type="datetime",
+        self.p_hmap = figure(plot_width=1200, plot_height=300, x_axis_type="datetime",title="Stringencyi/Measures Detail",
                             x_range = self.p_top.x_range,
-                            y_range=list(reversed(self.fields_of_interest)), toolbar_location=None, tools="", x_axis_location="above",
+                            y_range=list(reversed(self.fields_of_interest)), toolbar_location=None, tools="", 
                             output_backend="webgl")
 
         self.p_hmap.rect(y="class", x="date", width=86400000, height=1, source=self.cds_OxCGRTHeatmap,
@@ -545,9 +627,15 @@ class GUI():
         self.p_hmap.add_layout(color_bar, 'right')
         self.p_hmap.axis.axis_line_color = None
         self.p_hmap.axis.minor_tick_line_color = None
-        self.p_hmap.yaxis.major_label_text_font_size = "7pt"
-        self.p_hmap.axis.major_label_standoff = 0
-        self.p_hmap.xaxis.major_label_orientation = 1.0
+
+        self.p_votes = figure(plot_width=1200, plot_height=75, x_axis_type="datetime",title="Previous Selections/Votes",
+                                x_range = self.p_top.x_range,toolbar_location=None, tools="",output_backend="webgl")
+        self.p_votes.vbar(x="from",top="top",bottom="bottom",width="width",source=self.cds_votes_ranges,
+                            color="color",fill_alpha=0.2,line_color=None)
+        self.p_votes.yaxis.visible = False
+        self.p_votes.ygrid.visible = False
+        self.p_votes.xaxis.visible = False
+
 
         for i in range(len(self.wave_boxes)):
             self.p_hmap.add_layout(self.wave_boxes[i])
@@ -563,6 +651,25 @@ class GUI():
 
         self.voting_table = DataTable(source=self.cds_votes,columns=columns,width=400,height=800)
 
+        # Votes metrics: Wave Durations
+        self.p_histogram_wave = figure(tools="", background_fill_color="#efefef", toolbar_location=None, width=300, height=300,
+                                        title="Wave Durations",x_axis_label="Days",y_axis_label="Votes",output_backend="webgl")
+        self.p_histogram_wave.vbar(x="x",top="y",width="width",color="color",source=self.cds_wave_duration_histogram)
+
+        # Votes metrics: Calm Durations
+        self.p_histogram_calm = figure(tools="", background_fill_color="#efefef", toolbar_location=None, width=300, height=300,
+                                        title="Calm Durations",x_axis_label="Days",y_axis_label="Votes",output_backend="webgl")
+        self.p_histogram_calm.vbar(x="x",top="y",width="width",color="color",source=self.cds_calm_duration_histogram)
+
+        # Heatmap
+        self.p_duration_heatmap = figure(plot_width=300, plot_height=300,x_axis_label="Rel. Peak of New Cases [#/100000]",
+                                        y_axis_label="Peak Duration [d]",toolbar_location=None, tools="",
+                                        title="Relation of Wave Peak to Duration",output_backend="webgl")
+        colors = Plasma256
+        mapper = LinearColorMapper(palette=colors)
+        self.p_duration_heatmap.rect("rpc","d",source=self.cds_votes_heatmap,fill_color=transform("n", mapper),height="h",width="w",line_color=None)
+
+
         # squeezing the color scheme into the widgets
         self.progress_bar = self.apply_theme_defaults(self.progress_bar)
         self.country_select = self.apply_theme_defaults(self.country_select)
@@ -575,25 +682,39 @@ class GUI():
         self.p_hmap = self.apply_theme_defaults(self.p_hmap)
         self.p_hmap.background_fill_color = "#ffffff"
         self.voting_table = self.apply_theme_defaults(self.voting_table)
+        self.p_votes = self.apply_theme_defaults(self.p_votes)
+        self.p_votes.background_fill_color = "#ffffff"
 
+
+        self.p_histogram_wave = self.apply_theme_defaults(self.p_histogram_wave)
+        self.p_histogram_wave.background_fill_color = "lightsteelblue"
+        self.p_histogram_calm = self.apply_theme_defaults(self.p_histogram_calm)
+        self.p_histogram_calm.background_fill_color = "lightsteelblue"
+        self.p_duration_heatmap = self.apply_theme_defaults(self.p_duration_heatmap)
+        self.p_duration_heatmap.background_fill_color = "lightsteelblue"
+
+        self.user_id = TextInput(value="nobody@{}".format(socket.gethostname()),title="Name to save your results")
 
         # The return value is a row/column/widget array that defines the arrangement of the various elements.
         return(row([column([self.progress_bar,
                             row([self.blank,
                                 self.refresh_data,
                                 self.country_select,
-                                #self.scenario_name,
                                 self.scenario_type_label,
                                 self.scenario_type,
                                 self.scenario_number_label,
                                 self.scenario_number,
                                 self.save]),
-                        #self.pn,
-                        #self.p_stringency,
                         self.p_top,
                         self.p_stringency,
-                        self.p_hmap]),
-                    self.voting_table]))
+                        self.p_hmap,
+                        self.p_votes,
+                            row([Div(text='<div class="horizontalgap" style="width:200px"><h2>Statistics</h2></div>'),
+                                self.p_histogram_wave,self.p_histogram_calm,self.p_duration_heatmap]),
+                        ]),
+                    column([self.user_id,
+                        self.voting_table]),
+                    ]))
 
 
     def download_data(self):
@@ -608,19 +729,38 @@ class GUI():
         saved_color = self.progress_bar_data.data["color"]
         self.progress_bar_data.data["color"] = ["#FFFFFF"]
         self.progress_bar_data.data["right"][0] = 1.
-        self.dfConfirmed = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv")
+        self.dfConfirmed = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv",low_memory=False)
         self.progress_bar_data.data["color"] =  saved_color
         self.progress_bar_data.data["right"][0] = 0.2
-        self.dfDeaths = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv")
+        self.dfDeaths = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv",low_memory=False)
         self.progress_bar_data.data["right"][0] = 0.4
-        self.dfRecovered = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv")
+        self.dfRecovered = pd.read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv",low_memory=False)
         self.progress_bar_data.data["right"][0] = 0.6
-        self.dfMapping = pd.read_csv("https://github.com/rolls-royce/EMER2GENT/raw/master/data/sun/geo/country_name_mapping.csv")
+        self.dfMapping = pd.read_csv("https://github.com/rolls-royce/EMER2GENT/raw/master/data/sun/geo/country_name_mapping.csv",low_memory=False)
         self.progress_bar_data.data["right"][0] = 0.8
-        self.dfOxCGRT = pd.read_csv("https://github.com/OxCGRT/covid-policy-tracker/raw/master/data/OxCGRT_latest.csv")
+        self.dfOxCGRT = pd.read_csv("https://github.com/OxCGRT/covid-policy-tracker/raw/master/data/OxCGRT_latest.csv",low_memory=False)
         self.progress_bar_data.data["right"][0] = 1.
+        dfPopulation = pd.read_excel("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx",
+                            sheet_name="ESTIMATES",skiprows=16,usecols="E,BZ")
+        alldata = []
+        for i,row in dfPopulation.iterrows():
+            try:
+                result = pycountry.countries.get(numeric="{:03d}".format(row["Country code"]))
+            except:
+                print(row["Country code"],end="..")
+                continue
+            if result:
+                alldata.append({"ADM0_A3":result.alpha_3,"population":row["2020"]*1000})
+            else:
+                try:
+                    result = pycountry.countries.search_fuzzy(row["Region, subregion, country or area *"])
+                    print(row["Country code"],result,end="..")
+                    alldata.append({"ADM0_A3":result.alpha_3,"population":row["2020"]*1000})
+                except:
+                    continue
+        self.dfPopulation = pd.DataFrame(alldata)
         self.blob = {"last_update":"{}".format(datetime.datetime.now())}
-        
+                
 
     def process_data(self):
         """The heavy lifting of  processing the infection numbers of Johns Hopkins and the OxCGRT data.
@@ -646,7 +786,13 @@ class GUI():
         #TODO consider removal
         #for country in ["Germany","Australia","Austria","United Kingdom","France","Italy"]:
         for country in self.dfConfirmed["Country/Region"].unique():
-            print(country) # poor man's progress bar
+            try:
+                ADM0_A3 = self.dfMapping[self.dfMapping.name == country].ADM0_A3.values[0]
+            except:
+                continue # cannot use data we have no ISO3 country code for
+            if ADM0_A3 == "***": # invalid as per https://github.com/rolls-royce/EMER2GENT/blob/master/data/sun/geo/country_name_mapping.csv 
+                continue
+            #print("{} {}".format(ADM0_A3,country)) # poor man's progress bar
 
             # Step 1 Confirmed cases, data comes in an odd time series format with the columns being the time series
             dfCountry = self.dfConfirmed[self.dfConfirmed["Country/Region"] == country].transpose()
@@ -695,8 +841,12 @@ class GUI():
             dfCountry["trend"] = seasonal_decompose(dfCountry[["new_cases"]].fillna(0).values,period=7).trend
 
             # ADM0_A3 is a synonym for ISO 4166 Alpha 3
-            ADM0_A3 = self.dfMapping[self.dfMapping.name == country].ADM0_A3.values[0]
             dfCountry["ADM0_A3"] = ADM0_A3
+            population = self.dfPopulation[self.dfPopulation.ADM0_A3==ADM0_A3].population.values[0]
+            print("{} POPULATION {}".format(ADM0_A3,population))
+            dfCountry["active_rel"] = dfCountry["active"]/population*100000
+            dfCountry["new_cases_rel"] = dfCountry["new_cases"]/population*100000
+
             ddfOxCGRT = self.dfOxCGRT[self.dfOxCGRT.CountryCode == ADM0_A3].copy().rename(columns={"StringencyLegacyIndexForDisplay":"stringency_index"})
             if len(ddfOxCGRT) <= 0:
                 continue
@@ -803,6 +953,7 @@ class GUI():
             self.blob["stringency"] = base64.b64encode(pickle.dumps(self.adfOxCGRT,protocol=4)).decode("ascii")
             self.blob["measures"] = base64.b64encode(pickle.dumps(self.adfMeasures,protocol=4)).decode("ascii")
             self.blob["waves"] = base64.b64encode(pickle.dumps(self.adfWaves,protocol=4)).decode("ascii")
+            self.blob["population"] = base64.b64encode(pickle.dumps(self.dfPopulation,protocol=4)).decode("ascii")
             data = json.dumps(self.blob)
             f.write(data)
 
@@ -848,6 +999,7 @@ class GUI():
         """
         print(self.data_status)
         if self.data_status == "no_data":
+            self.dfVotesContent = pd.DataFrame()
             return
         else:
             with gzip.open("data/datafile.pckld.gz","rt") as f:
@@ -858,11 +1010,9 @@ class GUI():
                 self.adfOxCGRT = pickle.loads(base64.b64decode(data["stringency"]))
                 self.adfMeasures = pickle.loads(base64.b64decode(data["measures"]))
                 self.adfWaves = pickle.loads(base64.b64decode(data["waves"]))
+                self.dfPopulation = pickle.loads(base64.b64decode(data["population"]))
             self.country_select.options=sorted(self.adfCountryData.keys())
             self.sort_countries_by_relevance()
-            self.country_select.value = "Germany"
-            print(self.adfCountryData["Germany"].columns)
-            self.cds.selected.on_change('indices',self.on_selection_change_callback)
 
             alldata = []
             for country in self.adfWaves.keys():
@@ -883,8 +1033,12 @@ class GUI():
             newdata = {}
             files = os.listdir("./data")
             votes = {}
+            alldata = []
             for f in files:
                 if f.endswith(".csv"):
+                    ddf = pd.read_csv("./data/"+f)
+                    ddf["filename"] = f
+                    alldata.append(ddf)
                     fields = f.split(".")
                     if len(fields)>=3:
                         country = fields[2]
@@ -900,7 +1054,14 @@ class GUI():
             for c in self.dfVotes.columns:
                 newdata[c] = self.dfVotes[c].values
             self.cds_votes.data = newdata
-            print(self.dfVotes)
+            #print(self.dfVotes)
+            self.dfVotesContent = pd.DataFrame().append(alldata)
+            #self.dfVotesContent[self.dfVotesContent.infection_rate_7 > 1000.] = 0.
+            self.dfVotesContent.to_pickle("./data/votes.pickle",protocol=3)
+            self.compute_metrics()
+
+            self.country_select.value = "Germany"
+            self.cds.selected.on_change('indices',self.on_selection_change_callback)
         pass
 
 # just to be safe

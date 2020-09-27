@@ -1,0 +1,8 @@
+*.ipynb
+dump.*
+data/*
+*.JPG
+*.md
+Untitled*.*
+.git/*
+.ipynb_checkpoints/*
