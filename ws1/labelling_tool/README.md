@@ -35,8 +35,9 @@ http://<machine_name>:5006/cookiecutter
 
 ## Docker
 
-Change into this directory, then
+Change into this directory, then (after editing .env as required although it contains a good default, see below)
 ```
+mv .env.docker-compose .env
 docker-compose build
 docker-compose up
 ```
@@ -65,7 +66,8 @@ Basic screenshot.
 UI Elements are
 * a top status bar which initially displays how old the underlying data are, or if there was an issue locating it. When running the
   app for the first time, press "Load Data". When running locally you will see a list of countries as their associated data are preprocessed.
-  TODO: Provide a feedback/reload the page as the docker variant does not provide user feedback
+  TODO: Provide a feedback/reload the page as the docker variant does not provide user feedback except the first dataset
+  being displayed (see bottom screenshot for initial screen)
 * "Load Data" downloads the data from the github repos
 * The dropdown box allows the selection of countries, it is sorted by the percentage increase of new cases, i.e. countries with high
  infection growth rates should be at the top. It is still possible to type the desired country name when the dropdown widget is seletced
@@ -92,3 +94,8 @@ Selection of an eposode and naming it.
 
 Saving a selected episode.
 
+
+![Screenshot starting from scratch](Screenshot4.JPG)
+
+Screenshot when starting from scratch. Press "Load Data" and follow the screen outputs when running locally, or wait for the first dataset
+for Germany to be displayed.
