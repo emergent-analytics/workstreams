@@ -321,7 +321,7 @@ class GUI():
         """
         if len(self.dfVotesContent) > 1:
             ddf = self.dfVotesContent[["from","to","user","kind","filename","rel_peak_new_cases","duration"]].drop_duplicates()
-
+            ddf = ddf.dropna()
             sWaveDurations = ddf[ddf["kind"] == "Wave"].duration
             y, x_tmp = np.histogram(sWaveDurations,bins=bins)
             width = np.diff(x_tmp)
