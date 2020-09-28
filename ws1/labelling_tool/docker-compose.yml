@@ -4,30 +4,25 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-nginx
-    #restart: always
+      #args:
+        #  USER_ID: ${USER_ID}
+        #  GROUP_ID: ${GROUP_ID}     
     ports:
       - "${PUBLIC_WEBSERVER_PORT}:80"
     depends_on:
       - cookiecutter
     links:
       - "cookiecutter"
-    volumes:
-      #- ./data:/app/data
-      - "${DATA_FOLDER}:/app/data"
 
   cookiecutter:
     build:
       context: .
       dockerfile: Dockerfile-cookiecutter
       #args:
-      #  USER_ID: ${USER_ID}
-      #  GROUP_ID: ${GROUP_ID}     
-    environment:
-      AM_I_IN_A_DOCKER_CONTAINER: "True"
+        #  USER_ID: ${USER_ID}
+        #  GROUP_ID: ${GROUP_ID}     
     ports:
       - 5006  
     volumes:
-      - ./data:/app/cookiecutter/data  
-    #extra_hosts:
-    #  - localhostmachine:${HOST_IP}
+      - "${DATA_FOLDER}:/app/data"
   

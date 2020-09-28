@@ -340,7 +340,7 @@ class GUI():
             dfHeatmap_tmp["n"] = 1
             try:
                 dfTmp = dfHeatmap_tmp.groupby([pd.cut(dfHeatmap_tmp.rel_peak_new_cases, bins),pd.cut(dfHeatmap_tmp.duration, bins)]).n.sum().unstack()
-                dfHeatmapData = dfTmp.stack().reset_index().rename(columns={0:"n"})
+                dfHeatmapData = dfTmp.stack().reset_index().rename(columns={0:"n"}).dropna()
                 dfHeatmapData["rpc"] = [i.mid for i in dfHeatmapData.rel_peak_new_cases.values]
                 dfHeatmapData["d"] = [i.mid for i in dfHeatmapData.duration.values]
                 h = dfHeatmapData.loc[0].duration.length
@@ -474,17 +474,16 @@ class GUI():
         # Compute previous votes
         if len(self.dfVotesContent)>0:
             ADM0_A3 = self.dfMapping[self.dfMapping.name == new].ADM0_A3.values[0]
-            ddf = self.dfVotesContent[self.dfVotesContent.ADM0_A3 == ADM0_A3][["from","duration","kind"]].copy().drop_duplicates()
-            ddf["d"] = ddf.duration*86400*1000
+            ddf = self.dfVotesContent[self.dfVotesContent.ADM0_A3 == ADM0_A3][["from","to","kind"]].copy().drop_duplicates()
             ddf["from"] = pd.to_datetime(ddf["from"])
+            ddf["to"] = pd.to_datetime(ddf["to"])
             ddf["color"] = None
             ddf.loc[ddf["kind"] == "Wave","color"] = "tomato"
             ddf.loc[ddf["kind"] == "Calm","color"] = "mediumseagreen"
             ddf["height"] = [random.random()/3+0.1 for i in ddf.index]
-            ddf["top"] = 0.5+ddf["height"]/2
-            ddf["bottom"] = 0.5-ddf["height"]/2
-            self.cds_votes_ranges.data = {"from":ddf["from"].values,"top":ddf.top.values,"bottom":ddf.bottom.values,
-                                            "width":ddf.d.values,"color":ddf.color.values}
+            ddf["y"] = [0.5 for i in ddf.index]
+            self.cds_votes_ranges.data = {"from":ddf["from"].values,"to":ddf.to.values,"y":ddf.y.values,
+                                            "height":ddf.height.values,"color":ddf.color.values}
 
 
     def create(self):
@@ -546,7 +545,7 @@ class GUI():
         self.wave_boxes = [BoxAnnotation(left=None,right=None,visible=False,fill_alpha=0.1,fill_color="#FFFFFF") for i in range(10)]
 
         # Previous votes
-        self.cds_votes_ranges = ColumnDataSource({"from":[],"top":[],"bottom":[],"width":[],"color":[]})
+        self.cds_votes_ranges = ColumnDataSource({"from":[],"to":[],"y":[],"height":[],"color":[]})
 
         # The wave and calm histograms
         self.cds_wave_duration_histogram = ColumnDataSource({"x":[],"y":[],"color":[],"width":[]})
@@ -630,11 +629,11 @@ class GUI():
 
         self.p_votes = figure(plot_width=1200, plot_height=75, x_axis_type="datetime",title="Previous Selections/Votes",
                                 x_range = self.p_top.x_range,toolbar_location=None, tools="",output_backend="webgl")
-        self.p_votes.vbar(x="from",top="top",bottom="bottom",width="width",source=self.cds_votes_ranges,
+        self.p_votes.hbar(left="from",right="to",y="y",height="height",source=self.cds_votes_ranges,
                             color="color",fill_alpha=0.2,line_color=None)
         self.p_votes.yaxis.visible = False
         self.p_votes.ygrid.visible = False
-        self.p_votes.xaxis.visible = False
+        #self.p_votes.xaxis.visible = False
 
 
         for i in range(len(self.wave_boxes)):
@@ -1041,7 +1040,7 @@ class GUI():
                     alldata.append(ddf)
                     fields = f.split(".")
                     if len(fields)>=3:
-                        country = fields[2]
+                        country = fields[1]
                         if country in votes.keys():
                             votes[country] += 1
                         else:
@@ -1054,9 +1053,7 @@ class GUI():
             for c in self.dfVotes.columns:
                 newdata[c] = self.dfVotes[c].values
             self.cds_votes.data = newdata
-            #print(self.dfVotes)
             self.dfVotesContent = pd.DataFrame().append(alldata)
-            #self.dfVotesContent[self.dfVotesContent.infection_rate_7 > 1000.] = 0.
             self.dfVotesContent.to_pickle("./data/votes.pickle",protocol=3)
             self.compute_metrics()
 
