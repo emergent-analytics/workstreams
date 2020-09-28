@@ -19,7 +19,10 @@ precision is probably not required for this task initially.
 
 Clone the repository. You will need the python bokeh package, best installed using `conda install bokeh`, although
 it is part of any [anaconda distribution](https://www.anaconda.com/products/individual). Also ensure you have 
-[`statsmodels`](https://pypi.org/project/statsmodels/) installed.
+[`statsmodels`](https://pypi.org/project/statsmodels/) installed. In addition to that, we need the amazing 
+[pycountry](https://pypi.org/project/pycountry/) package installed, which is a perfect resource for country name
+and ISO country code mapping, and, last but not least, a library such as [xlrd](https://pypi.org/project/xlrd/) to
+read the United Nations population datafile with forecasted numbers for 2020.
 
 ## Running
 
@@ -32,6 +35,11 @@ then, from a web browser, enter
 http://<machine_name>:5006/cookiecutter
 ```
 
+At the moment, the tool will download also rather static data such as the UN population table, which is consuming
+unnecessary bandwidth and resources. Also, if URLs change, it would not revert to an existing data source.
+
+Migrating to a (No)SQL datastore or persistence approach would be the right thing to do, but given the limited useful
+time for this tool, effort has been spent on the UI and its functionality.
 
 ## Docker
 
@@ -56,6 +64,7 @@ DATA_FOLDER=./data
 PUBLIC_WEBSERVER_PORT=8080
 ```
 
+See [the data files description)[#data-files] at the end of this document.
 
 ## UI
 
@@ -79,6 +88,7 @@ UI Elements are
 * the center time series shows the ["Stringency Index for Display" value](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md)
 * the grey heatmap details [which measures were taken](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md)
 * the band below the grey heatmap shows previous labelling data (aka Votes). Deletion of previous votes needs to be done via the file system.
+  The height of the bands is randomly chosen and has no further meaning.
 * a text entry field that allows for capturing a user identity, this is useful if a team of people are asked to label the data
 * The table to the right gives a synposis of which countries have been voted on and which may need a vote. While this is being re-engineered,
  it will only be updated after pressing F5 or page refresh
@@ -87,15 +97,47 @@ UI Elements are
 
 ![Screenshot select episode](Screenshot2.JPG)
 
-Selection of an eposode and naming it.
+Selection of an episode (Australia WAVE 1) and naming/classifying it (see the selections of the radio buttons).
 
 
 ![Screenshot episode saved](Screenshot3.JPG)
 
-Saving a selected episode.
+Saving a selected episode, in this case, Australia WAVE 2. After pressing "Save" the status bar will display the filename,
+which will look like
+```
+BGR.Bulgaria.Wave.1.20200320.20200527.nobody.csv
+```
+which is a full stop separated field with the following information
+
+|Field No|Meaning                          |
+|--------|---------------------------------|
+| 0      | ISO 3166-1 alpha-3 country code |
+| 1      | [Country name](https://schema.org/Country), note this may contain blank characters |
+| 2      | Kind of episode, currently `Wave|Calm`, may be extended to `Onset` so that new waves can be captured |
+| 3      | running number of episode, the author uses Wave 1, Calm 1, Wave 2, but there is no semantics to the number other than discriminating two waves |
+| 4      | starting date of the selected episode YYYYMMDD |
+| 5      | end date of the selected episode YYYYMMDD |
+| 6      | user name as entered, this will be populated with `nobody@<machine_name>` and can be edited. Used to allow multiple votes if deemed useful |
 
 
 ![Screenshot starting from scratch](Screenshot4.JPG)
 
 Screenshot when starting from scratch. Press "Load Data" and follow the screen outputs when running locally, or wait for the first dataset
 for Germany to be displayed.
+
+## Data Files
+
+The data folder contains three classes of files:-
+* one or more csv files which contain the selected data for the eposides. Apologies for deferring a description to a later date,
+  it is using pieces of [OxCGRT data](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md),
+  fused [Johns Hopkins Data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data), and some [derived 
+  data partially described in some very old work](https://klausgpaul.github.io/)
+* a `votes.pickle` file which contains an aggregation of the above csv files, using [python pickle protocol 3](https://docs.python.org/3/library/pickle.html#data-stream-format),
+  some python 3.8 adopters may have encountered that protocol issue...
+* a `datafile.pckld.gz` file which is probably too much of a masterpiece of storing complex data, it is a compressed,
+  dict that contains base64 encoded pickled data, which renders it very incompatible between machines and pandas etc. versions
+  This project reused data structres from another [rapidly developed](https://got-data-for.me) COVID-19 related dashboard.
+
+## Disclaimer
+
+Disclaimer: This information can be used for educational and research use. The author is not a health care professional and it is not recommended to use the views in this document for any healthcare related decision making.
