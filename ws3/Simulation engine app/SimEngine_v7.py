@@ -179,7 +179,7 @@ GVA_vec = read_GVA(path = '.')
 # UI SET UP
 # Initial header
 st.title('Emergent Economic Engine')
-st.write('This app allows you to see how a shock to one sector of the UK economy propagates throughout the national economic network and how it is eventually absorbed over time. \
+st.write('This app allows you to see how a shock to one sector of the UK economy [1] propagates throughout the national economic network and how it is eventually absorbed over time. \
     You can think of it as a *what-if* type of simulation.')
 st.write('**:point_left: To start, use the menu on the left to choose the parameters of the shock.**')
 
@@ -430,5 +430,9 @@ st.markdown("We are a team of data scientists from [IBM's Data Science & AI Elit
          working on Regional Risk-Pulse Index: forecasting and simulation within [Emergent Alliance](https://emergentalliance.org/). \
          Have a look at our [challenge statement](https://emergentalliance.org/?page_id=1659)!")
 st.write("\n")
+st.markdown("_______")
+st.markdown("[1] Office for National Statistics (2020), *UK input-output analytical tables - industry by industry*, URL: \
+     https://www.ons.gov.uk/economy/nationalaccounts/supplyandusetables/datasets/ukinputoutputanalyticaltablesindustrybyindustry, last accessed: \
+     27 August 2020. Contains public sector information licensed under the Open Government License v3.0. http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/")
 
 # Copyright © IBM Corp. 2020. Licensed under the Apache License, Version 2.0. Released as licensed Sample Materials.
