@@ -1,5 +1,4 @@
 # TITLE: SIMULATION ENGINE APP
-# AUTHOR: Alvaro Corrales Cano
 # DESCRIPTION: This code outputs the Emergent Alliance's Simulation Engine to an app that can be interacted with using a web browser.  
 
 # IMPORTS
@@ -165,15 +164,17 @@ def total_out_loss(sol,time_vec, by_sector = True, sectors = None, GVA_vec = Non
 
 # READ DATA IN
 # Read A matrix locally
-df_lev = read_data(path = '/Users/alvaro.corrales.canoibm.com/Box/Projects/Emergent Alliance - Alvaro/3 - Output')
+df_lev = read_data(path = '.')
 # Read GVA matrix 
-GVA_vec = read_GVA(path = '/Users/alvaro.corrales.canoibm.com/Box/Projects/Emergent Alliance - Alvaro/3 - Output')
+GVA_vec = read_GVA(path = '.')
 
-# Read A matrix from Db2 database
-# string = "db2+ibm_db://bluadmin:hx9I0BgP_7Xxc9VigsZo1c1hypwme@db2w-amihafx.uk-south.db2w.cloud.ibm.com:50001/BLUDB"
-# engine = create_engine(string + ";SECURITY=SSL")
+# Can also read from Db2 database if preferred
+# string = "------"
+# engine = create_engine(string)
 # table = 'a_uk'
 # df_lev = read_data(engine = engine, table = table)
+# table = 'gva_uk'
+# GVA_vec = read_GVA(engine = engine, table = table)
 
 # UI SET UP
 # Initial header
@@ -422,7 +423,6 @@ if want_recovery:
 
 
 # Regional-Risk Pulse index text and logos
-# combined_logos = Image.open('/Users/alvaro.corrales.canoibm.com/Box/Projects/Emergent Alliance - Alvaro/4 - Presentations/Logos/combined logos 2.png')
 st.write("\n \n \n \n")
 st.markdown("_______")
 st.markdown("We are a team of data scientists from [IBM's Data Science & AI Elite Team](https://www.ibm.com/community/datascience/elite/), \
@@ -430,4 +430,5 @@ st.markdown("We are a team of data scientists from [IBM's Data Science & AI Elit
          working on Regional Risk-Pulse Index: forecasting and simulation within [Emergent Alliance](https://emergentalliance.org/). \
          Have a look at our [challenge statement](https://emergentalliance.org/?page_id=1659)!")
 st.write("\n")
-# st.image(combined_logos, width = 700)
+
+# Copyright © IBM Corp. 2020. Licensed under the Apache License, Version 2.0. Released as licensed Sample Materials.
