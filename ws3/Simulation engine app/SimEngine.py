@@ -1,6 +1,6 @@
 # TITLE: SIMULATION ENGINE APP
 # DESCRIPTION: This code outputs the Emergent Alliance's Simulation Engine to an app that can be interacted with using a web browser.  
-# This is version 7 of the app
+# This is version 8 of the app
 
 # IMPORTS
 import streamlit as st
@@ -401,15 +401,15 @@ if want_recovery:
     counter_sectors_list.extend(list(df_lev.columns))
     sector_viz = st.selectbox(label = 'Which sector do you want to visualise?', options = counter_sectors_list, key = 'counterviz')
     
+    df_viz2 = pd.DataFrame()
+
     if sector_viz =='- Aggregate Economy -':
-        df_viz2 = pd.DataFrame()
         df_viz2['No intervention scenario'] = np.sum((sol * (GVA_vec / GVA_vec.sum()).values.T) * 100, axis = 1)
         df_viz2['Intervention scenario'] = np.sum((sol_rec * (GVA_vec / GVA_vec.sum()).values.T) * 100, axis = 1)
     else:
         df_sol = pd.DataFrame(data = sol, columns = df_lev.columns)
         df_sol_rec = pd.DataFrame(data = sol_rec, columns = df_lev.columns)
         
-        df_viz2 = pd.DataFrame()
         df_viz2['No intervention scenario'] = df_sol[sector_viz].values * 100
         df_viz2['Intervention scenario'] = df_sol_rec[sector_viz].values * 100
 
@@ -428,7 +428,7 @@ st.markdown("We are a team of data scientists from [IBM's Data Science & AI Elit
         IBM's Cloud Pak Acceleration Team, and [Rolls-Royce's R2 Data Labs](https://www.rolls-royce.com/products-and-services/r2datalabs.aspx) \
          working on Regional Risk-Pulse Index: forecasting and simulation within [Emergent Alliance](https://emergentalliance.org/). \
          Have a look at our [challenge statement](https://emergentalliance.org/?page_id=1659)!")
-st.write("\n")
+
 st.markdown("_______")
 st.markdown("[1] Office for National Statistics (2020), *UK input-output analytical tables - industry by industry*, URL: \
      https://www.ons.gov.uk/economy/nationalaccounts/supplyandusetables/datasets/ukinputoutputanalyticaltablesindustrybyindustry, last accessed: \
