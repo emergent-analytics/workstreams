@@ -395,8 +395,8 @@ if want_recovery:
             "\n In case of no intervention, the output change would be", change_no_intervention.iloc[0], "%." 
             "\n The selected intervention strategy would yield a change in total output of", change_intervention.iloc[0], "%.")
     
-    st.write('In the chart below, you can see the impact on total output of your selected recovery strategy. The two lines represent \
-            the change in total output with and without intervention (dark and light line, respectively).')
+    st.write('In the chart below, you can see the impact on total output (or the selected sector) of your selected recovery strategy. \
+                The two lines represent the change in total output with and without intervention (dark and light line, respectively).')
 
     counter_sectors_list = ['- Aggregate Economy -']
     counter_sectors_list.extend(list(df_lev.columns))
