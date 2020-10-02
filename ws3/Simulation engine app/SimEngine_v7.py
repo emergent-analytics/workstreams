@@ -8,8 +8,6 @@ import numpy as np
 import plotly.express as px
 from scipy.integrate import odeint, simps
 from sqlalchemy import create_engine
-from PIL import Image
-
 
 # CLASS AND FUNCTION DEFINITIONS
 # Read data in
