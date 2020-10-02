@@ -1,5 +1,6 @@
 # TITLE: SIMULATION ENGINE APP
 # DESCRIPTION: This code outputs the Emergent Alliance's Simulation Engine to an app that can be interacted with using a web browser.  
+# AUTHOR: Alvaro Corrales Cano - Data Scientist at IBM
 # This is version 8 of the app
 
 # IMPORTS
