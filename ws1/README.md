@@ -20,7 +20,7 @@ For our assessment, we used the following structure for the countries we conside
 
 | Country | Name of Level considered | Rank of Level |
 |---------|--------------------------|---------------|
-| Germany | Bundestaaten; Landkreise and kreisfreise Städte, Berlin as a whole | Country->States->Regions and Municpipalities |
+| Germany | Bundestaaten; Landkreise and kreisfreise Städte, Berlin as a whole | Country->States->Regions and Municipalities |
 | Italy   | Regione | Country->States |
 | France  | Departements | Country->States |
 | England | UTLA (Upper Tier Local Authorities), NB: England only | (Country->)Nation->UTLA |
