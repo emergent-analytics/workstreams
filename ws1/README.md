@@ -20,11 +20,11 @@ For our assessment, we used the following structure for the countries we conside
 
 | Country | Name of Level considered | Rank of Level |
 |---------|--------------------------|---------------|
-| Germany | Landkreise and kreisfreise Städte and Bezirke (Berlin) | Country->States->Regions and Municpipalities |
-| Italy   | Reggione | TBD |
-| France  | Departements | TBD |
-| UK      | UTLA (Upper Tier Local Authorities), NB: England only | Country->Nation->UTLA |
-| South Korea | <Provinces> | TBD |
+| Germany | Bundestaaten; Landkreise and kreisfreise Städte, Berlin as a whole | Country->States->Regions and Municpipalities |
+| Italy   | Regione | Country->States |
+| France  | Departements | Country->States |
+| England | UTLA (Upper Tier Local Authorities), NB: England only | (Country->)Nation->UTLA |
+| South Korea | 도, 道 Provinces | Country->States |
 
 The [NUTS classification](https://ec.europa.eu/eurostat/documents/345175/629341/NUTS2021.xlsx) is a comprehensive summary of the logical
 structure of countries in Europe.
