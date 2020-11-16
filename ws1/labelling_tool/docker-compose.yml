@@ -4,9 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-nginx
-      #args:
-        #  USER_ID: ${USER_ID}
-        #  GROUP_ID: ${GROUP_ID}     
     ports:
       - "${PUBLIC_WEBSERVER_PORT}:80"
     depends_on:
@@ -18,11 +15,21 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-cookiecutter
-      #args:
-        #  USER_ID: ${USER_ID}
-        #  GROUP_ID: ${GROUP_ID}     
     ports:
-      - 5006  
+      - 5006
+      - 5432
+
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile-postgresql
+    environment:
+      POSTGRES_USER: cookiecutter
+      POSTGRES_PASSWORD: cookiecutter
+    ports:
+      - ${POSTGRES_PORT}:5432
     volumes:
-      - "${DATA_FOLDER}:/app/data"
+      - pg-data:/var/lib/postgresql/data
   
+volumes:
+  pg-data:
