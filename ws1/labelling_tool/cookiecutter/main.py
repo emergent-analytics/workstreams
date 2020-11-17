@@ -537,6 +537,7 @@ class GUIHealth():
             i += 1
         self.cds_OxCGRTHeatmap.selected.indices = selection
 
+
     def compute_metrics(self,bins=25):
         """using self.dfVotesContent, this computes stats for display
         """
@@ -585,12 +586,19 @@ class GUIHealth():
         """
         # Save selection
         conn = self.engine.connect()
-        result = conn.execute("select max(vote_id) from cookiecutter_verdicts")
-        vote_id = result.fetchone()[0]+1
+        try:
+            result = conn.execute("select max(vote_id) from cookiecutter_verdicts")
+            vote_id = result.fetchone()[0]+1
+            print("CANNOT RETRIEVE VOTE_ID")
+        except:
+            vote_id = 1
         print("VOTE ID = {}".format(vote_id))
 
         df = self.cds.to_df().iloc[self.cds.selected.indices]
-        df["rel_peak_new_cases"] = max(df["new_cases_rel"])
+        if max(df["new_cases_rel"]) < 0:
+            df["rel_peak_new_cases"] = 0.
+        else:
+            df["rel_peak_new_cases"] = max(df["new_cases_rel"])
         df["kind"] = self.scenario_type.labels[self.scenario_type.active]
         df["kind_counter"] = int(self.scenario_number.value)
         df["from_dt"] = df.datetime_date.min()
@@ -598,15 +606,9 @@ class GUIHealth():
         df["duration"] = (pd.to_datetime(df.datetime_date.max())-pd.to_datetime(df.datetime_date.min())).total_seconds()/86400
         df["user"] = self.user_id.value
         #ADM0_A3 = self.adm0_a3 #dfMapping[self.dfMapping.name == self.country_select.value].adm0_a3.values[0]
-        df["adm0_a3"] = self.adm0_a3
+        df["identifier"] = self.identifier
         df["vote_datetime"] = datetime.datetime.now()
-        #filename = "data/{}.{}.{}.{}.{:%Y%m%d}.{:%Y%m%d}.{}.csv".format(ADM0_A3,
-        #        self.country_select.value.replace("*","").replace("'","_"), # Taiwan* Cote d'Ivoire
-        #        self.scenario_type.labels[self.scenario_type.active],self.scenario_number.value,
-        #        pd.to_datetime(df.date.values[0]),
-        #        pd.to_datetime(df.date.values[-1]),
-        #        self.user_id.value)
-        #df.to_csv(filename,index=False)
+        df["vote_id"] = vote_id
         df.to_sql("cookiecutter_verdicts", conn, if_exists='append', dtype={"from_dt":sqlalchemy.types.Date,
                                                                          "to_dt":sqlalchemy.types.Date,
                                                                          "datetime_date":sqlalchemy.types.DateTime,
@@ -614,7 +616,6 @@ class GUIHealth():
                                                                          "kind":sqlalchemy.types.String(10),
                                                                          "user":sqlalchemy.types.String(50),
                                                                          "adm0_a3":sqlalchemy.types.String(10)},index=False)
-        df["vote_id"] = vote_id
         # reset selection
         self.cds.selected.indices = []
         # update message field
@@ -634,12 +635,14 @@ class GUIHealth():
         i = 0
         for r in self.gumbel_wave_renderers:
             print("Wave {} visible {}".format(i,r.visible))
+            i += 1
 
 
     def change_dataset(self,attr,old,new):
         sql_query = "SELECT DISTINCT name FROM COOKIECUTTER_CASE_DATA WHERE data_source='{}';".format(new)
         conn = self.engine.connect()
         df = pd.read_sql(sql_query,conn)
+        print("CHANGE DATASET NEW country names {}".format(df))
         self.country_select.options = sorted(df["name"].values)
         if "Germany" in df["name"].values:
             self.country_select.value = "Germany"
@@ -663,14 +666,6 @@ class GUIHealth():
         """
         # fresh data for the time series plots
 
-        sql_query = """SELECT johns_hopkins_data.*,oxford_stringency_index.*
-    FROM johns_hopkins_data
-    INNER JOIN oxford_stringency_index ON johns_hopkins_data.adm0_a3 = oxford_stringency_index.countrycode AND
-    johns_hopkins_data.datetime_date = oxford_stringency_index.datetime_date 
-    WHERE johns_hopkins_data.name='{}' AND oxford_stringency_index.regionname IS NULL
-    ORDER BY johns_hopkins_data.datetime_date;""".format(new)
-
-
         sql_query = """SELECT cookiecutter_case_data.*,oxford_stringency_index.*
     FROM cookiecutter_case_data
     INNER JOIN oxford_stringency_index ON cookiecutter_case_data.identifier = oxford_stringency_index.countrycode AND
@@ -681,30 +676,47 @@ class GUIHealth():
 
         conn = self.engine.connect()
         dfData = pd.read_sql(sql_query, conn)
-        # new we have a clone of datetime_date
-        dfRubbish = dfData.datetime_date
-        del dfData["datetime_date"]
-        dfRubbish.columns=["rubbish","datetime_date"]
-        #print(dfRubbish)
-        #dfData.index = dfRubbish.datetime_date
-        dfData["datetime_date"] = dfRubbish.datetime_date
+
+        if len(dfData) == 0: # most likely no OxCGRT dataset
+            have_OxCGRT = False
+            sql_query = "SELECT * FROM cookiecutter_case_data WHERE cookiecutter_case_data.name='{}' AND cookiecutter_case_data.data_source ='{}' ORDER BY cookiecutter_case_data.datetime_date;".format(new,self.dataset_select.value)
+            dfData = pd.read_sql(sql_query, conn)
+            print("sql_query {}".format(sql_query))
+        else:
+            have_OxCGRT = True
+            # new we have a clone of datetime_date
+            dfRubbish = dfData.datetime_date
+            del dfData["datetime_date"]
+            dfRubbish.columns=["rubbish","datetime_date"]
+            #print(dfRubbish)
+            #dfData.index = dfRubbish.datetime_date
+            dfData["datetime_date"] = dfRubbish.datetime_date
         dfData.index.name = None
+
+        sql_query = "SELECT population FROM un_population_data_2020_estimates WHERE adm0_a3='{}'".format(dfData.identifier.unique()[0])
+        try:
+            population = int(conn.execute(sql_query).fetchone()[0])
+            dfData['new_cases_rel'] = dfData['new_cases']/population
+        except:
+            dfData['new_cases_rel'] = -1.
+
         newdata = {}
         #print(self.cds.data.keys())
         for column in self.cds.data.keys():
-            #print(column,end=".->.")
             if column == "index" or column == "Timestamp" or column == "datetime_date":
                 #newdata[column] = self.adfCountryData[new].index
                 newdata[column] = dfData.datetime_date #datetime_date
+            elif "wave_" in column or column == "summed_waves":
+                continue
+            elif column in dfData.columns: # cater for reduced oxCGRT missing queries
+                newdata[column] = np.nan_to_num(dfData[column])
             else:
                 #newdata[column] = np.nan_to_num(self.adfCountryData[new][column])
-                newdata[column] = np.nan_to_num(dfData[column])
+                if have_OxCGRT:
+                    newdata[column] = np.nan_to_num(dfData[column])
+                else:
+                    newdata[column] = [[] for i in range(len(dfData["new_cases"]))]
         self.cds.data = newdata
-        #print(dfData.datetime_date)
-        #print(self.cds.data["new_cases"])
-        #print(self.cds.data)
-        # reset scenario text with country name
-        #self.scenario_name.value = new+" wave calm #"
         self.scenario_number.value = 1
         self.scenario_type.active = 0
         # rescale the y axes that require it
@@ -716,12 +728,16 @@ class GUIHealth():
         ddf = pd.read_sql("SELECT * FROM oxford_stringency_index WHERE countrycode='{}' AND regionname IS NULL;".format(dfData.identifier.unique()[0]),conn,index_col="datetime_date")
         dfMeasures = pd.DataFrame(ddf[self.fields_of_interest].stack(), columns=["level"]).reset_index().rename(columns={"level_1":"class"})
         newdata = {}
+        print("HAVE OXCGRT {}".format(have_OxCGRT))
         for column in self.cds_OxCGRTHeatmap.data.keys():
             if column == "index" or column == "Timestamp":
                 newdata[column] = dfMeasures.index
                 #newdata[column] = dfData.datetime_date
             else:
-                newdata[column] = np.nan_to_num(dfMeasures[column])
+                if have_OxCGRT:
+                    newdata[column] = np.nan_to_num(dfMeasures[column])
+                else:
+                    newdata[column] = []
                 #try: ####
                 #    newdata[column] = np.nan_to_num(dfData[column])
                 #except:
@@ -782,7 +798,7 @@ class GUIHealth():
         self.identifier = dfData.identifier.unique()[0]
         conn = self.engine.connect()
         try:
-            ddf = pd.read_sql("select DISTINCT from_dt,to_dt,user,kind,vote_id,rel_peak_new_cases,duration from cookiecutter_verdicts WHERE adm0_a3='{}'".format(self.identifier),conn)
+            ddf = pd.read_sql("select DISTINCT from_dt,to_dt,user,kind,vote_id,rel_peak_new_cases,duration from cookiecutter_verdicts WHERE identifier='{}'".format(self.identifier),conn)
         except:
             ddf = pd.DataFrame()
         conn.close()
@@ -811,13 +827,13 @@ class GUIHealth():
         empty_list = [None for i in range(len(ddf))]
         for k,v in self.cds_gumbel_waves.data.items():
             newdata[k] = empty_list
-        newdata["summed"] = [0 for i in range(len(ddf))]
+        newdata["summed_waves"] = [0 for i in range(len(ddf))]
         if len(all_waves)>0:
             i = 0
             for wave in all_waves:
                 newdata["datetime"] = wave["datetime_date"]
                 newdata["wave_{:02d}".format(i)] = wave["wave_values"]
-                newdata["summed"] = list(map(add,newdata["summed"],wave["wave_values"])) # https://stackoverflow.com/questions/18713321/element-wise-addition-of-2-lists
+                newdata["summed_waves"] = list(map(add,newdata["summed_waves"],wave["wave_values"])) # https://stackoverflow.com/questions/18713321/element-wise-addition-of-2-lists
                 i += 1
             try:
                 newdata["trend"] = dfData[(min(newdata["datetime"])<=dfData["datetime_date"]) & (dfData["datetime_date"] <= max(newdata["datetime"]))]["trend"]
@@ -853,14 +869,14 @@ class GUIHealth():
 
         # the buttons and dropdowns, connecting them to callbacks as required
         self.blank = Paragraph(text=" ",width=175)
-        self.refresh_data = Button(label="Load Data",disabled=False,width=150)
+        self.refresh_data = Button(label="Load Data",disabled=False,width=100)
         self.refresh_data.on_event(ButtonClick, self.refresh_data_callback)
         conn = self.engine.connect()
         df = pd.read_sql("SELECT DISTINCT data_source FROM cookiecutter_case_data",conn)
         conn.close()
-        self.dataset_select=Select(options=sorted(df.data_source.values))
+        self.dataset_select=Select(options=sorted(df.data_source.values),width=200)
         self.dataset_select.on_change("value",self.change_dataset)
-        self.country_select = Select(options=[""])
+        self.country_select = Select(options=[""],width=200)
         self.country_select.on_change("value",self.change_country)
         self.scenario_name = TextInput(value="country wave 2")
         self.scenario_type_label = Paragraph(text="Select Type")
@@ -868,7 +884,7 @@ class GUIHealth():
         self.scenario_type = RadioButtonGroup(labels=["Wave","Calm"],width=100,active=0)
         self.scenario_number_label = Paragraph(text=" Occurence #")
         self.scenario_number = Spinner(low=1, step=1, value=1,width=50)
-        self.save = Button(label="Save",disabled=True,width=150)
+        self.save = Button(label="Save",disabled=True,width=100)
         self.save.on_event(ButtonClick, self.save_callback)
         
         # fields of the OxCGRT dataset we actually use
@@ -881,7 +897,9 @@ class GUIHealth():
 
         # the main time series data source, created empty initially
         empty_data = dict(zip(self.fields_of_interest,[[] for i in range(len(self.fields_of_interest))]))
-        for c in ['datetime_date','new_cases','trend','stringencyindex']: 
+        # Gumbel distribution waves
+        empty_data.update(dict(zip(["wave_{:02d}".format(i) for i in range(self.max_gumbel_waves)],[[] for i in range(100)])))
+        for c in ['datetime_date','new_cases','new_cases_rel','trend','stringencyindex','summed_waves']: 
             empty_data[c] = []
         #self.cds = ColumnDataSource(pd.DataFrame({'date':[], 'confirmed':[], 'deaths':[], 'recovered':[], 'active':[], 'new_cases':[],
         #       'trend':[], 'stringency_index':[],'infection_rate_7':[], 'new_cases_rel':[], 
@@ -911,7 +929,7 @@ class GUIHealth():
         empty_data = dict(zip(["wave_{:02d}".format(i) for i in range(self.max_gumbel_waves)],[[] for i in range(100)]))
         empty_data["datetime"] = []
         empty_data["trend"] = []
-        empty_data["summed"] = []
+        empty_data["summed_waves"] = []
         self.cds_gumbel_waves = ColumnDataSource(empty_data)
 
 
@@ -1008,7 +1026,7 @@ class GUIHealth():
         self.p_gumbel.toolbar.logo=None
         #self.p_gumbel.yaxis.visible=False
         r0 = self.p_gumbel.cross(x="datetime_date",y="trend",source=self.cds,alpha=0.75,color="#a85232")
-        r1 = self.p_gumbel.x(x="datetime",y="summed",source=self.cds_gumbel_waves,alpha=0.75,color="#000000")
+        r1 = self.p_gumbel.x(x="datetime",y="summed_waves",source=self.cds_gumbel_waves,alpha=0.75,color="#000000")
         self.p_gumbel.add_layout(Legend(items=[("trend", [r0]),
             ("summed gumbel waves", [r1])],location="top_left"))
 
@@ -1165,144 +1183,7 @@ class GUIHealth():
         conn = self.engine.connect()
 
 
-        print("Johns Hopkins Global...")
-        dfJH = pd.read_csv("https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv?raw=true",
-               encoding="utf-8")
-
-        dfMapping = pd.read_sql("SELECT * FROM johns_hopkins_country_mapping",conn)
-
-        dfJHcountries = dfJH[dfJH["Province/State"].isnull()]
-        dfJHcountries = dfJHcountries.merge(dfMapping,left_on="Country/Region",right_on="name")
-        dfJHcountries = dfJHcountries[dfJHcountries["iso_3_code_i"]>0]
-        del dfJHcountries["Lat"]
-        del dfJHcountries["Long"]
-        del dfJHcountries["Province/State"]
-        del dfJHcountries["Country/Region"]
-        del dfJHcountries["adm0_a3"]
-        del dfJHcountries["iso_3_code_i"]
-
-        dfJHcountries.index = dfJHcountries.name
-        dfJHcountries.index.name = None
-        del dfJHcountries["name"]
-        dfJHcountries = dfJHcountries.transpose()
-        dfJHcountries.index = pd.to_datetime(dfJHcountries.index)
-        dfJHcountries = dfJHcountries.diff(1).dropna()
-
-        dfJHcountries_trend = dfJHcountries.copy()
-        for c in dfJHcountries_trend.columns:
-            dfJHcountries_trend[c] = seasonal_decompose(dfJHcountries_trend[c],period=7).trend
-
-        dfnew_cases = dfJHcountries.stack().reset_index().rename(columns={"level_0":"datetime_date","level_1":"name",0:"new_cases"})
-        dftrend = dfJHcountries_trend.stack().reset_index().rename(columns={"level_0":"datetime_date","level_1":"name",0:"trend"})
-        df = pd.merge(dfnew_cases,dftrend,how="left",left_on=["datetime_date","name"],right_on=["datetime_date","name"])
-        df["new_cases"] = df["new_cases"].astype(int)
-        df["data_source"] = "Johns Hopkins global"
-
-        try:
-            conn.execute("DELETE FROM cookiecutter_case_data WHERE source='Johns Hopkins global'")
-        except:
-            pass
-        df.to_sql("cookiecutter_case_data",conn,index=False,dtype={"datetime_date":sqlalchemy.types.DateTime,
-                                                                  "name":sqlalchemy.types.VARCHAR(100),
-                                                                   "data_source":sqlalchemy.types.VARCHAR(50)},
-                 if_exists="append")
-
-        allwaves = []
-        for c in dfJHcountries.columns:
-            allwaves.append(compute_changepoint_waves(dfJHcountries[c],country=c,ADM0_A3=dfMapping[dfMapping.name == c].adm0_a3.unique()[0]))
-        dfWaves = pd.DataFrame().append(allwaves)
-        dfWaves["wave_no"] = dfWaves["wave_no"].astype(int)
-        dfWaves["data_source"] = "Johns Hopkins global"
-        try:
-            conn.execute("DELETE FROM cookiecutter_computed_waves_chgpoint WHERE source='Johns Hopkins global'")
-        except:
-            pass
-        print(dfWaves)
-        dfWaves.to_sql("cookiecutter_computed_waves_chgpoint",conn,index=False,dtype={"name":sqlalchemy.types.VARCHAR(100),
-                                                                                     "datetime_date":sqlalchemy.types.DateTime,
-                                                                                     "kind":sqlalchemy.types.VARCHAR(10),
-                                                                                     "adm0_a3":sqlalchemy.types.VARCHAR(10),
-                                                                                     "data_source":sqlalchemy.types.VARCHAR(50)},
-                 if_exists="append")
-
-
-        print("Johns Hopkins US States...")
-
-        dfJHUS = pd.read_csv("https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv?raw=true",
-                       encoding="utf-8")
-        dfJHUS = dfJHUS[dfJHUS.FIPS.notnull()]
-
-        # chosen to hard code this as it is a very limited dataset and very stable
-        state_to_postal = dict(zip(['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia',
-                  'Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts',
-                  'Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey',
-                  'New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island',
-                  'South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia',
-                  'Wisconsin','Wyoming','American Samoa','Guam','Northern Mariana Islands','Puerto Rico','Virgin Islands'],
-                 ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD',
-                  'MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC',
-                  'SD','TN','TX','UT','VT','VA','WA','WV','WI','WY','AS','GU','MP','PR','VI']))
-
-        dfJHUS["name"] = ""
-        for i,row in dfJHUS.iterrows():
-            try:
-                dfJHUS.at[i,"name"] = "US-"+state_to_postal[row["Province_State"]]+" "+row["Province_State"]
-            except:
-                continue
-
-        dfJHUS = dfJHUS[dfJHUS.name > ""].groupby("name").sum()
-        del dfJHUS["UID"]
-        del dfJHUS["code3"]
-        del dfJHUS["FIPS"]
-        del dfJHUS["Lat"]
-        del dfJHUS["Long_"]
-        #del dfJHUS["Province_State"]
-        #dfJHUS.index = dfJHUS.name
-        dfJHUS.index.name = None
-        dfJHUS = dfJHUS.transpose()
-        dfJHUS.index = pd.to_datetime(dfJHUS.index)
-        dfJHUS = dfJHUS.diff(1).dropna()
-
-        dfJHUS_trend = dfJHUS.copy()
-        for c in dfJHUS_trend.columns:
-            dfJHUS_trend[c] = seasonal_decompose(dfJHUS_trend[c],period=7).trend
-        df = pd.merge(dfnew_cases,dftrend,how="left",left_on=["datetime_date","name"],right_on=["datetime_date","name"])
-
-
-        dfnew_cases = dfJHUS.stack().reset_index().rename(columns={"level_0":"datetime_date","level_1":"name",0:"new_cases"})
-        dftrend = dfJHUS_trend.stack().reset_index().rename(columns={"level_0":"datetime_date","level_1":"name",0:"trend"})
-        df = pd.merge(dfnew_cases,dftrend,how="left",left_on=["datetime_date","name"],right_on=["datetime_date","name"])
-        df["new_cases"] = df["new_cases"].astype(int)
-        df["data_source"] = "Johns Hopkins US States"
-
-        try:
-            conn.execute("DELETE FROM cookiecutter_case_data WHERE source='Johns Hopkins US States'")
-        except:
-            pass
-        df.to_sql("cookiecutter_case_data",conn,index=False,dtype={"datetime_date":sqlalchemy.types.DateTime,
-                                                                  "name":sqlalchemy.types.VARCHAR(100),
-                                                                   "data_source":sqlalchemy.types.VARCHAR(50)},
-                 if_exists="append")
-
-        allwaves = []
-        for c in dfJHUS.columns:
-            allwaves.append(compute_changepoint_waves(dfJHUS[c],country=c,ADM0_A3=c.split(" ")[0]))
-        dfWaves = pd.DataFrame().append(allwaves)
-        dfWaves["wave_no"] = dfWaves["wave_no"].astype(int)
-        dfWaves["data_source"] = "Johns Hopkins US States"
-
-        try:
-            conn.execute("DELETE FROM cookiecutter_computed_waves_chgpoint WHERE source='Johns Hopkins US States'")
-        except:
-            pass
-        dfWaves.to_sql("cookiecutter_computed_waves_chgpoint",conn,index=False,dtype={"name":sqlalchemy.types.VARCHAR(100),
-                                                                                     "datetime_date":sqlalchemy.types.DateTime,
-                                                                                     "kind":sqlalchemy.types.VARCHAR(10),
-                                                                                     "adm0_a3":sqlalchemy.types.VARCHAR(10),
-                                                                                     "data_source":sqlalchemy.types.VARCHAR(50)},
-                 if_exists="append")
-
-        conn.close()
+        
         print("Finished download")
 
                 
@@ -1312,196 +1193,7 @@ class GUIHealth():
         """
         # This look slike a duplicate
         # TODO: cleanup
-        self.fields_of_interest = ['C1_School closing','C2_Workplace closing','C3_Cancel public events','C4_Restrictions on gatherings',
-        'C6_Stay at home requirements','C7_Restrictions on internal movement', 
-        'C8_International travel controls', 'E1_Income support', 'E2_Debt/contract relief', 'E3_Fiscal measures',
-        'E4_International support', 'H1_Public information campaigns','H2_Testing policy', 'H3_Contact tracing',
-        'H4_Emergency investment in healthcare', 'H5_Investment in vaccines']
-        monetary_fields = ['E3_Fiscal measures','E4_International support','H4_Emergency investment in healthcare', 'H5_Investment in vaccines']
-
-        # To reuse some old code, the data are stored in dicts of dataframes, one per country.
-        self.adfCountryData = {}
-        self.adfOxCGRT = {}
-        self.adfMeasures = {}
-        self.adfWaves = {}
-        counter = 0
-        num_countries = len(self.dfConfirmed["Country/Region"].unique())
-        country_number = 1
-        #next line is troubleshooting/speedup code that could be removed but I leave it in for now
-        #TODO consider removal
-        #for country in ["Germany","Australia","Austria","United Kingdom","France","Italy"]:
-        for country in self.dfConfirmed["Country/Region"].unique():
-            try:
-                ADM0_A3 = self.dfMapping[self.dfMapping.name == country].ADM0_A3.values[0]
-            except:
-                continue # cannot use data we have no ISO3 country code for
-            if ADM0_A3 == "***": # invalid as per https://github.com/rolls-royce/EMER2GENT/blob/master/data/sun/geo/country_name_mapping.csv 
-                continue
-            #print("{} {}".format(ADM0_A3,country)) # poor man's progress bar
-
-            # Step 1 Confirmed cases, data comes in an odd time series format with the columns being the time series
-            dfCountry = self.dfConfirmed[self.dfConfirmed["Country/Region"] == country].transpose()
-            columns = list(dfCountry.columns)
-            dfCountry["date"] = pd.to_datetime(dfCountry.index,errors="coerce")
-            dfCountry = dfCountry.dropna()
-            dfCountry["confirmed"] = dfCountry[columns].sum(axis=1).astype(int)
-            for c in columns:
-                del dfCountry[c]
-        
-            # Step 2, recovered, also needs to be transposed
-            ddf = self.dfDeaths[self.dfDeaths["Country/Region"] == country].transpose()
-            columns = list(ddf.columns)
-            ddf["date"] = pd.to_datetime(ddf.index,errors="coerce")
-            ddf = ddf.dropna()
-            ddf["deaths"] = ddf[columns].sum(axis=1).astype(int)
-        
-            for c in columns:
-                del ddf[c]
-        
-            dfCountry = dfCountry.join(ddf,rsuffix = "_tmp")
-            del dfCountry["date_tmp"]
-        
-            # Step 3, recovered, also needs to be transposed
-            ddf = self.dfRecovered[self.dfRecovered["Country/Region"] == country].transpose()
-            columns = list(ddf.columns)
-            ddf["date"] = pd.to_datetime(ddf.index,errors="coerce")
-            ddf = ddf.dropna()
-            ddf["recovered"] = ddf[columns].sum(axis=1).astype(int)
-        
-            for c in columns:
-                del ddf[c]
-        
-            dfCountry = dfCountry.join(ddf,rsuffix = "_tmp")
-            del dfCountry["date_tmp"]
-       
-            # Cleanup to improve numerical stability, although the semantics of NaN and 0 are, of course, different.
-            # Else, scaling of axes will not work as min/max gets confused with NaN. 
-            dfCountry.replace([np.inf, -np.inf], np.nan).fillna(0.,inplace=True)
-        
-            # Some basic computations
-            dfCountry["active"] = dfCountry.confirmed-dfCountry.deaths-dfCountry.recovered
-            dfCountry["active"] = dfCountry["active"].clip(lower=0)
-            dfCountry["new_cases"] = dfCountry.confirmed.diff()
-            dfCountry["infection_rate_7"] = dfCountry[["active"]].pct_change(periods=7)
-            dfCountry["trend"] = seasonal_decompose(dfCountry[["new_cases"]].fillna(0).values,period=7).trend
-
-            # ADM0_A3 is a synonym for ISO 4166 Alpha 3
-            dfCountry["ADM0_A3"] = ADM0_A3
-            population = self.dfPopulation[self.dfPopulation.ADM0_A3==ADM0_A3].population.values[0]
-            #print("{} POPULATION {}".format(ADM0_A3,population))
-            dfCountry["active_rel"] = dfCountry["active"]/population*100000
-            dfCountry["new_cases_rel"] = dfCountry["new_cases"]/population*100000
-
-            ddfOxCGRT = self.dfOxCGRT[self.dfOxCGRT.CountryCode == ADM0_A3].copy().rename(columns={"StringencyLegacyIndexForDisplay":"stringency_index"})
-            if len(ddfOxCGRT) <= 0:
-                continue
-            ddfOxCGRT.index = pd.to_datetime(ddfOxCGRT.Date,format="%Y%m%d")
-            ddfOxCGRT = ddfOxCGRT[ddfOxCGRT.RegionCode.isnull()]
-            ddfOxCGRT = ddfOxCGRT.fillna(0)
-
-            # This step is actually only computing state changes in OxCGRT which is not used right now
-            alldata = []
-            previous_data = dict(zip(self.fields_of_interest,[0 for i in range(len(self.fields_of_interest))]))
-            previous_data["datetime"] = pd.to_datetime("2019-12-31")
-            for i,row in ddfOxCGRT.iterrows():
-                new_data = dict(zip(self.fields_of_interest,[0 for i in range(len(self.fields_of_interest))]))
-                for column in self.fields_of_interest:
-                    if row[column]:
-                        data = int(row[column])
-                    else:
-                        data = 0
-                    if column in monetary_fields:
-                        if data != 0:
-                            data = 1
-                    if previous_data[column] != data:
-                        alldata.append({"country":country,"ADM0_A3":ADM0_A3,"measure":column,"new_measure_value":data,"new":"{}#{}".format(column[:2],data),
-                                        "old_measure_value":previous_data[column],"old":"{}#{}".format(column[:2],previous_data[column]),
-                                        #"Timestamp":"{:%Y-%m-%d}".format(i),"stringency_index":row["StringencyLegacyIndexForDisplay"],
-                                        "Timestamp":"{:%Y-%m-%d}".format(i),"stringency_index":row["stringency_index"],
-                                        "id":country_number})
-                    new_data[column] = data
-                new_data["datetime"] = i
-                previous_data = new_data
-            country_number += 1
-            dfTemp = pd.DataFrame(alldata)
-            self.adfOxCGRT[country] = dfTemp
-
-            # For the monetary value fields in OxCGRT use 1 as a non-zero flag (else the heatmap gets confused by $$$$llions
-            # of support to economy and the public
-            for i,row in ddfOxCGRT.iterrows():
-                for m in monetary_fields:
-                    if row[m] != 0:
-                        ddfOxCGRT.at[i,m] = 1
-
-            # the data for the heatmap
-            dfMeasures = pd.DataFrame(ddfOxCGRT[self.fields_of_interest].stack(), columns=["level"]).reset_index().rename(columns={"Date":"date","level_1":"class"})
-            self.adfMeasures[country] = dfMeasures
-            # the numerical data
-            dfCountry = dfCountry.join(ddfOxCGRT[["stringency_index"]])
-            dfCountry = dfCountry.join(ddfOxCGRT[self.fields_of_interest])
-            # storing it in the dict of datafranes
-            self.adfCountryData[country] = dfCountry
-
-            # computing waves and "periods of calmness" using a very manual Schmitt-Trigger style detection of gradients up and down
-            all_verdicts = []
-            field = "trend"
-            THRESHOLD = 1
-            THRESHOLD_UP = 14
-            THRESHOLD_DOWN = 28
-            dfCountry.index = dfCountry["date"]
-
-            ddf = dfCountry[[field]].rolling(center=True,window=7).mean().dropna()
-            ddf["pct_change"] = ddf.pct_change()
-
-            datum = ddf[field].values[0]
-            increasing = 0
-            decreasing = 0
-            wave_no = 0
-            for i,row in ddf[1:].iterrows():
-                if row[field] > datum:
-                    if increasing == 0:
-                        start_date = i
-                    increasing += 1
-                    if increasing > 3:
-                        decreasing = 0
-                elif row[field] < datum:
-                    decreasing += 1
-                    if decreasing > 3:
-                        increasing = 0
-                    
-                if increasing == THRESHOLD_UP:
-                    wave_no += 1
-                    if len(all_verdicts)>0 and all_verdicts[-1]["kind"] == "begin":
-                        pass
-                    else:
-                        all_verdicts.append({"country":country,"date":i,"kind":"begin","wave_no":wave_no})
-                if decreasing == THRESHOLD_DOWN:
-                    if len(all_verdicts)>0 and all_verdicts[-1]["kind"] == "end":
-                        all_verdicts.pop()
-                        all_verdicts.append({"country":country,"date":i,"kind":"end","wave_no":wave_no})
-                    else:
-                        all_verdicts.append({"country":country,"date":i,"kind":"end","wave_no":wave_no})
-                datum = row[field]
-
-            if len(all_verdicts) > 0:
-                dfWaves = pd.DataFrame(all_verdicts)
-                dfWaves = dfWaves.sort_values(["country","date"])
-                self.adfWaves[country] = dfWaves
-            else:
-                self.adfWaves[country] = pd.DataFrame({"country":[],"date":[],"kind":[],"wave_no":[]})
-
-        # The data are stored in a somewhat horrifying format which I want to apologize for. This is due to the
-        # dict of dataframes idea that came from very early work which allowed for some code reuse.
-        """self.blob = {}
-        with gzip.open("data/datafile.pckld.gz","w+t") as f:
-            self.blob["data"] =base64.b64encode(pickle.dumps(self.adfCountryData,protocol=4)).decode("ascii")
-            self.blob["mapping"] = base64.b64encode(pickle.dumps(self.dfMapping,protocol=4)).decode("ascii")
-            self.blob["stringency"] = base64.b64encode(pickle.dumps(self.adfOxCGRT,protocol=4)).decode("ascii")
-            self.blob["measures"] = base64.b64encode(pickle.dumps(self.adfMeasures,protocol=4)).decode("ascii")
-            self.blob["waves"] = base64.b64encode(pickle.dumps(self.adfWaves,protocol=4)).decode("ascii")
-            self.blob["population"] = base64.b64encode(pickle.dumps(self.dfPopulation,protocol=4)).decode("ascii")
-            data = json.dumps(self.blob)
-            f.write(data)"""
+        pass
 
 
     def compute_data_status(self):
@@ -1556,11 +1248,12 @@ class GUIHealth():
         """Work in progress on how to display the countries in a relevant oder in the dropdown. Alphabetically may cause only the countries A-G to
         ever be voted on.... Here we use the relative percentage growth of infections compared to a week ago.
         """
-        score = {}
-        for country in self.country_select.options:
-            score[country] = self.adfCountryData[country].infection_rate_7.values[-1]
-        score_sorted = {k: v for k, v in sorted(score.items(), key=lambda item: item[1],reverse=True)}
-        self.country_select.options = list(score_sorted.keys())
+        ### TODO this code would not work anymore
+        #score = {}
+        #for country in self.country_select.options:
+        #    score[country] = self.adfCountryData[country].infection_rate_7.values[-1]
+        #score_sorted = {k: v for k, v in sorted(score.items(), key=lambda item: item[1],reverse=True)}
+        #self.country_select.options = list(score_sorted.keys())
         print("SORTED")
         
 
@@ -1573,16 +1266,6 @@ class GUIHealth():
             self.dfVotesContent = pd.DataFrame()
             return
         else:
-            """with gzip.open("data/datafile.pckld.gz","rt") as f:
-                data = f.read()
-                data = json.loads(data)
-                self.adfCountryData = pickle.loads(base64.b64decode(data["data"]))
-                self.dfMapping = pickle.loads(base64.b64decode(data["mapping"]))
-                self.adfOxCGRT = pickle.loads(base64.b64decode(data["stringency"]))
-                self.adfMeasures = pickle.loads(base64.b64decode(data["measures"]))
-                self.adfWaves = pickle.loads(base64.b64decode(data["waves"]))
-                self.dfPopulation = pickle.loads(base64.b64decode(data["population"]))"""
-
             conn = self.engine.connect()
 
             df = pd.read_sql("select distinct data_source from cookiecutter_case_data;",conn)
@@ -1590,35 +1273,20 @@ class GUIHealth():
             self.dataset_select.value = "Johns Hopkins global"
             print("DATASETS {}".format(self.dataset_select.options ))
 
-            #df = pd.read_sql("select distinct name,infection_rate_7 from johns_hopkins_data order by infection_rate_7 DESC NULLS LAST;",conn)
-            #df = pd.read_sql("""SELECT distinct name,infection_rate_7 FROM johns_hopkins_data AS a WHERE datetime_date = ( SELECT MAX(datetime_date) FROM johns_hopkins_data AS b ) order by infection_rate_7 DESC NULLS LAST""",conn)
             df = pd.read_sql("SELECT DISTINCT name FROM cookiecutter_case_data  WHERE data_source='Johns Hopkins global' ORDER BY name;",conn)
-            #print(df)
             self.country_select.options = list(df.name.values)
-            #self.country_select.options=sorted(self.adfCountryData.keys())
-            #self.sort_countries_by_relevance()
 
-            dfComputed_waves = pd.read_sql("SELECT * FROM cookiecutter_computed_waves_chgpoint  WHERE data_source='Johns Hopkins global'", conn)
-            dfComputed_waves_stats = pd.DataFrame(dfComputed_waves[dfComputed_waves.kind=="begin"].groupby("identifier").size()).rename(columns={0:"waves"})
-            dfComputed_waves_stats = dfComputed_waves_stats.join(pd.DataFrame(dfComputed_waves[dfComputed_waves.kind=="end"].groupby("identifier").size()).rename(columns={0:"episodes"}))
-            dfComputed_waves_stats = dfComputed_waves_stats.fillna(0)
-            dfComputed_waves_stats.episodes = dfComputed_waves_stats.episodes.astype("int")
-
-            try:
-                dfVerdicts = pd.read_sql("SELECT * FROM cookiecutter_verdicts  WHERE data_source='Johns Hopkins global'", conn)
-            except:
-                dfVerdicts = pd.DataFrame({"kind":[],"kind_counter":[],"identfier":[],"user":[]})
-            dfVerdicts_stats = pd.DataFrame(dfVerdicts[["kind","kind_counter","identfier","user"]].drop_duplicates().groupby("identfier").size()).rename(columns={0:"votes"})
-            dfVotesContent = dfVerdicts_stats.join(dfComputed_waves_stats).fillna(0)
-            dfVotesContent.waves = dfVotesContent.waves.astype("int")
-            dfVotesContent.episodes = dfVotesContent.episodes.astype("int")
+            sql_query = "SELECT name,identifier,count(CASE WHEN kind='begin' THEN kind END) as waves, count(CASE WHEN kind='end' THEN kind END) as episodes, count(*) from cookiecutter_computed_waves_chgpoint GROUP BY name,cookiecutter_computed_waves_chgpoint.identifier"
+            dfWaves = pd.read_sql(sql_query,conn)
+            sql_query = "SELECT count(r.identifier) as votes,r.identifier FROM (SELECT identifier FROM cookiecutter_verdicts GROUP BY vote_id,identifier) as r GROUP BY r.identifier;"
+            dfVotes = pd.read_sql(sql_query,conn)
+            dfVotesContent = dfWaves.merge(dfVotes,on="identifier",how="outer").fillna(0)
+            dfVotesContent.votes = dfVotesContent.votes.astype(int)
             dfVotesContent["need_vote"] = dfVotesContent.waves+dfVotesContent.episodes > dfVotesContent.votes
+            dfVotesContent = dfVotesContent.sort_values("count",ascending=False)
 
-            dfMapping = pd.read_sql("SELECT DISTINCT name,identifier from cookiecutter_case_data  WHERE data_source='Johns Hopkins global'",conn,index_col="identifier")
-            conn.close()
 
             if len(dfVotesContent)>0:
-                dfVotesContent = dfVotesContent.join(dfMapping)
                 self.cds_votes.data = {"name":dfVotesContent.name.values,
                     "waves":dfVotesContent.waves.values,
                     "episodes":dfVotesContent.episodes.values,
@@ -1683,8 +1351,10 @@ class GUIEconomy():
         category = self.category_select.value
         key = new
         conn = self.engine.connect()
-        df = pd.read_sql("SELECT datetime_date,parameter_value FROM economic_indicators WHERE category='{}' and parameter_name='{}' ORDER BY datetime_date;".format(category,key),conn)
+        sql_query = "SELECT datetime_date,parameter_value FROM economic_indicators WHERE category='{}' and parameter_name='{}' ORDER BY datetime_date;".format(category,key)
+        df = pd.read_sql(sql_query,conn)
         print("CHANGE_KEY from '{}' to '{}'".format(old,new))
+        print(sql_query)
         #print(df)
         self.cds_proxy_data.data = {"datetime":df["datetime_date"].values,"value":df["parameter_value"].values}
         self.p_values.title.text = "{} - {}".format(category,key)
