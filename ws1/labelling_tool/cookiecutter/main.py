@@ -609,6 +609,7 @@ class GUIHealth():
         df["identifier"] = self.identifier
         df["vote_datetime"] = datetime.datetime.now()
         df["vote_id"] = vote_id
+        print(df)
         df.to_sql("cookiecutter_verdicts", conn, if_exists='append', dtype={"from_dt":sqlalchemy.types.Date,
                                                                          "to_dt":sqlalchemy.types.Date,
                                                                          "datetime_date":sqlalchemy.types.DateTime,
@@ -693,12 +694,13 @@ class GUIHealth():
             dfData["datetime_date"] = dfRubbish.datetime_date
         dfData.index.name = None
 
-        sql_query = "SELECT population FROM un_population_data_2020_estimates WHERE adm0_a3='{}'".format(dfData.identifier.unique()[0])
+        sql_query = "SELECT population FROM population_data WHERE identifier='{}'".format(dfData.identifier.unique()[0])
         try:
             population = int(conn.execute(sql_query).fetchone()[0])
             dfData['new_cases_rel'] = dfData['new_cases']/population
         except:
             dfData['new_cases_rel'] = -1.
+            print("NO POPULATION DATA FOR identifer ({}) name ({})".format(dfData.identifier.unique()[0],new))
 
         newdata = {}
         #print(self.cds.data.keys())
@@ -715,7 +717,7 @@ class GUIHealth():
                 if have_OxCGRT:
                     newdata[column] = np.nan_to_num(dfData[column])
                 else:
-                    newdata[column] = [[] for i in range(len(dfData["new_cases"]))]
+                    newdata[column] = [-1 for i in range(len(dfData["new_cases"]))]
         self.cds.data = newdata
         self.scenario_number.value = 1
         self.scenario_type.active = 0
@@ -815,6 +817,9 @@ class GUIHealth():
             ddf["y"] = [0.5 for i in ddf.index]
             self.cds_votes_ranges.data = {"from":ddf["from"].values,"to":ddf.to.values,"y":ddf.y.values,
                                             "height":ddf.height.values,"color":ddf.color.values}
+        else:
+            self.cds_votes_ranges.data = {"from":[],"to":[],"y":[],
+                                            "height":[],"color":[]}
 
         
         ddf = dfData[["new_cases","datetime_date"]].copy().fillna(0)
@@ -1139,7 +1144,7 @@ class GUIHealth():
             #print(dfMapping)
             conn.close()
 
-        if not self.engine.dialect.has_table(self.engine,"un_population_data_2020_estimates"):
+        """if not self.engine.dialect.has_table(self.engine,"un_population_data_2020_estimates"):
             conn = self.engine.connect()
             dfPopulationRaw = pd.read_excel("https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/EXCEL_FILES/1_Population/WPP2019_POP_F01_1_TOTAL_POPULATION_BOTH_SEXES.xlsx",
                             sheet_name="ESTIMATES",skiprows=16,usecols="E,BZ")
@@ -1164,7 +1169,7 @@ class GUIHealth():
                                                                                   'name':sqlalchemy.types.String(150),
                                                                                   'ISO_3_code_i':sqlalchemy.types.Integer},index=False)
             #print(dfPopulation)
-            conn.close()
+            conn.close()"""
 
 
 
@@ -1496,7 +1501,8 @@ class GUIEconomy():
         self.p_values = figure(plot_width=1200, plot_height=400,x_axis_type='datetime',title="",
             y_range=(0,1.05),
             tools="pan,box_zoom,box_select,reset", #active_drag="point_draw",
-            output_backend="webgl")
+            #output_backend="webgl"
+            )
         self.p_values.extra_y_ranges = {"value":Range1d()}
         self.p_values = self.theme.apply_theme_defaults(self.p_values)
         self.p_values.background_fill_color = "#ffffff"
