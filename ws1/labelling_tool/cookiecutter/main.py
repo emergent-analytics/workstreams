@@ -879,9 +879,9 @@ class GUIHealth():
         conn = self.engine.connect()
         df = pd.read_sql("SELECT DISTINCT data_source FROM cookiecutter_case_data",conn)
         conn.close()
-        self.dataset_select=Select(options=sorted(df.data_source.values),width=200)
+        self.dataset_select=Select(options=sorted(df.data_source.values),width=250)
         self.dataset_select.on_change("value",self.change_dataset)
-        self.country_select = Select(options=[""],width=200)
+        self.country_select = Select(options=[""],width=250)
         self.country_select.on_change("value",self.change_country)
         self.scenario_name = TextInput(value="country wave 2")
         self.scenario_type_label = Paragraph(text="Select Type")
@@ -1110,10 +1110,19 @@ class GUIHealth():
 
         self.user_id = TextInput(value="nobody@{}".format(socket.gethostname()),title="Name to save your results")
 
+        self.help_text = Div(text="""<H3>How to use this tool</H3>
+            Select a dataset from the dropdowns to browse infection numbers by country (or state). The trend is a 7 days de-seasoned indicator computed by this toolset.
+            Stringcency indices are from the <a href="https://github.com/OxCGRT/covid-policy-tracker" style="color:#DDDDDD;">Oxford Covid-19 Government Response Tracker (OxCGRT)</a>.
+            Gumbel wave fits are based on work from <a href="https://gitlab.com/dzwietering" style="color:#DDDDDD;">Damiaan Zwietering</a>,  see also
+            <a href="https://gitlab.com/dzwietering/corona/-/tree/master/pydata" style="color:#DDDDDD;">https://gitlab.com/dzwietering/corona/-/tree/master/pydata</a>.
+            The histogram and heatmap data are populated based on your votes. Refer to <a href="https://github.com/emergent-analytics/workstreams" style="color:#DDDDDD;">emergent-analytics 
+            workstreams github repository</a> for license terms, and further documentation.
+            """)
+
         # The return value is a row/column/widget array that defines the arrangement of the various elements.
         return(row([column([self.progress_bar,
                             row([self.blank,
-                                self.refresh_data,
+                                #self.refresh_data,
                                 self.dataset_select,
                                 self.country_select,
                                 self.scenario_type_label,
@@ -1130,7 +1139,8 @@ class GUIHealth():
                                 self.p_histogram_wave,self.p_histogram_calm,self.p_duration_heatmap]),
                         ]),
                     column([self.user_id,
-                        self.voting_table]),
+                        self.voting_table,
+                        self.help_text]),
                     ]))
 
 
@@ -1369,11 +1379,12 @@ class GUIEconomy():
         self.p_values.extra_y_ranges["value"].start = df["parameter_value"].min()-value_range*0.05
         self.p_values.extra_y_ranges["value"].end = df["parameter_value"].max()+value_range*0.05
         self.p_values.yaxis[1].axis_label = new
-        df = pd.read_sql("SELECT DISTINCT explanation FROM economic_indicators WHERE category='{}' and parameter_name='{}';".format(category,key),conn)
+        df = pd.read_sql("SELECT DISTINCT explanation,explanation_text FROM economic_indicators WHERE category='{}' and parameter_name='{}';".format(category,key),conn)
         conn.close()
         url_shown = df["explanation"].values[0]
         url = "https://translate.google.com/translate?hl=en&sl=auto&tl=en&u={}".format(urllib.parse.quote_plus(url_shown))
         self.explanation.text="<H1>{}</H1><H2>{}</H2>See <A HREF=\"{}\" style=\"color:#DDDDDD;\">{}</A> for more details".format(category,key,url,url_shown)
+        self.explanation_text.text = df["explanation_text"].values[0]
 
 
     def get_keys(self,category=""):
@@ -1543,6 +1554,7 @@ class GUIEconomy():
         self.save_scenario.on_event(ButtonClick, self.save_scenario_callback)
 
         self.explanation = Div(text="<H2>Explanation of dataset</H2>Select a category and parameter. You can draw an approximation using the mouse.")
+        self.explanation_text = Div(text="<H2>Explanation of dataset</H2>Select a category and parameter. You can draw an approximation using the mouse.")
 
         self.clear_drawing = Button(label="Clear",disabled=True)
         self.clear_drawing.on_event(ButtonClick, self.clear_drawing_callback)
@@ -1558,11 +1570,11 @@ class GUIEconomy():
         self.load_data()
 
         return row([column([self.heading,
-                    row([self.category_select,self.key_select,self.start_date,self.end_date]),
+                    row([self.category_select,self.key_select]), #self.start_date,self.end_date]),
                     row([self.p_values]),
                     row([self.proxy_table,
                         column([self.clear_drawing,self.delete_selected_point])])]),            
-                    column([self.user_id,self.scenario_region,self.scenario_sector,self.scenario_name,self.save_scenario,self.explanation])])
+                    column([self.user_id,self.scenario_region,self.scenario_sector,self.scenario_name,self.save_scenario,self.explanation,self.explanation_text])])
 
 
 # just to be safe

@@ -1,14 +1,16 @@
+---this file is under review---
+
 # CookieCutter
 
-CookieCutter tool to select from (currently) [Johns Hokpins](https://github.com/CSSEGISandData/COVID-19) and 
+CookieCutter tool to select from various sources and 
 [Oxford Covid-19 Government Response Tracker (OxCGRT)](https://github.com/OxCGRT/covid-policy-tracker) in order
 to be able to understand compare COVID-19 infection waves and periods of quiet together with changes
-to country wide policies.
+to country wide policies. In addition, a second tab provides the ability to model economic shocks to the economy by overlaying a data editor with reference data sets.
 
 This tool has been written very fast without too much consideration on code quality or maintainability,
 as a Minimum Viable Product to understand the features actually required to make such a tool useful.
 
-Its contains a crude detection of infection wave(s) and periods of quiet, based on continually growing or decresing 
+Its contains a crude detection of infection wave(s) and periods of quiet, based on continually growing or decreasing 
 (and levelling off) of new reported cases of infection data.
 
 The author understands there are other, country level data sources with at times higher quality, definitely
@@ -22,7 +24,7 @@ it is part of any [anaconda distribution](https://www.anaconda.com/products/indi
 [`statsmodels`](https://pypi.org/project/statsmodels/) installed. In addition to that, we need the amazing 
 [pycountry](https://pypi.org/project/pycountry/) package installed, which is a perfect resource for country name
 and ISO country code mapping, and, last but not least, a library such as [xlrd](https://pypi.org/project/xlrd/) to
-read the United Nations population datafile with forecasted numbers for 2020.
+read the United Nations population datafile with forecasted numbers for 2020. We actually recommend to run the docker image as we also need the [sklearn-contrib-py-earth](https://pypi.org/project/sklearn-contrib-py-earth/) package which can be a challenge to install.
 
 ## Running
 
@@ -35,11 +37,7 @@ then, from a web browser, enter
 http://<machine_name>:5006/cookiecutter
 ```
 
-At the moment, the tool will download also rather static data such as the UN population table, which is consuming
-unnecessary bandwidth and resources. Also, if URLs change, it would not revert to an existing data source.
-
-Migrating to a (No)SQL datastore or persistence approach would be the right thing to do, but given the limited useful
-time for this tool, effort has been spent on the UI and its functionality.
+For standalone mode, you will need to specify a SQLalchemy sql database for persistence, sqlite3 could be an option, too.
 
 ## Docker
 
@@ -66,6 +64,12 @@ PUBLIC_WEBSERVER_PORT=8080
 
 See [the data files description)[#data-files] at the end of this document.
 
+The container image also ships with an installation of postgres to persist data. We map the postgres port to 15432 by default. You can specify another database backend via a config variable using SQLalchemy style connect strings, note the image only has drivers for postgres and db2 at the moment.
+
+## Helper Notebooks
+
+The folder helper_notebooks contain jupyter notebooks which are used to download data. We deliberately removed download functionality from the tool as some of the web data sources may cease to exist over time, so users would get notified and could edit the notebooks as required.
+
 ## UI
 
 ![Screenshot](Screenshot1.JPG)
@@ -77,9 +81,7 @@ UI Elements are
   app for the first time, press "Load Data". When running locally you will see a list of countries as their associated data are preprocessed.
   TODO: Provide a feedback/reload the page as the docker variant does not provide user feedback except the first dataset
   being displayed (see bottom screenshot for initial screen)
-* "Load Data" downloads the data from the github repos
-* The dropdown box allows the selection of countries, it is sorted by the percentage increase of new cases, i.e. countries with high
- infection growth rates should be at the top. It is still possible to type the desired country name when the dropdown widget is seletced
+* The dropdown boxes allow the selection of data sets and countries
 * A radio button and Occurence number spinner to label the selections as "Wave" or a period of "Calm"ness, and number them. The author
   uses Wave1-Calm1-Wave2 etc, but this is merely a way to structure one's data
 * A save button which becomes active when the user made a selection
@@ -87,6 +89,7 @@ UI Elements are
  active cases line, for the selected country
 * the center time series shows the ["Stringency Index for Display" value](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md)
 * the grey heatmap details [which measures were taken](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md)
+* the wave data use the algorithms developed by D. Zwietering [here](https://pydata.org/eindhoven2020/schedule/presentation/15/building-a-coronaradar/)
 * the band below the grey heatmap shows previous labelling data (aka Votes). Deletion of previous votes needs to be done via the file system.
   The height of the bands is randomly chosen and has no further meaning.
 * a text entry field that allows for capturing a user identity, this is useful if a team of people are asked to label the data
@@ -97,46 +100,52 @@ UI Elements are
 
 ![Screenshot select episode](Screenshot2.JPG)
 
-Selection of an episode (Australia WAVE 1) and naming/classifying it (see the selections of the radio buttons).
+Selection of an episode (Israel WAVE 2) and naming/classifying it (see the selections of the radio buttons).
 
 
 ![Screenshot episode saved](Screenshot3.JPG)
 
-Saving a selected episode, in this case, Australia WAVE 2. After pressing "Save" the status bar will display the filename,
-which will look like
-```
-BGR.Bulgaria.Wave.1.20200320.20200527.nobody.csv
-```
-which is a full stop separated field with the following information
+Saving a selected episode, in this case, Australia WAVE 2. After pressing "Save" the status bar will display the table the vote is saved to, together with a wave_id.
 
-|Field No|Meaning                          |
-|--------|---------------------------------|
-| 0      | ISO 3166-1 alpha-3 country code |
-| 1      | [Country name](https://schema.org/Country), note this may contain blank characters |
-| 2      | Kind of episode, currently `Wave|Calm`, may be extended to `Onset` so that new waves can be captured |
-| 3      | running number of episode, the author uses Wave 1, Calm 1, Wave 2, but there is no semantics to the number other than discriminating two waves |
-| 4      | starting date of the selected episode YYYYMMDD |
-| 5      | end date of the selected episode YYYYMMDD |
-| 6      | user name as entered, this will be populated with `nobody@<machine_name>` and can be edited. Used to allow multiple votes if deemed useful |
+| Column Name | Description |
+|---------------------------|---------------------------|
+| c1_school closing | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| c2_workplace closing | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| c3_cancel public events | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| c4_restrictions on gatherings | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| c6_stay at home requirements | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| c7_restrictions on internal movement | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| c8_international travel controls | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| e1_income support | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| e2_debt/contract relief | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| e3_fiscal measures | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| e4_international support | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| h1_public information campaigns | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| h2_testing policy | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| h3_contact tracing | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| h4_emergency investment in healthcare | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| h5_investment in vaccines | OxCGRT flag [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| datetime_date | datetime of selected data point(s) |
+| new_cases | number of new cases reported at that datetime for the selected country from the selected dataset |
+| new_cases_rel | number of new cases reported divided by population (in 100000) at that datetime for the selected country from the selected dataset |
+| trend | trend for new cases reported, 7 day seasonality removed to cater for weekend lack of data |
+| stringencyindex | OxCGRT StringencyIndexForDisplay [Codebook](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) for selected time range |
+| rel_peak_new_cases | max of new_cases_rel |
+| kind | one of "wave" or "calm", extension to "onset" under consideration to mark up initial waves |
+| kind_counter | number as entered on the UI |
+| from_dt | selection range from datetime |
+| to_dt | selection range to datetime |
+| duration | in days |
+| user | user name as entered in the UI |
+| identifier | ISO 3166-1 short three character country code, or a synthesis of two character country and two character postal/ISO code for state (e.g. US-NC, DE-BY) |
+| vote_datetime | datetime the vote was made |
+| vote_id | running number of vote |
 
 
-![Screenshot starting from scratch](Screenshot4.JPG)
-
-Screenshot when starting from scratch. Press "Load Data" and follow the screen outputs when running locally, or wait for the first dataset
-for Germany to be displayed.
 
 ## Data Files
 
-The data folder contains three classes of files:-
-* one or more csv files which contain the selected data for the eposides. Apologies for deferring a description to a later date,
-  it is using pieces of [OxCGRT data](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md),
-  fused [Johns Hopkins Data](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data), and some [derived 
-  data partially described in some very old work](https://klausgpaul.github.io/)
-* a `votes.pickle` file which contains an aggregation of the above csv files, using [python pickle protocol 3](https://docs.python.org/3/library/pickle.html#data-stream-format),
-  some python 3.8 adopters may have encountered that protocol issue...
-* a `datafile.pckld.gz` file which is probably too much of a masterpiece of storing complex data, it is a compressed,
-  dict that contains base64 encoded pickled data, which renders it very incompatible between machines and pandas etc. versions
-  This project reused data structres from another [rapidly developed](https://got-data-for.me) COVID-19 related dashboard.
+* Documentation will be provided for the dockerized database.
 
 ## Disclaimer
 
