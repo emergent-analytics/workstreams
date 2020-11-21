@@ -6,17 +6,17 @@
 # Notice to users: This is a Minimum Viable Product designed to elicit user requirements. The code
 # quality is write-once, reuse only if deemed necessary
 #
-from bokeh.models import Button, Plot, TextInput, Legend
+from bokeh.models import Button, Plot, TextInput, Legend, TextAreaInput
 from bokeh.palettes import RdYlBu3, RdYlBu11, Turbo256, Plasma256, Colorblind8
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh.models.widgets import Select
 from bokeh.layouts import row, column, layout
 from bokeh.models import Range1d, HoverTool, LinearAxis, Label, NumeralTickFormatter, PrintfTickFormatter, Div, LinearColorMapper, ColorBar, BasicTicker
 from bokeh.models import BoxAnnotation, DataTable, DateFormatter, TableColumn, RadioGroup, Spinner, Paragraph, RadioButtonGroup
-from bokeh.models import Panel, Tabs, DatePicker, PointDrawTool, DataTable, TableColumn, NumberFormatter, DataRange1d
+from bokeh.models import Panel, Tabs, DatePicker, PointDrawTool, DataTable, TableColumn, NumberFormatter, DataRange1d, MultiChoice
 from bokeh.palettes import Category20, Category10, RdYlBu3, Greys4
 from bokeh.client.session import push_session, show_session
-from bokeh.events import SelectionGeometry, ButtonClick
+from bokeh.events import SelectionGeometry, ButtonClick, Press, PlotEvent
 from bokeh.transform import transform
 from sqlalchemy import create_engine
 from bokeh.transform import linear_cmap
@@ -491,6 +491,7 @@ class GUIHealth():
         except:
             self.max_gumbel_waves = 25
         self.dataset_selected = ""
+        self.gumbel_visibility_lock = False # interlock to avoid ping-pong of callbacks
 
 
     def refresh_data_callback(self,event):
@@ -536,6 +537,19 @@ class GUIHealth():
                 selection.append(i)
             i += 1
         self.cds_OxCGRTHeatmap.selected.indices = selection
+
+
+    def gumbel_choices_callback(self,attr,old,new):
+        removed = list(set(old)-set(new))
+        added = list(set(new)-set(old))
+        self.gumbel_visibility_lock = True # interlock to avoid ping-pong of callbacks
+        for v in removed:
+            idx = int(v)
+            self.gumbel_wave_renderers[idx].visible = False
+        for v in added:
+            idx = int(v)
+            self.gumbel_wave_renderers[idx].visible = True
+        self.gumbel_visibility_lock = False # interlock to avoid ping-pong of callbacks
 
 
     def compute_metrics(self,bins=25):
@@ -587,7 +601,7 @@ class GUIHealth():
         # Save selection
         conn = self.engine.connect()
         try:
-            result = conn.execute("select max(vote_id) from cookiecutter_verdicts")
+            result = conn.execute("select ifnull(max(vote_id),0) from cookiecutter_verdicts")
             vote_id = result.fetchone()[0]+1
             print("CANNOT RETRIEVE VOTE_ID")
         except:
@@ -604,19 +618,20 @@ class GUIHealth():
         df["from_dt"] = df.datetime_date.min()
         df["to_dt"] = df.datetime_date.max()
         df["duration"] = (pd.to_datetime(df.datetime_date.max())-pd.to_datetime(df.datetime_date.min())).total_seconds()/86400
-        df["user"] = self.user_id.value
+        df["user"] = self.user_id.value ### change to user_name
         #ADM0_A3 = self.adm0_a3 #dfMapping[self.dfMapping.name == self.country_select.value].adm0_a3.values[0]
         df["identifier"] = self.identifier
         df["vote_datetime"] = datetime.datetime.now()
         df["vote_id"] = vote_id
-        print(df)
+        df.datetime_date = pd.to_datetime(df.datetime_date)
+        print(df.datetime_date)
         df.to_sql("cookiecutter_verdicts", conn, if_exists='append', dtype={"from_dt":sqlalchemy.types.Date,
                                                                          "to_dt":sqlalchemy.types.Date,
                                                                          "datetime_date":sqlalchemy.types.DateTime,
                                                                          "vote_datetime":sqlalchemy.types.DateTime,
                                                                          "kind":sqlalchemy.types.String(10),
                                                                          "user":sqlalchemy.types.String(50),
-                                                                         "adm0_a3":sqlalchemy.types.String(10)},index=False)
+                                                                         "identifier":sqlalchemy.types.String(10)},index=False)
         # reset selection
         self.cds.selected.indices = []
         # update message field
@@ -643,7 +658,6 @@ class GUIHealth():
         sql_query = "SELECT DISTINCT name FROM COOKIECUTTER_CASE_DATA WHERE data_source='{}';".format(new)
         conn = self.engine.connect()
         df = pd.read_sql(sql_query,conn)
-        print("CHANGE DATASET NEW country names {}".format(df))
         self.country_select.options = sorted(df["name"].values)
         if "Germany" in df["name"].values:
             self.country_select.value = "Germany"
@@ -651,9 +665,26 @@ class GUIHealth():
             self.country_select.value = "US-NC North Carolina"
         else:
             self.country_select.value = sorted(df["name"].values)[0]
-        #self.dataset_select.options = ["Johns Hopkins global","Johns Hopkins US States","ECDC","D RKI"]
-        #self.dataset_select.values = "Johns Hopkins global"
-        #self.dataset_selected = "Johns Hopkins global"
+
+
+    def gumbel_plot_callback(self,attr,old,new):
+        if self.gumbel_visibility_lock: # interlock to avoid ping-pong of callbacks
+            return 
+        num_datapoints = len(self.cds_gumbel_waves.data["summed_waves"])
+        summed_data = [0. for i in range(num_datapoints)]
+        chosen_waves = []
+
+        i = 0
+        for r in self.gumbel_wave_renderers:
+            wave = "wave_{:02d}".format(i)
+            if r.visible:
+                chosen_waves.append("{:02d}".format(i))
+                for j in range(num_datapoints):
+                    summed_data[j] += self.cds_gumbel_waves.data[wave][j]
+            i += 1
+
+        self.gumbel_choices.value = chosen_waves
+        self.cds_gumbel_waves.data["summed_waves"] = summed_data
 
 
     def change_country(self,attr,old,new):
@@ -753,8 +784,6 @@ class GUIHealth():
             b.fill_color = "#F1F1F1"
 
         # each background box is a BoxAnnotation. Loop through the episode data and color/display them as required.
-        ############
-        #dfWaves = self.adfWaves[new]
         conn = self.engine.connect()
         dfWaves = pd.read_sql("SELECT * from cookiecutter_computed_waves_chgpoint WHERE name='{}'".format(new),conn)
         conn.close()
@@ -827,9 +856,12 @@ class GUIHealth():
         #ddf.index.name = None
 
         all_waves = compute_gumbel_waves(ddf,maxwaves=self.max_gumbel_waves)
+        num_waves = len(all_waves)
+        self.gumbel_choices.options = ["{:02d}".format(i) for i in range(num_waves)]
+        self.gumbel_choices.value = ["{:02d}".format(i) for i in range(num_waves)]
 
         newdata = {}#self.cds_gumbel_waves.data
-        empty_list = [None for i in range(len(ddf))]
+        empty_list = [0 for i in range(len(ddf))]
         for k,v in self.cds_gumbel_waves.data.items():
             newdata[k] = empty_list
         newdata["summed_waves"] = [0 for i in range(len(ddf))]
@@ -877,7 +909,7 @@ class GUIHealth():
         self.refresh_data = Button(label="Load Data",disabled=False,width=100)
         self.refresh_data.on_event(ButtonClick, self.refresh_data_callback)
         conn = self.engine.connect()
-        df = pd.read_sql("SELECT DISTINCT data_source FROM cookiecutter_case_data",conn)
+        df = pd.read_sql("SELECT DISTINCT data_source FROM cookiecutter_case_data",conn).dropna()
         conn.close()
         self.dataset_select=Select(options=sorted(df.data_source.values),width=250)
         self.dataset_select.on_change("value",self.change_dataset)
@@ -969,8 +1001,9 @@ class GUIHealth():
         tooltips_top = [("datetime_date","@date{%Y-%m-%d}"),
                     ("New Cases","@new_cases{0}"),
                     ("New Cases Trend","@trend{0}"),
-                    ("Active Cases","@active{0}"),
-                    ("Deaths","@deaths{0.00}"),]
+                    #("Active Cases","@active{0}"),
+                    #("Deaths","@deaths{0.00}"),
+                    ]
         hover_top = HoverTool(tooltips = tooltips_top,
                           formatters={
                               "@date": "datetime"
@@ -1035,6 +1068,9 @@ class GUIHealth():
         self.p_gumbel.add_layout(Legend(items=[("trend", [r0]),
             ("summed gumbel waves", [r1])],location="top_left"))
 
+        self.gumbel_choices = MultiChoice(value=[],options=[],title="keep waves")
+        self.gumbel_choices.on_change("value",self.gumbel_choices_callback)
+
         #r = [None for i in range(self.max_gumbel_waves)]
         legend_items = []
         stack_y = []
@@ -1042,12 +1078,15 @@ class GUIHealth():
         for i in range(self.max_gumbel_waves):
             stack_y.append("wave_{:02d}".format(i))
             colors.append(Colorblind8[i%len(Colorblind8)])
-        self.gumbel_wave_renderers = self.p_gumbel.varea_stack(stack_y,x="datetime",source=self.cds_gumbel_waves,color=colors,fill_alpha=0.25)
+        self.gumbel_wave_renderers = self.p_gumbel.varea_stack(stack_y,x="datetime",source=self.cds_gumbel_waves,color=colors,fill_alpha=0.5)
         for i in range(self.max_gumbel_waves):
             legend_items.append(("{:02d}".format(i), [self.gumbel_wave_renderers[i]]))
-        self.p_gumbel.add_layout(Legend(items=legend_items,click_policy="hide",orientation="horizontal",label_text_font_size="6pt",
+        self.p_gumbel_legend = Legend(items=legend_items,click_policy="hide",orientation="horizontal",label_text_font_size="6pt",
             label_height=1,label_standoff=1,label_text_line_height=1,margin=1,spacing=0,
-            background_fill_color="#252425",label_text_color="#FFFFFF",padding=0),"below")
+            background_fill_color="#252425",label_text_color="#FFFFFF",padding=0)
+        self.p_gumbel.add_layout(self.p_gumbel_legend,"below")
+        for renderer in self.gumbel_wave_renderers:
+            renderer.on_change('visible',self.gumbel_plot_callback)
 
 
         for i in range(len(self.wave_boxes)):
@@ -1099,6 +1138,7 @@ class GUIHealth():
         self.voting_table = self.theme.apply_theme_defaults(self.voting_table)
         self.p_votes = self.theme.apply_theme_defaults(self.p_votes)
         self.p_votes.background_fill_color = "#ffffff"
+        self.gumbel_choices = self.theme.apply_theme_defaults(self.gumbel_choices)
 
 
         self.p_histogram_wave = self.theme.apply_theme_defaults(self.p_histogram_wave)
@@ -1140,6 +1180,7 @@ class GUIHealth():
                         ]),
                     column([self.user_id,
                         self.voting_table,
+                        self.gumbel_choices,
                         self.help_text]),
                     ]))
 
@@ -1293,11 +1334,16 @@ class GUIHealth():
 
             sql_query = "SELECT name,identifier,count(CASE WHEN kind='begin' THEN kind END) as waves, count(CASE WHEN kind='end' THEN kind END) as episodes, count(*) from cookiecutter_computed_waves_chgpoint GROUP BY name,cookiecutter_computed_waves_chgpoint.identifier"
             dfWaves = pd.read_sql(sql_query,conn)
-            sql_query = "SELECT count(r.identifier) as votes,r.identifier FROM (SELECT identifier FROM cookiecutter_verdicts GROUP BY vote_id,identifier) as r GROUP BY r.identifier;"
-            dfVotes = pd.read_sql(sql_query,conn)
+
+            try:
+                sql_query = "SELECT count(r.identifier) as votes,r.identifier FROM (SELECT identifier FROM cookiecutter_verdicts GROUP BY vote_id,identifier) as r GROUP BY r.identifier;"
+                dfVotes = pd.read_sql(sql_query,conn)
+            except:
+                dfVotes=pd.DataFrame({"identifier":[],"votes":[],"count":[]})
             dfVotesContent = dfWaves.merge(dfVotes,on="identifier",how="outer").fillna(0)
             dfVotesContent.votes = dfVotesContent.votes.astype(int)
             dfVotesContent["need_vote"] = dfVotesContent.waves+dfVotesContent.episodes > dfVotesContent.votes
+            dfVotesContent["count"] = dfVotesContent.waves+dfVotesContent.episodes 
             dfVotesContent = dfVotesContent.sort_values("count",ascending=False)
 
 
@@ -1545,9 +1591,12 @@ class GUIEconomy():
         self.proxy_table = DataTable(source=self.cds_drawn_polyline, columns=columns, editable=True, height=500,selectable='checkbox',index_position=None)
 
         self.user_id = TextInput(value="nobody@{}".format(socket.gethostname()),title="Name to save your results")
-        self.scenario_region = Select(title="Region the scenario applies to",options=["Global","UK","Germany"])
-        self.scenario_sector = Select(title="Sector the scenario applies to",options=["Air Transport","Hotel"])
-        self.scenario_name = TextInput(title="Title to save your scenario")
+        regions = ["Global","UK","Germany"]
+        self.scenario_region = MultiChoice(title="Region the scenario applies to",options=regions,value=regions)
+        sectors = ["Air Transport","Hotel"]
+        self.scenario_sector = MultiChoice(title="Sector the scenario applies to",options=sectors,value=sectors)
+        dummy_text = "Scenario {:%Y-%m-%d %H:%M} using ".format(datetime.datetime.now()) 
+        self.scenario_name = TextAreaInput(title="Title to save your scenario",value=dummy_text,rows=4)
         self.scenario_name.on_change("value_input",self.scenario_name_callback) # Yay! This is not really documented anywhere
 
         self.save_scenario = Button(label="Save Scenario",disabled=True)
