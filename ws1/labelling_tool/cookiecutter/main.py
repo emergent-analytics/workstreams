@@ -6,7 +6,7 @@
 # Notice to users: This is a Minimum Viable Product designed to elicit user requirements. The code
 # quality is write-once, reuse only if deemed necessary
 #
-from bokeh.models import Button, Plot, TextInput, Legend, TextAreaInput
+from bokeh.models import Button, Plot, TextInput, Legend, TextAreaInput, FactorRange
 from bokeh.palettes import RdYlBu3, RdYlBu11, Turbo256, Plasma256, Colorblind8
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh.models.widgets import Select
@@ -549,6 +549,16 @@ class GUIHealth():
         for v in added:
             idx = int(v)
             self.gumbel_wave_renderers[idx].visible = True
+
+        num_datapoints = len(self.cds_gumbel_waves.data["summed_waves"])
+        summed_data = [0. for i in range(num_datapoints)]
+        chosen_waves = []
+        for w in new:
+            wave = "wave_{}".format(w)
+            for j in range(num_datapoints):
+                summed_data[j] += self.cds_gumbel_waves.data[wave][j]
+        self.cds_gumbel_waves.data["summed_waves"] = summed_data
+
         self.gumbel_visibility_lock = False # interlock to avoid ping-pong of callbacks
 
 
@@ -624,7 +634,36 @@ class GUIHealth():
         df["vote_datetime"] = datetime.datetime.now()
         df["vote_id"] = vote_id
         df.datetime_date = pd.to_datetime(df.datetime_date)
-        print(df.datetime_date)
+        #print(df.datetime_date)
+
+        ddf = self.cds_gumbel_waves.to_df()
+        ddf = ddf[(df.datetime_date.min() <= ddf.datetime)&(ddf.datetime <= df.datetime_date.max())]
+        ddf.datetime = pd.to_datetime(ddf.datetime)
+        i = 0
+        for r in self.gumbel_wave_renderers:
+            if not r.visible:
+                ddf["wave_{:02d}".format(i)] = -1
+            elif ddf["wave_{:02d}".format(i)].sum() == 0:
+                del ddf["wave_{:02d}".format(i)]
+            i += 1
+        df = df.merge(ddf,left_on="datetime_date",right_on="datetime").rename(columns={"trend_x":"trend"})
+        del df["trend_y"]
+        del df["datetime"]
+        
+        # amend schema if necessary
+        meta = sqlalchemy.MetaData()
+        schema = sqlalchemy.Table("cookiecutter_verdicts",meta, autoload=True, autoload_with=conn)
+        existing_wave_columns = []
+        for c in schema.columns:
+            if "wave" in c.name.lower():
+                existing_wave_columns.append(c.name.lower())
+        for c in df.columns:
+            if "wave" in c:
+                if c not in existing_wave_columns:
+                    print("ALTER TABLE cookiecutter_verdicts ADD COLUMN {} FLOAT;".format(c))
+                    conn.execute("ALTER TABLE cookiecutter_verdicts ADD COLUMN {} FLOAT;".format(c))
+
+
         df.to_sql("cookiecutter_verdicts", conn, if_exists='append', dtype={"from_dt":sqlalchemy.types.Date,
                                                                          "to_dt":sqlalchemy.types.Date,
                                                                          "datetime_date":sqlalchemy.types.DateTime,
@@ -632,6 +671,7 @@ class GUIHealth():
                                                                          "kind":sqlalchemy.types.String(10),
                                                                          "user":sqlalchemy.types.String(50),
                                                                          "identifier":sqlalchemy.types.String(10)},index=False)
+        conn.close()
         # reset selection
         self.cds.selected.indices = []
         # update message field
@@ -645,13 +685,8 @@ class GUIHealth():
         #self.dfVotesContent[self.dfVotesContent.infection_rate_7 > 1000.] = 0.
         ##self.dfVotesContent["filename"] = filename
         ##self.dfVotesContent.to_pickle("./data/votes.pickle",protocol=3)
-        conn.close()
         #print(self.dfVotesContent)
         self.compute_metrics()
-        i = 0
-        for r in self.gumbel_wave_renderers:
-            print("Wave {} visible {}".format(i,r.visible))
-            i += 1
 
 
     def change_dataset(self,attr,old,new):
@@ -832,7 +867,6 @@ class GUIHealth():
             ddf = pd.read_sql("select DISTINCT from_dt,to_dt,user,kind,vote_id,rel_peak_new_cases,duration from cookiecutter_verdicts WHERE identifier='{}'".format(self.identifier),conn)
         except:
             ddf = pd.DataFrame()
-        conn.close()
         #if len(dfVotesContent)>0:
         if len(ddf)>0:
             #ADM0_A3 = self.dfMapping[self.dfMapping.name == new].ADM0_A3.values[0]
@@ -881,6 +915,27 @@ class GUIHealth():
         i = 0
         for r in self.gumbel_wave_renderers:
             r.visible = True
+
+        ddf =  pd.read_sql("SELECT DISTINCT cluster_id FROM stringency_index_clustering where country='{}'".format(new),conn)
+        if len(ddf) > 0:
+            cluster_id = ddf.cluster_id.values[0]
+            df = pd.read_sql("SELECT country,state_value,state_date,cluster_id FROM stringency_index_clustering where cluster_id='{}'".format(cluster_id),conn)
+            df["alpha"] = 0.25
+            df.at[df.country==new,"alpha"] = 1.0
+            country_list = ", ".join(sorted(df.country.unique(),reverse=False))
+
+            newdata = {}
+            self.p_oxcluster.visible = True
+            for k in self.cds_oxcluster.data.keys():
+                newdata[k] = df[k].values
+            self.cds_oxcluster.data = newdata
+            self.p_oxcluster.height = 50+15*len(df.country.unique())
+            self.p_oxcluster.y_range = FactorRange(factors=sorted(df.country.unique(),reverse=True))
+        else:
+            self.p_oxcluster.visible = False
+
+        conn.close()
+
 
 
 
@@ -1049,6 +1104,18 @@ class GUIHealth():
         self.p_hmap.axis.axis_line_color = None
         self.p_hmap.axis.minor_tick_line_color = None
 
+        self.cds_oxcluster = ColumnDataSource({"country":[],"state_value":[],"state_date":[],"cluster_id":[],"alpha":[]})
+        self.p_oxcluster = figure(plot_width=1200, plot_height=65, x_axis_type="datetime",title="Temporal clusters of measures for ",
+                            x_range = self.p_top.x_range,
+                            y_range=[], toolbar_location=None, tools="", 
+                            output_backend="webgl")
+        ox_palette = ["#e41a1c","#377eb8","#4daf4a","#ffffb2"]
+        ox_mapper = LinearColorMapper(palette=ox_palette, low=0, high=3)
+        self.p_oxcluster.rect(y="country", x="state_date", width=86400000, height=1, source=self.cds_oxcluster,fill_alpha="alpha",
+                            line_color=None, fill_color=transform('state_value', ox_mapper))
+
+
+
         self.p_votes = figure(plot_width=1200, plot_height=75, x_axis_type="datetime",title="Previous Selections/Votes",
                                 x_range = self.p_top.x_range,toolbar_location=None, tools="",output_backend="webgl")
         self.p_votes.hbar(left="from",right="to",y="y",height="height",source=self.cds_votes_ranges,
@@ -1101,7 +1168,7 @@ class GUIHealth():
             TableColumn(field="need_vote",title="Need Vote"),
             ]
 
-        self.voting_table = DataTable(source=self.cds_votes,columns=columns,width=400,height=800)
+        self.voting_table = DataTable(source=self.cds_votes,columns=columns,width=400,height=600)
 
         # Votes metrics: Wave Durations
         self.p_histogram_wave = figure(tools="", background_fill_color="#efefef", toolbar_location=None, width=300, height=300,
@@ -1133,6 +1200,8 @@ class GUIHealth():
         self.p_stringency.background_fill_color = "#ffffff"
         self.p_hmap = self.theme.apply_theme_defaults(self.p_hmap)
         self.p_hmap.background_fill_color = "#ffffff"
+        self.p_oxcluster = self.theme.apply_theme_defaults(self.p_oxcluster)
+        self.p_oxcluster.background_fill_color = "#ffffff"
         self.p_gumbel = self.theme.apply_theme_defaults(self.p_gumbel)
         self.p_gumbel.background_fill_color = "#ffffff"
         self.voting_table = self.theme.apply_theme_defaults(self.voting_table)
@@ -1173,6 +1242,7 @@ class GUIHealth():
                         self.p_top,
                         self.p_stringency,
                         self.p_hmap,
+                        self.p_oxcluster,
                         self.p_gumbel,
                         self.p_votes,
                             row([Div(text='<div class="horizontalgap" style="width:200px"><h2>Statistics</h2></div>'),
