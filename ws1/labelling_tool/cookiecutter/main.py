@@ -649,7 +649,7 @@ class GUIHealth():
         df = df.merge(ddf,left_on="datetime_date",right_on="datetime").rename(columns={"trend_x":"trend"})
         del df["trend_y"]
         del df["datetime"]
-        
+
         # amend schema if necessary
         meta = sqlalchemy.MetaData()
         schema = sqlalchemy.Table("cookiecutter_verdicts",meta, autoload=True, autoload_with=conn)
@@ -1510,7 +1510,7 @@ class GUIEconomy():
         result = conn.execute("SELECT DISTINCT parameter_name FROM economic_indicators WHERE category='{}';".format(category))
         keys = []
         keys.extend([k[0] for k in result.fetchall()])
-        print("KEYS {}".format(keys))
+        #print("KEYS {}".format(keys))
         conn.close()
         if len(keys) <= 0:
             self.key_select.options=["<select catgory first>"]
@@ -1537,7 +1537,23 @@ class GUIEconomy():
             self.key_select.value = ""
             #print('self.key_select.value = ""')
         ## self.key_select.value = "PERCENTAGE"
-        pass
+        conn = self.engine.connect()
+        #try:
+        ddf = pd.read_sql("SELECT DISTINCT name FROM input_output_tables",conn)
+        regions = sorted(ddf.name.values)
+        #except:
+        #    regions = ["Global","Europe","National"]
+        self.scenario_region.options = regions
+        self.scenario_region.value = regions
+
+        #try:
+        ddf = pd.read_sql("SELECT DISTINCT row_sector FROM input_output_tables",conn)
+        sectors = sorted(ddf.row_sector.values)
+        #except:
+        #    sectors = sorted(["Air Transport","Hotel","Finance","Industry","Sales","Services"])
+        self.scenario_sector.options = sectors
+        self.scenario_sector.value = [random.choice(sectors)]
+        conn.close()
 
 
     def add_point(self,attr,old,new):
@@ -1639,12 +1655,6 @@ class GUIEconomy():
             axis_label_text_color=self.theme.text_color,
             major_label_text_color=self.theme.text_color,
             axis_line_color=self.theme.plot_color), 'right')
-        #print(self.start_date.value,type(self.start_date.value))
-        #print(pd.to_datetime(self.start_date.value).date(),type(pd.to_datetime(self.start_date.value).date()))
-        #print(Range1d(pd.to_datetime(self.start_date.value).date(),pd.to_datetime(self.end_date.value).date()))
-        #self.p_values.x_range=Range1d(pd.to_datetime(self.start_date.value).date(),pd.to_datetime(self.end_date.value).date())
-        #print(self.p_values.x_range)
-        #self.p_values.y_range=Range1d(0,1)
 
         editor = self.p_values.line(x="datetime",y="value",source=self.cds_drawn_polyline,line_color="darkgrey",line_width=3)
         mapper = linear_cmap(field_name="coloridx",palette=["tomato","grey","seagreen"],low=-1,high=1)
@@ -1661,10 +1671,10 @@ class GUIEconomy():
         self.proxy_table = DataTable(source=self.cds_drawn_polyline, columns=columns, editable=True, height=500,selectable='checkbox',index_position=None)
 
         self.user_id = TextInput(value="nobody@{}".format(socket.gethostname()),title="Name to save your results")
-        regions = ["Global","UK","Germany"]
+        regions = [] 
         self.scenario_region = MultiChoice(title="Region the scenario applies to",options=regions,value=regions)
-        sectors = ["Air Transport","Hotel"]
-        self.scenario_sector = MultiChoice(title="Sector the scenario applies to",options=sectors,value=sectors)
+        sectors = [] 
+        self.scenario_sector = MultiChoice(title="Sector the scenario applies to",options=sectors,value=sectors,width=400)
         dummy_text = "Scenario {:%Y-%m-%d %H:%M} using ".format(datetime.datetime.now()) 
         self.scenario_name = TextAreaInput(title="Title to save your scenario",value=dummy_text,rows=4)
         self.scenario_name.on_change("value_input",self.scenario_name_callback) # Yay! This is not really documented anywhere
