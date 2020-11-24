@@ -12,6 +12,8 @@ services:
       - "cookiecutter"
 
   cookiecutter:
+    env_file:
+      - .cookiecutter.env
     build:
       context: .
       dockerfile: Dockerfile-cookiecutter

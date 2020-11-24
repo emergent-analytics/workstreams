@@ -12,7 +12,7 @@ from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh.models.widgets import Select
 from bokeh.layouts import row, column, layout
 from bokeh.models import Range1d, HoverTool, LinearAxis, Label, NumeralTickFormatter, PrintfTickFormatter, Div, LinearColorMapper, ColorBar, BasicTicker
-from bokeh.models import BoxAnnotation, DataTable, DateFormatter, TableColumn, RadioGroup, Spinner, Paragraph, RadioButtonGroup
+from bokeh.models import BoxAnnotation, DataTable, DateFormatter, TableColumn, RadioGroup, Spinner, Paragraph, RadioButtonGroup, DatePicker
 from bokeh.models import Panel, Tabs, DatePicker, PointDrawTool, DataTable, TableColumn, NumberFormatter, DataRange1d, MultiChoice
 from bokeh.palettes import Category20, Category10, RdYlBu3, Greys4
 from bokeh.client.session import push_session, show_session
@@ -44,6 +44,8 @@ import urllib
 from pyearth import Earth
 from pyearth import export
 from operator import add
+import logging
+
 
 import warnings
 #warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -477,14 +479,13 @@ class GUIHealth():
         self.theme = THEME()
         self.data_status = "no_data" # "stale", "current"
         if "SQL_CONNECT" not in list(os.environ.keys()):
-            sql_url = "sqlite:///database.sqlite"
             sql_url = "postgresql://cookiecutter:cookiecutter@database:5432/cookiec"
-            #sql_url = "db2+ibm_db://db2inst1:cookiecutter@192.168.100.197:50000/cookiec"
         else:
             print("HAVE CONNECT {}".format(os.environ["SQL_CONNECT"]))
             sql_url = os.environ["SQL_CONNECT"]
         #print("SQL_CONNECT {}".format(sql_url))
-        self.engine = create_engine(sql_url)
+        logging.error(sql_url)
+        self.engine = create_engine(sql_url, pool_size=10, max_overflow=20)
         print(self.engine)
         try:
             self.max_gumbel_waves = int(os.environ["GUMBEL_MAX_WAVES"])
@@ -611,19 +612,26 @@ class GUIHealth():
         # Save selection
         conn = self.engine.connect()
         try:
-            result = conn.execute("select ifnull(max(vote_id),0) from cookiecutter_verdicts")
+            result = conn.execute("SELECT MAX(vote_id) FROM cookiecutter_verdicts")
             vote_id = result.fetchone()[0]+1
-            print("CANNOT RETRIEVE VOTE_ID")
+            have_verdict_table = True
         except:
+            print("CANNOT RETRIEVE VOTE_ID")
+            have_verdict_table = False
             vote_id = 1
-        print("VOTE ID = {}".format(vote_id))
+        #print("VOTE ID = {}".format(vote_id))
 
         df = self.cds.to_df().iloc[self.cds.selected.indices]
         if max(df["new_cases_rel"]) < 0:
             df["rel_peak_new_cases"] = 0.
         else:
             df["rel_peak_new_cases"] = max(df["new_cases_rel"])
-        df["kind"] = self.scenario_type.labels[self.scenario_type.active]
+        max_selected = max(self.cds.selected.indices)
+        if max_selected >= len(self.cds.data["new_cases"])-1:
+            df["kind"] = self.scenario_type.labels[self.scenario_type.active]+"_act"
+        else:
+            df["kind"] = self.scenario_type.labels[self.scenario_type.active]
+
         df["kind_counter"] = int(self.scenario_number.value)
         df["from_dt"] = df.datetime_date.min()
         df["to_dt"] = df.datetime_date.max()
@@ -651,18 +659,24 @@ class GUIHealth():
         del df["datetime"]
 
         # amend schema if necessary
-        meta = sqlalchemy.MetaData()
-        schema = sqlalchemy.Table("cookiecutter_verdicts",meta, autoload=True, autoload_with=conn)
-        existing_wave_columns = []
-        for c in schema.columns:
-            if "wave" in c.name.lower():
-                existing_wave_columns.append(c.name.lower())
+        if have_verdict_table:
+            meta = sqlalchemy.MetaData()
+            schema = sqlalchemy.Table("cookiecutter_verdicts",meta, autoload=True, autoload_with=conn)
+            existing_wave_columns = []
+            for c in schema.columns:
+                if "wave" in c.name.lower():
+                    existing_wave_columns.append(c.name.lower())
+            for c in df.columns:
+                if "wave" in c:
+                    if c not in existing_wave_columns:
+                        print("ALTER TABLE cookiecutter_verdicts ADD COLUMN {} FLOAT;".format(c))
+                        conn.execute("ALTER TABLE cookiecutter_verdicts ADD COLUMN {} FLOAT;".format(c))
+
+
+        # Avoid loss of precision SQL errors for tiny numbers
         for c in df.columns:
             if "wave" in c:
-                if c not in existing_wave_columns:
-                    print("ALTER TABLE cookiecutter_verdicts ADD COLUMN {} FLOAT;".format(c))
-                    conn.execute("ALTER TABLE cookiecutter_verdicts ADD COLUMN {} FLOAT;".format(c))
-
+                df[c] = df[c].clip(lower=0.1)
 
         df.to_sql("cookiecutter_verdicts", conn, if_exists='append', dtype={"from_dt":sqlalchemy.types.Date,
                                                                          "to_dt":sqlalchemy.types.Date,
@@ -670,7 +684,24 @@ class GUIHealth():
                                                                          "vote_datetime":sqlalchemy.types.DateTime,
                                                                          "kind":sqlalchemy.types.String(10),
                                                                          "user":sqlalchemy.types.String(50),
-                                                                         "identifier":sqlalchemy.types.String(10)},index=False)
+                                                                         "identifier":sqlalchemy.types.String(10)},
+                                                                         index=False,chunksize=25,method=None)
+        #print(df[["kind"]])
+        """for i in df.index:
+            print(i)
+            ddf = df[i:i+1]
+            ddf.to_pickle("uaaah.pckld")
+            ddf.to_sql("cookiecutter_verdicts", conn, if_exists='append', dtype={"from_dt":sqlalchemy.types.Date,
+                                                                         "to_dt":sqlalchemy.types.Date,
+                                                                         "datetime_date":sqlalchemy.types.DateTime,
+                                                                         "vote_datetime":sqlalchemy.types.DateTime,
+                                                                         "kind":sqlalchemy.types.String(10),
+                                                                         "user":sqlalchemy.types.String(50),
+                                                                         "identifier":sqlalchemy.types.String(10)},
+                                                                         index=False)
+            conn.close()
+            conn = self.engine.connect()"""
+
         conn.close()
         # reset selection
         self.cds.selected.indices = []
@@ -828,7 +859,10 @@ class GUIHealth():
             if row["kind"] == "begin":
                 left = row["datetime_date"]
                 if last == "end":
-                    self.wave_boxes[box_no].left = right
+                    try:
+                        self.wave_boxes[box_no].left = right
+                    except:
+                        self.wave_boxes[box_no].left = left
                     self.wave_boxes[box_no].right = left
                     self.wave_boxes[box_no].visible = True
                     self.wave_boxes[box_no].fill_color = "#00FF00"
@@ -837,7 +871,10 @@ class GUIHealth():
                 last = "begin"
             elif row["kind"] == "end":
                 right = row["datetime_date"]
-                self.wave_boxes[box_no].left = left
+                try:
+                    self.wave_boxes[box_no].left = left
+                except:
+                    self.wave_boxes[box_no].left = right
                 self.wave_boxes[box_no].right = right
                 self.wave_boxes[box_no].visible = True
                 self.wave_boxes[box_no].fill_color = "#FF0000"
@@ -875,7 +912,9 @@ class GUIHealth():
             ddf["to"] = pd.to_datetime(ddf["to_dt"])
             ddf["color"] = None
             ddf.loc[ddf["kind"] == "Wave","color"] = "tomato"
+            ddf.loc[ddf["kind"] == "Wave_act","color"] = "orange"
             ddf.loc[ddf["kind"] == "Calm","color"] = "mediumseagreen"
+            ddf.loc[ddf["kind"] == "Calm_act","color"] = "lightgreen"
             ddf["height"] = [random.random()/3+0.1 for i in ddf.index]
             ddf["y"] = [0.5 for i in ddf.index]
             self.cds_votes_ranges.data = {"from":ddf["from"].values,"to":ddf.to.values,"y":ddf.y.values,
@@ -916,7 +955,10 @@ class GUIHealth():
         for r in self.gumbel_wave_renderers:
             r.visible = True
 
-        ddf =  pd.read_sql("SELECT DISTINCT cluster_id FROM stringency_index_clustering where country='{}'".format(new),conn)
+        try:
+            ddf =  pd.read_sql("SELECT DISTINCT cluster_id FROM stringency_index_clustering where country='{}'".format(new),conn)
+        except:
+            ddf = pd.DataFrame()
         if len(ddf) > 0:
             cluster_id = ddf.cluster_id.values[0]
             df = pd.read_sql("SELECT country,state_value,state_date,cluster_id FROM stringency_index_clustering where cluster_id='{}'".format(cluster_id),conn)
@@ -1053,7 +1095,7 @@ class GUIHealth():
         except:
             pass
 
-        tooltips_top = [("datetime_date","@date{%Y-%m-%d}"),
+        tooltips_top = [("datetime_date","@datetime_date{%Y-%m-%d}"),
                     ("New Cases","@new_cases{0}"),
                     ("New Cases Trend","@trend{0}"),
                     #("Active Cases","@active{0}"),
@@ -1061,7 +1103,7 @@ class GUIHealth():
                     ]
         hover_top = HoverTool(tooltips = tooltips_top,
                           formatters={
-                              "@date": "datetime"
+                              "@datetime_date": "datetime"
                               }
                          )
         self.p_top.add_tools(hover_top)
@@ -1441,12 +1483,11 @@ class GUIEconomy():
         self.theme = THEME()
         self.data_status = "no_data" # "stale", "current"
         if "SQL_CONNECT" not in list(os.environ.keys()):
-            sql_url = "postgresql://cookiecutter:cookiecutter@database:5432/cookiec" #"sqlite:///database.sqlite"
-            #sql_url = "db2+ibm_db://db2inst1:cookiecutter@192.168.100.197:50000/cookiec"
+            sql_url = "postgresql://cookiecutter:cookiecutter@database:5432/cookiec"
         else:
             sql_url = os.environ["SQL_CONNECT"]
         #print("SQL_CONNECT {}".format(sql_url))
-        self.engine = create_engine(sql_url)
+        self.engine = create_engine(sql_url, pool_size=10, max_overflow=20)
         print(self.engine)
         self.add_point_guard = False
         pass
@@ -1464,10 +1505,13 @@ class GUIEconomy():
 
     def get_categories(self):
         conn = self.engine.connect()
-        result = conn.execute("SELECT DISTINCT category FROM economic_indicators;")
         categories = []
-        categories.extend([c[0] for c in result.fetchall()])
-        conn.close()
+        try:
+            result = conn.execute("SELECT DISTINCT category FROM economic_indicators;")
+            categories.extend([c[0] for c in result.fetchall()])
+            conn.close()
+        except:
+            pass
         #print(categories)
         self.category_select.options=categories
         self.cds_proxy_data.data = {"datetime":[],"value":[]}
@@ -1507,7 +1551,7 @@ class GUIEconomy():
         if category == "":
             category = self.category_select.value
         conn = self.engine.connect()
-        result = conn.execute("SELECT DISTINCT parameter_name FROM economic_indicators WHERE category='{}';".format(category))
+        result = conn.execute("SELECT DISTINCT parameter_name FROM economic_indicators WHERE category='{}' ORDER BY parameter_name;".format(category))
         keys = []
         keys.extend([k[0] for k in result.fetchall()])
         #print("KEYS {}".format(keys))
@@ -1538,19 +1582,19 @@ class GUIEconomy():
             #print('self.key_select.value = ""')
         ## self.key_select.value = "PERCENTAGE"
         conn = self.engine.connect()
-        #try:
-        ddf = pd.read_sql("SELECT DISTINCT name FROM input_output_tables",conn)
-        regions = sorted(ddf.name.values)
-        #except:
-        #    regions = ["Global","Europe","National"]
+        try:
+            ddf = pd.read_sql("SELECT DISTINCT name FROM input_output_tables",conn)
+            regions = sorted(ddf.name.values)
+        except:
+            regions = ["Global","Europe","National"]
         self.scenario_region.options = regions
         self.scenario_region.value = regions
 
-        #try:
-        ddf = pd.read_sql("SELECT DISTINCT row_sector FROM input_output_tables",conn)
-        sectors = sorted(ddf.row_sector.values)
-        #except:
-        #    sectors = sorted(["Air Transport","Hotel","Finance","Industry","Sales","Services"])
+        try:
+            ddf = pd.read_sql("SELECT DISTINCT row_sector FROM input_output_tables",conn)
+            sectors = sorted(ddf.row_sector.values)
+        except:
+            sectors = sorted(["Air Transport","Hotel","Finance","Industry","Sales","Services"])
         self.scenario_sector.options = sectors
         self.scenario_sector.value = [random.choice(sectors)]
         conn.close()
@@ -1620,7 +1664,8 @@ class GUIEconomy():
         pass
 
 
-    def scenario_name_callback(self,attr,old,new):
+    def scenario_name_callback(self,attr,old,new): #################
+        print("SCENARIO_NAME_CALLBACK",old,new)
         if len(new)>0:
             self.save_scenario.disabled = False
         else:
@@ -1676,7 +1721,7 @@ class GUIEconomy():
         sectors = [] 
         self.scenario_sector = MultiChoice(title="Sector the scenario applies to",options=sectors,value=sectors,width=400)
         dummy_text = "Scenario {:%Y-%m-%d %H:%M} using ".format(datetime.datetime.now()) 
-        self.scenario_name = TextAreaInput(title="Title to save your scenario",value=dummy_text,rows=4)
+        self.scenario_name = TextInput(title="Title to save your scenario",value=dummy_text)# Only single line TextInput works with value_input typed keys
         self.scenario_name.on_change("value_input",self.scenario_name_callback) # Yay! This is not really documented anywhere
 
         self.save_scenario = Button(label="Save Scenario",disabled=True)
@@ -1706,8 +1751,224 @@ class GUIEconomy():
                     column([self.user_id,self.scenario_region,self.scenario_sector,self.scenario_name,self.save_scenario,self.explanation,self.explanation_text])])
 
 
+class GUIwhatif():
+    def __init__(self):
+        self.theme = THEME()
+        if "SQL_CONNECT" not in list(os.environ.keys()):
+            sql_url = "postgresql://cookiecutter:cookiecutter@database:5432/cookiec"
+        else:
+            sql_url = os.environ["SQL_CONNECT"]
+        self.engine = create_engine(sql_url, pool_size=10, max_overflow=20)
+        print(self.engine)
+
+
+    def end_of_wave_2_callback(self,attr,old,new):
+        df = self.cds.to_df().dropna()
+        self.cds_end_of_wave_2.data = {"datetime_date":[pd.to_datetime(df.datetime_date.max()),pd.to_datetime(new)],"value":[df.trend.values[-2],0]}
+        #try:
+        wave3_start = pd.to_datetime(new)+pd.Timedelta(days=self.calm_durations[1])
+        wave3_end   = wave3_start + pd.Timedelta(days=self.wave_durations[1])
+        print("Wave 3 start {} end {}".format(wave3_start,wave3_end))
+
+        calm3_end = wave3_end+pd.Timedelta(days=self.calm_durations[2])
+        print("Calm 3 start {} end {}".format(wave3_end,calm3_end))
+
+        wave4_end = calm3_end + pd.Timedelta(days=self.wave_durations[1])
+        print("Wave 4 start {} end {}".format(calm3_end,wave4_end))
+
+        #self.cassandra.text = """<H1>Scenario Forecast</H1>
+        #    Wave 3 start {:%Y-%m-%d} end {:%Y-%m-%d}<P>
+        #    Calm 3 start {:%Y-%m-%d} end {:%Y-%m-%d}<P>
+        #    Wave 4 start {:%Y-%m-%d} end {:%Y-%m-%d}""".format(wave3_start,wave3_end,wave3_end,calm3_end,calm3_end,wave4_end)
+
+        self.cds_cassandra.data = {"category":["Wave 3","Calm 3","Wave 4"],"from_dt":[wave3_start,wave3_end,calm3_end],"to_dt":[wave3_end,calm3_end,wave4_end]}
+        pass
+
+
+    def select_country_callback(self,attr,old,new):
+        conn = self.engine.connect()
+        sql = "SELECT datetime_date,sum(new_cases) as new_cases,sum(trend) AS trend FROM cookiecutter_case_data WHERE name IN ("+",".join(["'{}'".format(c) for c in new])+") GROUP BY datetime_date ORDER BY datetime_date;"
+        df = pd.read_sql(sql,conn)
+        datetime_dates = list(df.datetime_date.values)
+        self.cds.data = {"datetime_date":df.datetime_date.dt.date.values,
+                        "new_cases":df.new_cases.values,
+                        "trend":df.trend.values,
+            }
+
+        self.p_top.x_range.update(end=df.datetime_date.max()+pd.Timedelta(days=60))
+
+        df = pd.read_sql("SELECT DISTINCT adm0_a3 AS identifier FROM johns_hopkins_country_mapping WHERE name IN ("+",".join(["'{}'".format(c) for c in new])+")",conn)
+        identifiers = list(df.identifier.values)
+        try:
+            sql = "SELECT DISTINCT from_dt,to_dt,user,kind,vote_id,rel_peak_new_cases,duration,kind_counter FROM cookiecutter_verdicts WHERE identifier IN ("+",".join(["'{}'".format(c) for c in identifiers])+")"
+            ddf = pd.read_sql(sql,conn)
+        except:
+            ddf = pd.DataFrame()
+        if len(ddf)>0:
+            #ADM0_A3 = self.dfMapping[self.dfMapping.name == new].ADM0_A3.values[0]
+            #ddf = dfVotesContent[self.dfVotesContent.ADM0_A3 == ADM0_A3][["from","to","kind"]].copy().drop_duplicates()
+            ddf["from"] = pd.to_datetime(ddf["from_dt"])
+            ddf["to"] = pd.to_datetime(ddf["to_dt"])
+            ddf["color"] = None
+            ddf.loc[ddf["kind"] == "Wave","color"] = "tomato"
+            ddf.loc[ddf["kind"] == "Wave_act","color"] = "orange"
+            ddf.loc[ddf["kind"] == "Calm","color"] = "mediumseagreen"
+            ddf.loc[ddf["kind"] == "Calm_act","color"] = "lightgreen"
+            ddf["height"] = [random.random()/3+0.1 for i in ddf.index]
+            ddf["y"] = [0.5 for i in ddf.index]
+            self.cds_votes_ranges.data = {"from":ddf["from"].values,"to":ddf.to.values,"y":ddf.y.values,
+                                            "height":ddf.height.values,"color":ddf.color.values}
+        else:
+            self.cds_votes_ranges.data = {"from":[],"to":[],"y":[],
+                                            "height":[],"color":[]}
+
+        if len(ddf)>0:
+            wave_duration_q10 = ddf[(ddf["kind"] == "Wave")&(ddf["kind_counter"] == 1)].duration.quantile(0.1)
+            wave_duration_mean = ddf[(ddf["kind"] == "Wave")&(ddf["kind_counter"] == 1)].duration.mean()
+            wave_duration_q95 = ddf[(ddf["kind"] == "Wave")&(ddf["kind_counter"] == 1)].duration.quantile(0.95)
+            self.wave_durations = [wave_duration_q10,wave_duration_mean,wave_duration_q95]
+            print("Duration wave [{:.1f},{:.1f},{:.1f}]".format(wave_duration_q10,wave_duration_mean,wave_duration_q95))
+
+            calm_duration_q10 = ddf[ddf["kind"] == "Calm"].duration.quantile(0.1)
+            calm_duration_mean = ddf[ddf["kind"] == "Calm"].duration.mean()
+            calm_duration_q90 = ddf[ddf["kind"] == "Calm"].duration.quantile(0.9)
+            self.calm_durations = [calm_duration_q10,calm_duration_mean,calm_duration_q90]
+            print("Duration calm [{:.1f},{:.1f},{:.1f}]".format(calm_duration_q10,calm_duration_mean,calm_duration_q90))
+            
+            start_dates_current_waves = pd.Series(pd.to_datetime(ddf[ddf["kind"] == "Wave_act"].from_dt))
+            start_dates_current_waves_q10 = start_dates_current_waves.quantile(0.1)
+            start_dates_current_waves_mean = start_dates_current_waves.mean()
+            start_dates_current_waves_q90 = start_dates_current_waves.quantile(0.9)
+            print("Start current wave [{},{},{}]".format(start_dates_current_waves_q10,start_dates_current_waves_mean,start_dates_current_waves_q90))
+
+            print("End current wave [{},{},{}]".format(start_dates_current_waves_mean+pd.Timedelta(days=wave_duration_q10),
+                start_dates_current_waves_mean+pd.Timedelta(days=wave_duration_mean),
+                start_dates_current_waves_mean+pd.Timedelta(days=wave_duration_q95),
+                ))
+            # I have no idea why the top version throws an error
+            try:
+                self.end_of_wave_2.value = (start_dates_current_waves_mean+pd.Timedelta(days=wave_duration_q95)).date()
+            except:
+                pass
+            
+
+
+        conn.close()
+
+
+    def select_subregion_callback(self,attr,old,new):
+        conn = self.engine.connect()
+        sql = "SELECT DISTINCT country FROM neighbourhood_relations_world_region_level WHERE subregion IN ("+",".join(["'{}'".format(c) for c in new])+") ORDER BY country"
+        df = pd.read_sql(sql,conn)
+        self.select_country.options = list(df.country.values)
+        conn.close()
+
+
+    def select_continent_callback(self,attr,old,new):
+        conn = self.engine.connect()
+        sql = "SELECT DISTINCT subregion FROM neighbourhood_relations_world_region_level WHERE continent IN ("+",".join(["'{}'".format(c) for c in new])+") ORDER BY subregion"
+        df = pd.read_sql(sql,conn)
+        self.select_subregion.options = list(df.subregion.values)
+        conn.close()
+
+
+    def load_data(self):
+        conn = self.engine.connect()
+        df = pd.read_sql("SELECT DISTINCT continent FROM neighbourhood_relations_world_region_level ORDER BY continent;",conn)
+        self.select_continent.options = list(df.continent.values)
+        conn.close()
+
+    def prepopulate(self):
+        self.select_continent.value = ["Europe"]
+        self.select_subregion.value = ["Northern Europe","Western Europe","Southern Europe"]
+        self.select_country.value = ["Austria","Belgium","Denmark","Germany","Luxembourg","Netherlands","Switzerland"]
+
+
+    def create(self):
+        self.select_continent = MultiChoice(title="Continent",options=[""],value=[""])
+        self.select_continent.on_change("value",self.select_continent_callback)
+
+        self.select_subregion = MultiChoice(title="Subregion",options=[""],value=[""])
+        self.select_subregion.on_change("value",self.select_subregion_callback)
+
+        self.select_country   = MultiChoice(title="Country",options=[""],value=[""])
+        self.select_country.on_change("value",self.select_country_callback)
+
+        self.end_of_wave_2 = DatePicker(title="Model end of Wave 2",value=datetime.date.today())
+        self.end_of_wave_2.on_change("value",self.end_of_wave_2_callback)
+
+        self.cds = ColumnDataSource({"datetime_date":[],"new_cases":[],"trend":[]})
+
+         # The top time series vbar and line plots
+        self.p_top = figure(plot_width=1200, plot_height=225,x_axis_type='datetime',title="Cumulative Number of Cases for Selected Countries",
+            tools="pan,box_zoom,box_select,reset",active_drag="box_select",
+            output_backend="webgl")
+        self.p_top.toolbar.logo=None
+        self.p_top.vbar(x="datetime_date",top="new_cases",source=self.cds,#y_range_name="new_cases",
+            #width=86400*750,alpha=0.75,color='#ffbb78',legend_label="New Cases")
+            width=86400*750,alpha=0.75,color='darkblue',legend_label="New Cases")
+        self.p_top.cross(x="datetime_date",y="trend",source=self.cds,#y_range_name="new_cases",
+                            alpha=0.75,color="#a85232",legend_label="Trend")
+        self.p_top.legend.location="top_left"
+        self.p_top.legend.click_policy="hide"
+        self.cds_end_of_wave_2 = ColumnDataSource({"datetime_date":[],"value":[]})
+        self.p_top.line(x="datetime_date",y="value",color="tomato",source=self.cds_end_of_wave_2)
+        self.p_top.circle(x="datetime_date",y="value",color="tomato",size=15,source=self.cds_end_of_wave_2)
+
+
+        self.cds_votes_ranges = ColumnDataSource({"from":[],"to":[],"height":[],"color":[]})
+        self.p_votes = figure(plot_width=1200, plot_height=75, x_axis_type="datetime",title="Previous Selections/Votes",
+                                x_range = self.p_top.x_range,toolbar_location=None, tools="",output_backend="webgl")
+        self.p_votes.hbar(left="from",right="to",y="y",height="height",source=self.cds_votes_ranges,
+                            color="color",fill_alpha=0.2,line_color=None)
+        self.p_votes.yaxis.visible = False
+        self.p_votes.ygrid.visible = False
+
+        tooltips_top = [("Date","@datetime_date{%F}"),
+                    ("New Cases","@new_cases{0}"),
+                    ("New Cases Trend","@trend{0}"),
+                    #("Active Cases","@active{0}"),
+                    #("Deaths","@deaths{0.00}"),
+                    ]
+        hover_top = HoverTool(tooltips = tooltips_top,
+                          formatters={
+                              "@datetime_date": "datetime",
+                              }
+                         )
+        self.p_top.add_tools(hover_top)
+
+        self.p_top = self.theme.apply_theme_defaults(self.p_top)
+        self.p_top.background_fill_color = "#ffffff"
+
+        self.p_votes = self.theme.apply_theme_defaults(self.p_votes)
+        self.p_votes.background_fill_color = "#ffffff"
+
+        self.cassandra = Div(text="<H1>Scenario Forecast</H1>")
+
+        columns = [
+            TableColumn(field="category",title="Episode"),
+            TableColumn(field="from_dt",title="From",formatter=DateFormatter()),
+            TableColumn(field="to_dt",title="To",formatter=DateFormatter()),
+            ]
+
+        self.cds_cassandra = ColumnDataSource({"category":[],"from_dt":[],"to_dt":[]})
+        self.cassandra_table = DataTable(source=self.cds_cassandra,columns=columns,width=400,height=300,index_position=None)
+
+        self.sql_connect = Div(text="<small>{}</small>".format(self.engine))
+
+        return (column([row([
+                                self.select_continent,self.select_subregion,self.select_country,self.end_of_wave_2,
+                            ]),
+                        self.p_top,
+                        self.p_votes,
+                        self.cassandra,
+                        self.cassandra_table,
+                        self.sql_connect,
+                        ]))
+
+
 # just to be safe
-Path("./data").mkdir(exist_ok=True,parents=True)
+#Path("./data").mkdir(exist_ok=True,parents=True)
 # instantiate main class
 gui_health = GUIHealth()
 # create widgets which will not have data to be displayed just yet
@@ -1716,10 +1977,15 @@ content_health = Panel(child=gui_health.create(),title="Health and Stringency")
 gui_economy = GUIEconomy()
 content_economy = Panel(child=gui_economy.create(),title="Economy and Economic Proxies")
 
-content = Tabs(tabs=[content_health,content_economy])
+gui_whatif = GUIwhatif()
+content_whatif = Panel(child=gui_whatif.create(),title="Fly-Forward Modeller")
+
+content = Tabs(tabs=[content_health,content_economy,content_whatif])
 
 #print("gui_economy.load_data()")
 gui_economy.load_data()
+gui_whatif.load_data()
+gui_whatif.prepopulate()
 # put it on the canvas/web browser
 curdoc().add_root(content)
 # check if we have data...

@@ -7,6 +7,9 @@ WORKDIR /app/cookiecutter/templates
 COPY cookiecutter/templates/index.html .
 WORKDIR /app/data
 WORKDIR /app/cookiecutter
+ENV SQL_CONNECT=postgresql://cookiecutter:cookiecutter@database:5432/cookiec
+ENV GUMBEL_MAX_WAVES=25
+ENV DB2CODEPAGE=1208
 COPY cookiecutter/main.py .
 WORKDIR /app
 ENTRYPOINT bokeh serve cookiecutter --allow-websocket-origin="*" --address 0.0.0.0
