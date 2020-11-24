@@ -28,9 +28,8 @@ def read_data(path = None, engine = None, table = None, region=None):
         _df.index = _df.columns
         
     elif (path != None) & (engine == None) & (region == 'US'):
-        _df = pd.read_csv(path + '/A_US.csv', header = [0, 1], index_col= [0, 1])
-        _df.columns = _df.index.get_level_values(1).values
-        _df.index = _df.columns
+        _df = pd.read_csv(path + '/A_US.csv', index_col=0)
+        
         
     elif (path != None) & (engine == None) & (region == 'DE'):
         _df = pd.read_csv(path + '/A_DE.csv', header = [0, 1], index_col= [0, 1])
@@ -128,8 +127,9 @@ def economic_dynamics_ode(y,t, A, sectors, external_shock_vec_dict):
         economic_dynamics_ode.time_vec = [t]
     shock_vec = pd.Series(data = np.zeros(len(A)), index = sectors)
     for _sector_idx, _shock_attrs in external_shock_vec_dict.items():
-        if (t>=_shock_attrs[0]) & (t<=_shock_attrs[1]):
-            shock_vec[_sector_idx] = _shock_attrs[2]    
+        if (t>=_shock_attrs[0]) & (t<=_shock_attrs[1]) & (_sector_idx in shock_vec.index):
+            shock_vec[_sector_idx] = _shock_attrs[2]  
+    #print(len(shock_vec),len(y),A.shape)            
     return np.dot(A-np.eye(A.shape[0]),y) + shock_vec
 
 # Propagation dynamics with recovery
@@ -185,6 +185,7 @@ def total_out_loss(sol,time_vec, by_sector = True, sectors = None, GVA_vec = Non
         num_sectors = sol.shape[1]
         tot_out_loss = 0
         for n in range(num_sectors):
+            print(GVA_vec.iloc[n],GVA_vec.sum())
             tot_out_loss += simps(sol[:,n],time_vec) * GVA_vec.iloc[n] / GVA_vec.sum()
     
     return tot_out_loss
@@ -305,7 +306,7 @@ if shock_profile == 'Custom':
                         sector_5: (start_sector_5 / 12, end_sector_5 / 12, shock_val_5 / 100)}
 
 elif shock_profile == 'ILO':
-    sectors_n_shocks = generate_shock_profiles('iloshock')
+    sectors_n_shocks = generate_shock_profiles('iloshock_%s'%(region_name))
     shocked_sectors = list(sectors_n_shocks.keys())
 
 
