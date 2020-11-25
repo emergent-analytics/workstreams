@@ -28,13 +28,10 @@ def read_data(path = None, engine = None, table = None, region=None):
         _df.index = _df.columns
         
     elif (path != None) & (engine == None) & (region == 'US'):
-        _df = pd.read_csv(path + '/A_US.csv', index_col=0)
-        
+        _df = pd.read_csv(path + '/A_US.csv', index_col=0)  
         
     elif (path != None) & (engine == None) & (region == 'DE'):
-        _df = pd.read_csv(path + '/A_DE.csv', header = [0, 1], index_col= [0, 1])
-        _df.columns = _df.index.get_level_values(1).values
-        _df.index = _df.columns
+        _df = pd.read_csv(path + '/A_DE.csv', index_col= 0)
         
     elif (path != None) & (engine == None) & (region == 'CN'):
         _df = pd.read_csv(path + '/A_CN.csv', header = [0, 1], index_col= [0, 1])
@@ -72,7 +69,8 @@ class LeonTradeModel:
     def __init__(self,df_A,demand='unit', type = 'Upstream'):
         self.df_A = df_A
         self.sector_indices = df_A.index.get_level_values(0).values
-        self.sectors =  df_A.index.get_level_values(0).unique().values        
+        self.sectors =  df_A.index.get_level_values(0).unique().values
+        #print(self.sectors)        
         if type == 'Upstream':
             self.A = df_A.values
         elif type == 'Downstream':
@@ -81,7 +79,13 @@ class LeonTradeModel:
             self.d_base = np.ones(len(df_A))
         else:
             self.d_base = demand
-        self.x_base = np.dot(self.df_A.values,self.d_base)
+        try:
+            self.x_base = np.dot(self.df_A.values,self.d_base)
+            #print(self.df_A.values)
+
+        except Exception as e:
+            print(self.df_A.values)
+            print(e)
         self.x_out = self.x_base
         
     def shock_impulse(self, sectors_n_shocks=None, general_shock = [0, 0, 0]):
@@ -91,6 +95,7 @@ class LeonTradeModel:
         
         for sector in sectors_n_shocks:
             shock_vec[sector] = sectors_n_shocks[sector]
+        #print(shock_vec)
 
         return shock_vec
 
@@ -185,7 +190,7 @@ def total_out_loss(sol,time_vec, by_sector = True, sectors = None, GVA_vec = Non
         num_sectors = sol.shape[1]
         tot_out_loss = 0
         for n in range(num_sectors):
-            print(GVA_vec.iloc[n],GVA_vec.sum())
+            #print(GVA_vec.iloc[n],GVA_vec.sum())
             tot_out_loss += simps(sol[:,n],time_vec) * GVA_vec.iloc[n] / GVA_vec.sum()
     
     return tot_out_loss
@@ -202,6 +207,7 @@ def generate_shock_profiles(shockdescriptionfile):
             shock_dict[sdat['sector']] = (sdat['start']/12,sdat['end']/12,sdat['val']/100)
         except:
             print(_)
+    print(shock_dict)
     return shock_dict
     
         
@@ -235,6 +241,8 @@ type_shock = st.sidebar.selectbox(label = 'Do you want your shock to propagate u
 df_lev = read_data(path = '.',region=region_name)
 # Read GVA matrix 
 GVA_vec = read_GVA(path = '.',region=region_name)
+# Need to reform GVA_vec for the US, where more gva"s present
+GVA_vec = GVA_vec.loc[df_lev.index.get_level_values(0).unique().values]
 
 # Can also read from Db2 database if preferred
 # string = "------"
