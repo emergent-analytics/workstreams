@@ -1,43 +1,116 @@
----this file is under review---
+# Emergent Analytics CookieCutter
 
-# CookieCutter
+## Problem we are trying to solve
 
-CookieCutter tool to select from various sources and 
-[Oxford Covid-19 Government Response Tracker (OxCGRT)](https://github.com/OxCGRT/covid-policy-tracker) in order
-to be able to understand compare COVID-19 infection waves and periods of quiet together with changes
-to country wide policies. In addition, a second tab provides the ability to model economic shocks to the economy by overlaying a data editor with reference data sets.
+The cookiecutter is a labelling and data selection tool to provide data driven knowledge management of COVID-19 infection data. When performing analytics on these data it is both key to deeply understand the data, where cookiecutter can be used as a browser, but also be able to create labelled datasets that can be used for further analyses.
 
-This tool has been written very fast without too much consideration on code quality or maintainability,
-as a Minimum Viable Product to understand the features actually required to make such a tool useful.
+Cookiecutter and its associated jupyter notebook infrastructure can be configured to tap into a variety of COVID-19 case data sources, and visualise it together with the exciting [Oxford Covid-19 Government Response Tracker (OxCGRT)](https://github.com/OxCGRT/covid-policy-tracker) dataset, so it becomes easier to understand and correlate the health situation and government responses aiming at managing the health situation. It also features clustering of government measures and a novel way of fitting [Gumbel dtstributions to the health datasets, provided by Damiaan Zwietering](https://pydata.org/eindhoven2020/schedule/presentation/15/building-a-coronaradar/).
 
-Its contains a crude detection of infection wave(s) and periods of quiet, based on continually growing or decreasing 
-(and levelling off) of new reported cases of infection data.
+In addition, as one of the goals of the Regional Risk Pulse Index was to study the impact of COVID-19 onto the economy, a tab provides the ability to model shocks to the economy, which can be used by the [Emergent Economic Engine E³](https://github.com/emergent-analytics/workstreams/tree/master/ws3) found in this repository.
 
-The author understands there are other, country level data sources with at times higher quality, definitely
-different numbers, but the purpose of the tool is to collect infection waves using human ingenuity, and
-precision is probably not required for this task initially.
+This tool has been written very fast without too much consideration on code quality or maintainability, as a Minimum Viable Product to understand the features actually required to make such a tool useful.
 
-## Setup
+## Installation
 
-Clone the repository. You will need the python bokeh package, best installed using `conda install bokeh`, although
-it is part of any [anaconda distribution](https://www.anaconda.com/products/individual). Also ensure you have 
-[`statsmodels`](https://pypi.org/project/statsmodels/) installed. In addition to that, we need the amazing 
-[pycountry](https://pypi.org/project/pycountry/) package installed, which is a perfect resource for country name
-and ISO country code mapping, and, last but not least, a library such as [xlrd](https://pypi.org/project/xlrd/) to
-read the United Nations population datafile with forecasted numbers for 2020. We actually recommend to run the docker image as we also need the [sklearn-contrib-py-earth](https://pypi.org/project/sklearn-contrib-py-earth/) package which can be a challenge to install.
+### Standalone
+
+Check out the repository, create a virtual environment using tools such as [conda](https://docs.conda.io/en/latest/), or [pip, pipenv](https://packaging.python.org/guides/tool-recommendations/) or any similar tool. I found Python 3.6 to be a good base version for running cookiecutter. As we also need the [sklearn-contrib-py-earth](https://pypi.org/project/sklearn-contrib-py-earth/), which seems to be non trivial to get installed on Windows and some versions of python, my recommendation is to actually use the docker image.
+
+You also need to have access to a SQL datastore such as postgres, or db2. sqlite3 may work, but no effort has been made to test it, not with any other SQL databases such as MySQL, SQL Server, or Oracle.
+
+After installing the packages found in `requirements.txt`, you can launch the bokeh server application
+
+```
+SQL_CONNECT=postgresql://user:password@datbasehost:5432/database bokeh serve cookiecutter/  --allow-websocket-origin"*" -address 0.0.0.0
+```
+
+by adding the user name, password, database server name (such as localhost), and database name to connect to, when using postgres. I find [DigitalOcean's user guides](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-18-04) as being of generally impressive and high quality. Also, if you never set up a posgres database before, getting [pg_hba.conf](https://www.linuxtopia.org/online_books/database_guides/Practical_PostgreSQL_database/c15679_002.htm) to accept connections can be frustrating.
+
+When using db2, the connect string will be like
+
+```
+SQL_CONNECT=db2+ibm_db://user:password@datbasehost:50000/database bokeh serve cookiecutter/  --allow-websocket-origin"*" -address 0.0.0.0
+```
+
+I was using a [db2 docker image](https://hub.docker.com/r/ibmcom/db2) for set-up and testing and kept using the default db2inst1 user name, the set up a database under this user.
+
+You can then connect to the bokeh server web frontend by entering
+
+```
+http://yourmachine:5006/cookiecutter
+```
+
+Before doing that, though, download data first.
+
+### Docker
+
+This is the recommended installation method as it contains all relevant packages in a working configuration. You will need [docker-compose](https://docs.docker.com/compose/install/) and a working docker installation, then, after cloning the repository, from its top folder, download and build the images
+
+```
+docker-compose build
+```
+
+Check for any errors. 
+
+The image comes with a dedicated nginx web server and its own copy of postgres. You can specify another SQL datastore (connection to postgres and db2 is available, else, you may need to install [other python packages](https://docs.sqlalchemy.org/en/13/core/engines.html)) by specifying its [connection string](https://docs.sqlalchemy.org/en/13/core/engines.html) in a file named `.cookiecutter.env`, located in the same folder as `docker-compose.yml`. Its content would read like, for postgres
+
+```
+SQL_CONNECT=postgresql://user:password@datbasehost:5432/database
+```
+
+or, for db2
+
+```
+SQL_CONNECT=db2+ibm_db://user:password@datbasehost:50000/database
+```
+
+or, commonly used for db2 installations on the cloud with enabled transport encryption
+
+```
+SQL_CONNECT=db2+ibm_db://user:password@datbasehost:50001/database;Security=ssl;
+```
+
+## Data
+
+Before running the image or bokeh app, you need to download a number of datafiles. Please check the usage conditions and licensing of the source pages to ensure you are using and consuming these data in accordance to the data owners, considering your intended use.
+
+You will need to change the connect strings according to your database configuration. When using the docker image, make sure it runs so the notebooks have access to the postgres database. Note that I configured the postgres sub-container to accept connections on port 15432, thus allowing cookiecutter to not interfere with a possibly existing postgres installation. The connect string will look like
+
+```
+postgres://cookiecutter:cookiecutter@localhost:15432/cookiec
+```
+
+The configuration above is done partially in `docker-compose.yml`, and `Dockerfile-postgresql`.
+
+The folder `helper_notebooks` contains three of them, namely
+
+* `Download Reference Data.ipynb`, which downloads country names, population data etc. This is a one-off import.
+
+* `Download Case Data.ipynb` connects to data from Johns Hopkins, ECDC, and the German RKI, and the OxCGRT data, this is recommeneded to be run, say, daily
+* `Download Economic Indicators.ipynb` connects and downloads data from a variety of sources found on the web, mainly as a proof of concept of various web crawling techniques. Please ensure you use the data in accordance to the allowed use, we assume this is personal use for academic and educational purposes only.
 
 ## Running
 
-If deploying in standalone mode, change into this directory, then, in a console
+### Standalone
+
+When deploying in standalone mode, change into this directory, then, in a console
+
 ```
-bokeh serve cookiecutter --allow-websocket-origin"*" -address 0.0.0.0
+SQL_CONNECT=postgresql://user:password@datbasehost:5432/database bokeh serve cookiecutter/  --allow-websocket-origin"*" -address 0.0.0.0
 ```
+or
+
+```
+SQL_CONNECT=db2+ibm_db://user:password@datbasehost:50000/database bokeh serve cookiecutter/  --allow-websocket-origin"*" -address 0.0.0.0
+```
+
+Change username and password, machine name and database name to your configuration
+
 then, from a web browser, enter
+
 ```
 http://<machine_name>:5006/cookiecutter
 ```
-
-For standalone mode, you will need to specify a SQLalchemy sql database for persistence, sqlite3 could be an option, too.
 
 ## Docker
 
@@ -47,30 +120,24 @@ mv .env.docker-compose .env
 docker-compose build
 docker-compose up
 ```
-If you want to run this in the background, use `docker-compuse up -d`.
+If you want to run this in the background, use `docker-compose up -d`.
 
 The app is now available on
 ```
 http://<machine_name>:8080
 ```
 
-To change the publically available port number from 8080, and to allow for persistence of the storage, there exists a file named .env which 
-defines these two entries.
+To change the publically available port number from 8080, and to allow for persistence of the storage, there exists a file named .env which defines this entry.
 
 ```
-DATA_FOLDER=./data
 PUBLIC_WEBSERVER_PORT=8080
 ```
 
-See [the data files description)[#data-files] at the end of this document.
-
 The container image also ships with an installation of postgres to persist data. We map the postgres port to 15432 by default. You can specify another database backend via a config variable using SQLalchemy style connect strings, note the image only has drivers for postgres and db2 at the moment.
 
-## Helper Notebooks
-
-The folder helper_notebooks contain jupyter notebooks which are used to download data. We deliberately removed download functionality from the tool as some of the web data sources may cease to exist over time, so users would get notified and could edit the notebooks as required.
-
 ## UI
+
+(need to provide description what it does)
 
 ![Screenshot](Screenshot1.JPG)
 
@@ -142,10 +209,6 @@ Saving a selected episode, in this case, Australia WAVE 2. After pressing "Save"
 | vote_id | running number of vote |
 
 
-
-## Data Files
-
-* Documentation will be provided for the dockerized database.
 
 ## Disclaimer
 
