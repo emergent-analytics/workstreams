@@ -686,21 +686,7 @@ class GUIHealth():
                                                                          "user":sqlalchemy.types.String(50),
                                                                          "identifier":sqlalchemy.types.String(10)},
                                                                          index=False,chunksize=25,method=None)
-        #print(df[["kind"]])
-        """for i in df.index:
-            print(i)
-            ddf = df[i:i+1]
-            ddf.to_pickle("uaaah.pckld")
-            ddf.to_sql("cookiecutter_verdicts", conn, if_exists='append', dtype={"from_dt":sqlalchemy.types.Date,
-                                                                         "to_dt":sqlalchemy.types.Date,
-                                                                         "datetime_date":sqlalchemy.types.DateTime,
-                                                                         "vote_datetime":sqlalchemy.types.DateTime,
-                                                                         "kind":sqlalchemy.types.String(10),
-                                                                         "user":sqlalchemy.types.String(50),
-                                                                         "identifier":sqlalchemy.types.String(10)},
-                                                                         index=False)
-            conn.close()
-            conn = self.engine.connect()"""
+
 
         conn.close()
         # reset selection
