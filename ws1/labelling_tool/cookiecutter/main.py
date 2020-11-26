@@ -1837,31 +1837,40 @@ class GUIwhatif():
             except:
                 pass
             
-
-
         conn.close()
 
 
     def select_subregion_callback(self,attr,old,new):
         conn = self.engine.connect()
-        sql = "SELECT DISTINCT country FROM neighbourhood_relations_world_region_level WHERE subregion IN ("+",".join(["'{}'".format(c) for c in new])+") ORDER BY country"
-        df = pd.read_sql(sql,conn)
-        self.select_country.options = list(df.country.values)
+        try:
+            sql = "SELECT DISTINCT country FROM neighbourhood_relations_world_region_level WHERE subregion IN ("+",".join(["'{}'".format(c) for c in new])+") ORDER BY country"
+            df = pd.read_sql(sql,conn)
+            self.select_country.options = list(df.country.values)
+        except:
+            sql = "SELECT DISTINCT name FROM COOKIECUTTER_CASE_DATA WHERE DATA_SOURCE='Johns Hopkins global'"
+            df = pd.read_sql(sql,conn)
+            self.select_country.options = list(df.name.values)
         conn.close()
 
 
     def select_continent_callback(self,attr,old,new):
         conn = self.engine.connect()
-        sql = "SELECT DISTINCT subregion FROM neighbourhood_relations_world_region_level WHERE continent IN ("+",".join(["'{}'".format(c) for c in new])+") ORDER BY subregion"
-        df = pd.read_sql(sql,conn)
-        self.select_subregion.options = list(df.subregion.values)
+        try:
+            sql = "SELECT DISTINCT subregion FROM neighbourhood_relations_world_region_level WHERE continent IN ("+",".join(["'{}'".format(c) for c in new])+") ORDER BY subregion"
+            df = pd.read_sql(sql,conn)
+            self.select_subregion.options = list(df.subregion.values)
+        except:
+            self.select_continent.options = ["*"]
         conn.close()
 
 
     def load_data(self):
         conn = self.engine.connect()
-        df = pd.read_sql("SELECT DISTINCT continent FROM neighbourhood_relations_world_region_level ORDER BY continent;",conn)
-        self.select_continent.options = list(df.continent.values)
+        try:
+            df = pd.read_sql("SELECT DISTINCT continent FROM neighbourhood_relations_world_region_level ORDER BY continent;",conn)
+            self.select_continent.options = list(df.continent.values)
+        except:
+            self.select_continent.options = ["*"]
         conn.close()
 
     def prepopulate(self):
