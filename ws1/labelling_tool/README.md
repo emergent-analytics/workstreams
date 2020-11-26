@@ -44,7 +44,29 @@ Before doing that, though, download data first.
 
 ### Docker
 
-This is the recommended installation method as it contains all relevant packages in a working configuration. You will need [docker-compose](https://docs.docker.com/compose/install/) and a working docker installation, then, after cloning the repository, from its top folder, download and build the images
+This is the recommended installation method as it contains all relevant packages in a working configuration. You will need [docker-compose](https://docs.docker.com/compose/install/) and a working docker installation. As a first step, you need a definition of environment variable for your build. In the folder containing this README.md and the docker-compose.yml files,
+
+```
+cp .env.example .env
+```
+
+Then, open up the `.env` file to change/edit its settings (altough the defaults should result in a working configuration)
+
+```
+PUBLIC_WEBSERVER_PORT=8080
+GUMBEL_MAX_WAVES=25
+POSTGRES_PORT=15432
+```
+
+The parameter settings are as follows
+
+| Parameter               | Meaning                                                      | Default |
+| ----------------------- | ------------------------------------------------------------ | ------- |
+| `PUBLIC_WEBSERVER_PORT` | The IP port the webserver will make the cookiecutter app available. Deliberately set to 8080 to avoid clashes with a possibly existing webserver on port 80 | 8080    |
+| `GUMBEL_MAX_WAVES`      | An internal setting for cookiecutter logic defining how many Gumbel distributions should be fitted to a time series. At the time of this writing, a value of about 25 waves seemed sufficient for the 2020 March-end of November time period, as time progresses, a higher number may become necessary. Setting this value to a higher number will cause the application to provision a lot more memory space for plotting the data, which could also cause memory issues on user browsers (this could not be tested).<br />Recommend leave at default unless, by 2021, you see deficiencies. | 25      |
+| `POSTGRES_PORT`         | The externally visible port number to the postgres db inside the docker container suite. Postgres normally uses port 5432, we set it to 15432 to avoid clashes with possibly existing installations. This value needs to be used for the helper jupyter notebook database connection strings. | 15432   |
+
+Then, download and build the images
 
 ```
 docker-compose build
