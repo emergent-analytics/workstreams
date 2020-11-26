@@ -1,11 +1,15 @@
-FROM python:3.8-slim
-RUN pip install --no-cache-dir statsmodels bokeh pandas numpy pycountry xlrd
-WORKDIR /app/cookiecutter
-COPY cookiecutter/main.py .
+FROM python:3.6
+RUN pip install --no-cache-dir statsmodels bokeh pandas numpy pycountry xlrd scikit-learn sqlalchemy ibm-db ibm-db-sa psycopg2
+RUN pip install sklearn-contrib-py-earth
 WORKDIR /app/cookiecutter/static
 COPY cookiecutter/static .
 WORKDIR /app/cookiecutter/templates
 COPY cookiecutter/templates/index.html .
-RUN mkdir -p /app/data
+WORKDIR /app/data
+WORKDIR /app/cookiecutter
+ENV SQL_CONNECT=postgresql://cookiecutter:cookiecutter@database:5432/cookiec
+ENV GUMBEL_MAX_WAVES=25
+ENV DB2CODEPAGE=1208
+COPY cookiecutter/main.py .
 WORKDIR /app
 ENTRYPOINT bokeh serve cookiecutter --allow-websocket-origin="*" --address 0.0.0.0
