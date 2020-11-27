@@ -216,7 +216,7 @@ def generate_shock_profiles(shockdescriptionfile):
 # UI SET UP
 # Initial header
 st.title('Emergent Economic Engine')
-st.write('This app allows you to see how a shock to one sector of the UK economy [1] propagates throughout the national economic network and how it is eventually absorbed over time. \
+st.write('This app allows you to see how a shock to one sector of a national economy [1,2] propagates throughout the national economic network and how it is eventually absorbed over time. \
     You can think of it as a *what-if* type of simulation.')
 st.write('**:point_left: To start, use the menu on the left to choose the parameters of the shock.**')
 
@@ -264,7 +264,7 @@ else:
 
 # Define shocks (up to 5). Could be shock profiles (According to ILO/IMF/other institutions) or user defined
 
-st.sidebar.markdown('## Choose shock profiles (preloaded/custom')
+st.sidebar.markdown('## Choose shock profiles (preloaded (ILO*)/custom)')
 shock_profile = st.sidebar.selectbox(label = 'Region of shock', options = ['ILO', 'Custom'], index = 0, key = 'updown')
 if shock_profile == 'Custom':
     st.sidebar.markdown("### Sector 1")
@@ -498,6 +498,9 @@ st.markdown("We are a team of data scientists from [IBM's Data Science & AI Elit
 st.markdown("_______")
 st.markdown("[1] Office for National Statistics (2020), *UK input-output analytical tables - industry by industry*, URL: \
      https://www.ons.gov.uk/economy/nationalaccounts/supplyandusetables/datasets/ukinputoutputanalyticaltablesindustrybyindustry, last accessed: \
-     27 August 2020. Contains public sector information licensed under the Open Government License v3.0. http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/")
+     27 August 2020. Contains public sector information licensed under the Open Government License v3.0. http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/ ")
+
+st.markdown("[2] http://wiod.org/database/wiots16")
+st.markdown("-- * ILO data listing sectorial shocks available at https://www.ilo.org/global/topics/coronavirus/sectoral/lang--en/index.htm. Use at your discretion")
 
 # Copyright © IBM Corp. 2020. Licensed under the Apache License, Version 2.0. Released as licensed Sample Materials.
