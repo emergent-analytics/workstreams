@@ -13,6 +13,8 @@ Also contains
 * [geospatial knowledge of the world with respect to neighbourhood relationships at country and sub-country level](ws1/geospatial)
 * [a tagging tool for humans to annotate infection waves](ws1/labelling_tool)
 
+![Cookiecutter Preview](cookiecutter.select.gif)
+
 # Workstream 2 - Emergent Pulse
 
 Create a series of index that can we describe the status of a region, for example; What is the sentiment of the population of that region? How are they behaving? How the news and Media changing? How is the tourism industry being affected?
@@ -22,5 +24,4 @@ Create a series of index that can we describe the status of a region, for exampl
 
 Creating a simulation model: What-if scenarios will support Government and Business to quantify the impact of specific measures on countries, regions, counties (i.e. Risk Index) and Industries. 
 
-
-
+![Emergent Economic Engine](e3.png)

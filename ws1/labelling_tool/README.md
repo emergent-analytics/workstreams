@@ -157,6 +157,20 @@ PUBLIC_WEBSERVER_PORT=8080
 
 The container image also ships with an installation of postgres to persist data. We map the postgres port to 15432 by default. You can specify another database backend via a config variable using SQLalchemy style connect strings, note the image only has drivers for postgres and db2 at the moment.
 
+## Introduction videos
+
+### Health and Stringency Tab
+
+![Health and Scringency Tab](cookiecutter.small.gif)
+
+### Economic and Economic Proxies Tab
+
+![Economic and Economic Proxies Tab](cookiecutter.eco.small.gif)
+
+### Fly Forward Modeller Tab
+
+![Fly Forward Modeller Tab](cookiecutter.whatif.small.gif)
+
 ## UI
 
 (need to provide description what it does)
