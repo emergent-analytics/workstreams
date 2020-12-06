@@ -30,11 +30,11 @@ The folder - airport_restrictions contain the analysis done on NOTAM data and tr
 
 Named Entity Recognizer was used to identify country names mentioned in the data.
 
-[!NER](restrictions_ner.png)
+![NER](restrictions_ner.png)
 
 Part of speech tagging was used to identify the verbs in the sentences and rules were used to determine if the verb had a positive or negative connotation.
 
-[!POS tagging](restrictions_pos_tagging.png)
+![POS tagging](restrictions_pos_tagging.png)
 
 ## Airbnb analysis
 
