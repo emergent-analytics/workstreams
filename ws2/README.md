@@ -28,6 +28,14 @@ The folder - airport_restrictions contain the analysis done on NOTAM data and tr
 * ws2_snr_validation_information_extraction_rules.ipynb - validation of the information extraction rules based on the results generated using NOTAM and travel restriction data from humanitarian exchange
 * ws2_snr_travel_advisory_data_download.ipynb - travel risk index from travel-advisory website that provides a travel risk index for each country based on the travel advisories from different foreign countries.
 
+Named Entity Recognizer was used to identify country names mentioned in the data.
+
+[!NER](restrictions_ner.png)
+
+Part of speech tagging was used to identify the verbs in the sentences and rules were used to determine if the verb had a positive or negative connotation.
+
+[!POS tagging](restrictions_pos_tagging.png)
+
 ## Airbnb analysis
 
 The Airbnb folder contains the analysis done on the InsideAirbnb data: http://insideairbnb.com/get-the-data.html. The aim of this analysis is to offer data-driven insights into the new trends in tourism and hospitality. The following summarises the content of Airbnb notebooks.
