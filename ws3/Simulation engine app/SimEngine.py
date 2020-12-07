@@ -35,6 +35,9 @@ def read_data(path = None, engine = None, table = None, region=None):
         
     elif (path != None) & (engine == None) & (region == 'CN'):
         _df = pd.read_csv(path + '/A_CN.csv', index_col= 0)
+       
+    elif (path != None) & (engine == None) & (region == 'IN'):
+        _df = pd.read_csv(path + '/A_IN.csv', index_col= 0)
     
     return _df
 
@@ -57,6 +60,10 @@ def read_GVA(path = None, engine = None, table = None, region =None):
         
     elif (path != None) & (engine == None) & (region == 'CN'):
         _GVA = pd.read_csv(path + '/GVA_CN.csv', index_col = [0,1], header = None)
+        _GVA.index = _GVA.index.get_level_values(1).values
+        
+    elif (path != None) & (engine == None) & (region == 'IN'):
+        _GVA = pd.read_csv(path + '/GVA_IN.csv', index_col = [0,1], header = None)
         _GVA.index = _GVA.index.get_level_values(1).values
     
     return _GVA    
@@ -223,7 +230,7 @@ st.sidebar.markdown("# Model parameters")
 st.sidebar.markdown('Use this menu to tailor your *what-if* scenario. You can choose the sectors that you want to shock, the magnitude of the shock and when it happens. \
     You will also be able to choose the parameters of your recovery path.')
 st.sidebar.markdown('## Choose the jurisdiction')
-region_name = st.sidebar.selectbox(label = 'Region of shock', options = ['UK', 'US','DE','CN'], index = 0, key = 'updown')
+region_name = st.sidebar.selectbox(label = 'Region of shock', options = ['UK', 'US','DE','CN','IN'], index = 0, key = 'updown')
 st.sidebar.markdown('## Lever 1. Choose your shocks')
 
 # Define time frame and stream of propagation
@@ -335,7 +342,7 @@ if want_recovery:
     if st.sidebar.checkbox(label = 'Do you want to target any specific sectors?', key = 'specstim'):
         
         st.sidebar.markdown("### Sector 1")
-        rec_1 = st.sidebar.selectbox(label = 'What sector do you want to start by stimulate?', options = df_lev.index, key = 'rec1')
+        rec_1 = st.sidebar.selectbox(label = 'What sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec1')
         rec_val_1 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec1')
         start_rec_1, end_rec_1 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec1')
         
@@ -348,7 +355,7 @@ if want_recovery:
 
         if st.sidebar.checkbox(label = 'Add another sector', key = 'rec2'):
             st.sidebar.markdown("### Sector 2")
-            rec_2 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = df_lev.index, key = 'rec2')
+            rec_2 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec2')
             rec_val_2 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec2')
             start_rec_2, end_rec_2 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec2')
             
@@ -356,7 +363,7 @@ if want_recovery:
 
             if st.sidebar.checkbox(label = 'Add another sector', key = 'rec3'):
                 st.sidebar.markdown("### Sector 3")
-                rec_2 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = df_lev.index, key = 'rec3')
+                rec_2 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec3')
                 rec_val_3 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec3')
                 start_rec_3, end_rec_3 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec3')
                 
@@ -364,7 +371,7 @@ if want_recovery:
 
                 if st.sidebar.checkbox(label = 'Add another sector', key = 'rec4'):
                     st.sidebar.markdown("### Sector 4")
-                    rec_4 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = df_lev.index, key = 'rec4')
+                    rec_4 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec4')
                     rec_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec4')
                     start_rec_4, end_rec_4 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec4')
                     
@@ -372,7 +379,7 @@ if want_recovery:
 
                     if st.sidebar.checkbox(label = 'Add another sector', key = 'rec5'):
                         st.sidebar.markdown("### Sector 5")
-                        rec_5 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = df_lev.index, key = 'rec5')
+                        rec_5 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec5')
                         rec_val_5 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec5')
                         start_rec_5, end_rec_5 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec5')
                         
@@ -416,7 +423,7 @@ st.write(' ### ** Impact of shock on the economy ** \
 df_viz = pd.DataFrame(data = sol * 100, columns = df_lev.columns)
 
 
-viz_columns = st.multiselect(label = 'Select the sectors that you want to visualise:', options = df_lev.columns, default = [], key = 'viz_columns')
+viz_columns = st.multiselect(label = 'Select the sectors that you want to visualise:', options = np.sort(df_lev.columns), default = [], key = 'viz_columns')
 
 if (viz_columns != []):
     df_viz = df_viz[viz_columns]
