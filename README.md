@@ -19,6 +19,10 @@ Also contains
 
 Create a series of index that can we describe the status of a region, for example; What is the sentiment of the population of that region? How are they behaving? How the news and Media changing? How is the tourism industry being affected?
 
+The following image gives an overview of the topics covered in this workstream
+
+![Workstream 2 topics](ws2_overview.png)
+
 
 # Workstream 3 - Simulation Track
 
