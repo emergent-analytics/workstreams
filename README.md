@@ -11,6 +11,8 @@ Create a composed regional Risk Index that takes into account the level of infec
 
 Also contains
 * [geospatial knowledge of the world with respect to neighbourhood relationships at country and sub-country level](ws1/geospatial)
+* [A jupyter notebook that executes parallel threads without the need for a running `ipyparallel` instance](ws1/geospatial/WS3_kp_Knowledge_Graph.ipynb),
+  see computation of neighbours at the bottom
 * [a tagging tool for humans to annotate infection waves](ws1/labelling_tool)
 
 ![Cookiecutter Preview](cookiecutter.select.gif)
