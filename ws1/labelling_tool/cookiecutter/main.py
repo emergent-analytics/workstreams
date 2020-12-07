@@ -413,6 +413,9 @@ def compute_gumbel_waves(df,region="",mincases=2.5,maxwaves=25):
     return alldata
 
 
+"""
+possible dead code
+
 def compute_changepoint_waves(sCountry,ADM0_A3="",country=""):
     # computing waves and "periods of calmness" using a very manual Schmitt-Trigger style detection of gradients up and down
     all_verdicts = []
@@ -458,7 +461,7 @@ def compute_changepoint_waves(sCountry,ADM0_A3="",country=""):
         dfWaves = dfWaves.sort_values(["name","datetime_date"])
         return dfWaves
     else:
-        return pd.DataFrame({"name":[],"datetime_date":[],"kind":[],"wave_no":[]})
+        return pd.DataFrame({"name":[],"datetime_date":[],"kind":[],"wave_no":[]})"""
 
 
 
@@ -837,7 +840,8 @@ class GUIHealth():
 
         # each background box is a BoxAnnotation. Loop through the episode data and color/display them as required.
         conn = self.engine.connect()
-        dfWaves = pd.read_sql("SELECT * from cookiecutter_computed_waves_chgpoint WHERE name='{}'".format(new),conn)
+        # fix for #8
+        dfWaves = pd.read_sql("SELECT * from cookiecutter_computed_waves_chgpoint WHERE name='{}' AND data_source='{}'".format(new,self.dataset_select.value),conn)
         conn.close()
         last = "new"
         box_no = 0
@@ -924,7 +928,7 @@ class GUIHealth():
         for k,v in self.cds_gumbel_waves.data.items():
             newdata[k] = empty_list
         newdata["summed_waves"] = [0 for i in range(len(ddf))]
-        if len(all_waves)>0:
+        if num_waves>0:
             i = 0
             for wave in all_waves:
                 newdata["datetime"] = wave["datetime_date"]
@@ -935,6 +939,11 @@ class GUIHealth():
                 newdata["trend"] = dfData[(min(newdata["datetime"])<=dfData["datetime_date"]) & (dfData["datetime_date"] <= max(newdata["datetime"]))]["trend"]
             except:
                 pass # strange error
+        else:
+            # address issue #7, else datetime is set to zero
+            newdata["datetime"] = dfData.datetime_date
+            newdata["trend"] = dfData.trend
+        
         self.cds_gumbel_waves.data = newdata
 
         i = 0
@@ -956,9 +965,14 @@ class GUIHealth():
             self.p_oxcluster.visible = True
             for k in self.cds_oxcluster.data.keys():
                 newdata[k] = df[k].values
+            # issue #9
+            # this will not cause the parent diagram to be updated as it creates a new Range
+            #self.p_oxcluster.y_range = FactorRange(factors=sorted(df.country.unique(),reverse=True))
+            # 
+            # this reassigns new country names to the y axis range, as intended
+            self.p_oxcluster.y_range.factors=sorted(df.country.unique(),reverse=True)
             self.cds_oxcluster.data = newdata
             self.p_oxcluster.height = 50+15*len(df.country.unique())
-            self.p_oxcluster.y_range = FactorRange(factors=sorted(df.country.unique(),reverse=True))
         else:
             self.p_oxcluster.visible = False
 
@@ -1255,6 +1269,8 @@ class GUIHealth():
             The histogram and heatmap data are populated based on your votes. Refer to <a href="https://github.com/emergent-analytics/workstreams" style="color:#DDDDDD;">emergent-analytics 
             workstreams github repository</a> for license terms, and further documentation.
             """)
+
+        self.intro_text = Div(text="<H1>Hello</H1>",css_classes=["dim_screen"])
 
         # The return value is a row/column/widget array that defines the arrangement of the various elements.
         return(row([column([self.progress_bar,
