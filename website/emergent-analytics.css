@@ -1,0 +1,27 @@
+@font-face {
+	font-family: "IBM-plex-sans";
+	src: local('☺'), url('fonts/IBMPlexSans-Regular.woff2') format('woff2');
+	font-weight: 900;
+	font-style: normal;
+}
+body {
+	/* font-family: "Ostrich Sans"  !important; */
+	font-family: "IBM-plex-sans"  !important;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+	color: #fff;
+	background: #252425;
+	height: 100%;
+	width: 100%;
+}
+
+body.fade {
+	opacity: 0.5;
+}
+
+* {
+	font-family: "IBM-plex-sans" !important;
+	-webkit-font-smoothing: antialiased;
+	text-rendering: optimizeLegibility;
+}
+
