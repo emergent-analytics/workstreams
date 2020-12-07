@@ -34,9 +34,7 @@ def read_data(path = None, engine = None, table = None, region=None):
         _df = pd.read_csv(path + '/A_DE.csv', index_col= 0)
         
     elif (path != None) & (engine == None) & (region == 'CN'):
-        _df = pd.read_csv(path + '/A_CN.csv', header = [0, 1], index_col= [0, 1])
-        _df.columns = _df.index.get_level_values(1).values
-        _df.index = _df.columns
+        _df = pd.read_csv(path + '/A_CN.csv', index_col= 0)
     
     return _df
 
