@@ -269,11 +269,11 @@ else:
 
 # Define shocks (up to 5). Could be shock profiles (According to ILO/IMF/other institutions) or user defined
 
-st.sidebar.markdown('## Choose shock profiles (preloaded (ILO*)/custom)')
-shock_profile = st.sidebar.selectbox(label = 'Region of shock', options = ['ILO', 'Custom'], index = 0, key = 'updown')
+st.sidebar.markdown('## Choose shock profiles')
+shock_profile = st.sidebar.selectbox(label = 'Shock options', options = ['Custom','Preloaded*'], index = 0, key = 'updown')
 if shock_profile == 'Custom':
     st.sidebar.markdown("### Sector 1")
-    sector_1 = st.sidebar.selectbox(label = 'What sector do you want to start by shocking?', options = df_lev.index, key = 'sect1')
+    sector_1 = st.sidebar.selectbox(label = 'What sector do you want to start by shocking?', options = np.sort(df_lev.index), key = 'sect1')
     shock_val_1 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect1')
     start_sector_1, end_sector_1 = st.sidebar.slider("How many months would you like your initial shock to persist?", min_value = 0, max_value = months, value = [0, 6], key = 'sect1')
 
@@ -286,28 +286,28 @@ if shock_profile == 'Custom':
 
     if st.sidebar.checkbox(label = 'Add another sector', key = 'sect2'):
         st.sidebar.markdown("### Sector 2")
-        sector_2 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect2')
+        sector_2 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect2')
         shock_val_2 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect2')
         start_sector_2, end_sector_2 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect2')
         shocked_sectors.append(sector_2)
 
         if st.sidebar.checkbox(label = 'Add another sector', key = 'sect3'):
             st.sidebar.markdown("### Sector 3")
-            sector_3 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect3')
+            sector_3 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect3')
             shock_val_3 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect3')
             start_sector_3, end_sector_3 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect3')
             shocked_sectors.append(sector_3)
 
             if st.sidebar.checkbox(label = 'Add another sector', key = 'sect4'):
                 st.sidebar.markdown("### Sector 4")
-                sector_4 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect4')
+                sector_4 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect4')
                 shock_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 1.0, value = 100.00, key = 'sect4')
                 start_sector_4, end_sector_4 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect4')
                 shocked_sectors.append(sector_4)
 
                 if st.sidebar.checkbox(label = 'Add another sector', key = 'sect5'):
                     st.sidebar.markdown("### Sector 5")
-                    sector_5 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect5')
+                    sector_5 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect5')
                     shock_val_5 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect5')
                     start_sector_5, end_sector_5 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect5')
                     shocked_sectors.append(sector_5)
@@ -318,7 +318,7 @@ if shock_profile == 'Custom':
                         sector_4: (start_sector_4 / 12, end_sector_4 / 12, shock_val_4 / 100),
                         sector_5: (start_sector_5 / 12, end_sector_5 / 12, shock_val_5 / 100)}
 
-elif shock_profile == 'ILO':
+elif shock_profile == 'Preloaded':
     sectors_n_shocks = generate_shock_profiles('iloshock_%s'%(region_name))
     shocked_sectors = list(sectors_n_shocks.keys())
 
@@ -423,7 +423,7 @@ st.write(' ### ** Impact of shock on the economy ** \
 df_viz = pd.DataFrame(data = sol * 100, columns = df_lev.columns)
 
 
-viz_columns = st.multiselect(label = 'Select the sectors that you want to visualise:', options = np.sort(df_lev.columns), default = [], key = 'viz_columns')
+viz_columns = st.multiselect(label = 'Select the sectors that you want to visualise:', options = df_lev.columns, default = [], key = 'viz_columns')
 
 if (viz_columns != []):
     df_viz = df_viz[viz_columns]
@@ -449,9 +449,10 @@ xtick = x_max if x_max > x_min else x_min
 
 fig = px.bar(x = total_change.drop(index = shocked_sectors).sort_values(ascending=True),
             # y = total_change.drop(index = sectors).index,
-            color=total_change.drop(index = shocked_sectors).index,
+            color=total_change.drop(index = shocked_sectors).sort_values(ascending=True).index,
             color_discrete_sequence=px.colors.sequential.Redor
             )
+#print(total_change.drop(index = shocked_sectors).sort_values(ascending=True))
 fig.layout.update(showlegend = False, width = 800, height = 800, template = 'simple_white', 
                 yaxis = dict(showline = False, showticklabels = False, color = 'white'),
                 xaxis = dict(title_text = '% change', range = [-xtick, xtick]))
@@ -506,6 +507,6 @@ st.markdown("[1] Office for National Statistics (2020), *UK input-output analyti
      27 August 2020. Contains public sector information licensed under the Open Government License v3.0. http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/ ")
 
 st.markdown("[2] http://wiod.org/database/wiots16")
-st.markdown("-- * ILO data listing sectorial shocks available at https://www.ilo.org/global/topics/coronavirus/sectoral/lang--en/index.htm. Use at your discretion")
+st.markdown("-- * Typical data listing sectorial shocks available at for example, https://www.ilo.org/global/topics/coronavirus/sectoral/lang--en/index.htm. Simulation parameters considered here are for illustrative purposes only. Authors do not assume resposibility for accuracy. Please contact the authors for integrating other shock sources or regarding technical improvements")
 
 # Copyright © IBM Corp. 2020. Licensed under the Apache License, Version 2.0. Released as licensed Sample Materials.
