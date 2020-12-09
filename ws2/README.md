@@ -67,11 +67,13 @@ The following blog posts can provide more information on the analysis and result
  
 ## Team
 
-IBM:
-* Mehrnoosh Vahdat is Data Scientist with Data Science & AI Elite team where she specializes in Data Science, Analytics platforms, and Machine Learning solutions.
-* Vincent Nelis is Senior Data Scientist with Data Science & AI Elite team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.
-* Anthony Ayanwale is Data Scientist with CPAT team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.   
+#### IBM:
+* **Mehrnoosh Vahdat** is Data Scientist with Data Science & AI Elite team where she specializes in Data Science, Analytics platforms, and Machine Learning solutions.
+* **Vincent Nelis** is Senior Data Scientist with Data Science & AI Elite team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.
+* **Anthony Ayanwale** is Data Scientist with CPAT team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.   
+* **Álvaro Corrales Cano** is a Data Scientist within IBM's Cloud Pak Acceleration team. With a background in Economics, Álvaro specialises in a wide array Econometric techniques and causal inference, including regression, discrete choice models, time series and duration analysis.
+* **Ananda Pal** is a Data Scientist and Performance Test Analyst at IBM, where he specialises in Data Science and Machine Learning Solutions.
 
-Rolls Royce:
+#### Rolls Royce:
 * Shri Nishanth Rajendran - AI Development Specialist, R² Data Labs, Rolls Royce
 * Maria Ivanciu is AI Developer in R2 Data Labs, Rolls-Royce. 
