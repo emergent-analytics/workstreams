@@ -47,6 +47,13 @@ The Airbnb folder contains the analysis done on the InsideAirbnb data: http://in
 
 The meltwater folder is a Python package that provides a client to access the Export APIs from Meltwater: https://developer.meltwater.com. Note that we do not provide an interface to all the endpoints exposed by API. We only provide an interface to two groups of endpoints: the "searches" endpoints and the "One-time export" endpoints. However, the client can easily be extended to include the other groups of endpoints. 
 
+## Social Media
+The Social Media forlder contains our analysis of Twitter data in the local areas of Nottingham and Liverpool. Twitter data allows us to monitor what type of information around Covid-19 is being shared in a local area. Some of the work we’ve done so far includes:
+* Analyse the content of tweets. We can infer the sentiment and emotions associated to a body of text. Based on its content, we can also classify it with similar tweets that share a common “topic” using Topic Modelling techniques.
+* Identify what type information is more popular in an area (viral tweets).
+* Identify who are key spreaders of such information - or influencers.
+
+
 ## Our Results
 The following blog posts can provide more information on the analysis and results of our work:
 
