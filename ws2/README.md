@@ -75,5 +75,5 @@ IBM:
 * **Ananda Pal** is a Data Scientist and Performance Test Analyst at IBM, where he specialises in Data Science and Machine Learning Solutions.
 
 Rolls Royce:
-* Shri Nishanth Rajendran - AI Development Specialist, R² Data Labs, Rolls Royce
-* Maria Ivanciu is AI Developer in R2 Data Labs, Rolls-Royce. 
+* **Shri Nishanth Rajendran** - AI Development Specialist, R² Data Labs, Rolls Royce
+* **Maria Ivanciu** is AI Developer in R2 Data Labs, Rolls-Royce. 
