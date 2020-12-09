@@ -319,7 +319,7 @@ if shock_profile == 'Custom':
                         sector_4: (start_sector_4 / 12, end_sector_4 / 12, shock_val_4 / 100),
                         sector_5: (start_sector_5 / 12, end_sector_5 / 12, shock_val_5 / 100)}
 
-elif shock_profile == 'Preloaded':
+elif shock_profile == 'Preloaded*':
     sectors_n_shocks = generate_shock_profiles('iloshock_%s'%(region_name))
     shocked_sectors = list(sectors_n_shocks.keys())
 
