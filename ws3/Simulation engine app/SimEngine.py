@@ -1,7 +1,8 @@
 # TITLE: SIMULATION ENGINE APP
 # DESCRIPTION: This code outputs the Emergent Alliance's Simulation Engine to an app that can be interacted with using a web browser.  
 # AUTHOR: Alvaro Corrales Cano - Data Scientist at IBM
-# This is version 8 of the app
+# v1 - Alvaro Corrales Cano
+# v2 - Deepak Shankar Srinivasan, Alvaro Corrales Cano
 
 # IMPORTS
 import streamlit as st
@@ -223,7 +224,7 @@ def generate_shock_profiles(shockdescriptionfile):
 st.title('Emergent Economic Engine')
 st.write('This app allows you to see how a shock to one sector of a national economy [1,2] propagates throughout the national economic network and how it is eventually absorbed over time. \
     You can think of it as a *what-if* type of simulation.')
-st.write('**:point_left: To start, use the menu on the left to choose the parameters of the shock.**')
+st.write('**To start, use the menu on the left to choose the parameters of the shock.**')
 
 # Model parameter selection using UI - Sidebar set up
 st.sidebar.markdown("# Model parameters")
@@ -301,7 +302,7 @@ if shock_profile == 'Custom':
             if st.sidebar.checkbox(label = 'Add another sector', key = 'sect4'):
                 st.sidebar.markdown("### Sector 4")
                 sector_4 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect4')
-                shock_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 1.0, value = 100.00, key = 'sect4')
+                shock_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect4')
                 start_sector_4, end_sector_4 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect4')
                 shocked_sectors.append(sector_4)
 
@@ -363,7 +364,7 @@ if want_recovery:
 
             if st.sidebar.checkbox(label = 'Add another sector', key = 'rec3'):
                 st.sidebar.markdown("### Sector 3")
-                rec_2 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec3')
+                rec_3 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec3')
                 rec_val_3 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec3')
                 start_rec_3, end_rec_3 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec3')
                 
@@ -416,7 +417,7 @@ if want_recovery:
 
 # VISUALISATION
 # Time dynamics with no recovery
-st.write(' ### ** Impact of shock on the economy ** \
+st.write(' ### ** Lever 1 - Impact of shock on the economy ** \
         \n In the chart below we can how the shock is propagated throughout the different sectors of the economy and it is absorbed as time passes. \
         \n \n Hover over the chart to see what sectors are the most affected at each point in time.')
 
@@ -462,7 +463,7 @@ if want_recovery:
 
     change_intervention = round(total_out_loss(sol_rec, np.linspace(0,years,months), by_sector = False, GVA_vec= GVA_vec) * 100, 2)
 
-    st.write(' ### ** Countermeasuring the shock ** ', \
+    st.write(' ### ** Lever 2 - Countermeasuring the shock ** ', \
             "\n In case of no intervention, the output change would be", change_no_intervention.iloc[0], "%." 
             "\n The selected intervention strategy would yield a change in total output of", change_intervention.iloc[0], "%.")
     
