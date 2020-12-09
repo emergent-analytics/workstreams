@@ -1,7 +1,8 @@
 # TITLE: SIMULATION ENGINE APP
 # DESCRIPTION: This code outputs the Emergent Alliance's Simulation Engine to an app that can be interacted with using a web browser.  
 # AUTHOR: Alvaro Corrales Cano - Data Scientist at IBM
-# This is version 8 of the app
+# v1 - Alvaro Corrales Cano
+# v2 - Deepak Shankar Srinivasan, Alvaro Corrales Cano
 
 # IMPORTS
 import streamlit as st
@@ -10,31 +11,60 @@ import numpy as np
 import plotly.express as px
 from scipy.integrate import odeint, simps
 from sqlalchemy import create_engine
+import json
 
 # CLASS AND FUNCTION DEFINITIONS
 # Read data in
 @st.cache
-def read_data(path = None, engine = None, table = None):
+def read_data(path = None, engine = None, table = None, region=None):
     if (path == None) & (engine != None):
         _df = pd.read_sql(table, engine)
         _df.index = _df['Sectors']
         _df.drop(columns = 'Sectors', inplace = True)
         _df.columns = _df.index
 
-    elif (path != None) & (engine == None):
+    elif (path != None) & (engine == None) & ((region == 'UK') | (region is None)):
         _df = pd.read_csv(path + '/A_UK.csv', header = [0, 1], index_col= [0, 1])
         _df.columns = _df.index.get_level_values(1).values
         _df.index = _df.columns
+        
+    elif (path != None) & (engine == None) & (region == 'US'):
+        _df = pd.read_csv(path + '/A_US.csv', index_col=0)  
+        
+    elif (path != None) & (engine == None) & (region == 'DE'):
+        _df = pd.read_csv(path + '/A_DE.csv', index_col= 0)
+        
+    elif (path != None) & (engine == None) & (region == 'CN'):
+        _df = pd.read_csv(path + '/A_CN.csv', index_col= 0)
+       
+    elif (path != None) & (engine == None) & (region == 'IN'):
+        _df = pd.read_csv(path + '/A_IN.csv', index_col= 0)
     
     return _df
 
 @st.cache
-def read_GVA(path = None, engine = None, table = None):
+def read_GVA(path = None, engine = None, table = None, region =None):
     if (path == None) & (engine != None):
         _GVA = pd.read_sql(table, engine) # - TBC
 
-    elif (path != None) & (engine == None):
+    elif (path != None) & (engine == None) & ((region == 'UK') | (region is None)):
         _GVA = pd.read_csv(path + '/GVA_UK.csv', index_col = [0,1], header = None)
+        _GVA.index = _GVA.index.get_level_values(1).values
+        
+    elif (path != None) & (engine == None) & (region == 'US'):
+        _GVA = pd.read_csv(path + '/GVA_US.csv', index_col = [0,1], header = None)
+        _GVA.index = _GVA.index.get_level_values(1).values
+        
+    elif (path != None) & (engine == None) & (region == 'DE'):
+        _GVA = pd.read_csv(path + '/GVA_DE.csv', index_col = [0,1], header = None)
+        _GVA.index = _GVA.index.get_level_values(1).values
+        
+    elif (path != None) & (engine == None) & (region == 'CN'):
+        _GVA = pd.read_csv(path + '/GVA_CN.csv', index_col = [0,1], header = None)
+        _GVA.index = _GVA.index.get_level_values(1).values
+        
+    elif (path != None) & (engine == None) & (region == 'IN'):
+        _GVA = pd.read_csv(path + '/GVA_IN.csv', index_col = [0,1], header = None)
         _GVA.index = _GVA.index.get_level_values(1).values
     
     return _GVA    
@@ -45,7 +75,8 @@ class LeonTradeModel:
     def __init__(self,df_A,demand='unit', type = 'Upstream'):
         self.df_A = df_A
         self.sector_indices = df_A.index.get_level_values(0).values
-        self.sectors =  df_A.index.get_level_values(0).unique().values        
+        self.sectors =  df_A.index.get_level_values(0).unique().values
+        #print(self.sectors)        
         if type == 'Upstream':
             self.A = df_A.values
         elif type == 'Downstream':
@@ -54,7 +85,13 @@ class LeonTradeModel:
             self.d_base = np.ones(len(df_A))
         else:
             self.d_base = demand
-        self.x_base = np.dot(self.df_A.values,self.d_base)
+        try:
+            self.x_base = np.dot(self.df_A.values,self.d_base)
+            #print(self.df_A.values)
+
+        except Exception as e:
+            print(self.df_A.values)
+            print(e)
         self.x_out = self.x_base
         
     def shock_impulse(self, sectors_n_shocks=None, general_shock = [0, 0, 0]):
@@ -64,6 +101,7 @@ class LeonTradeModel:
         
         for sector in sectors_n_shocks:
             shock_vec[sector] = sectors_n_shocks[sector]
+        #print(shock_vec)
 
         return shock_vec
 
@@ -100,9 +138,9 @@ def economic_dynamics_ode(y,t, A, sectors, external_shock_vec_dict):
         economic_dynamics_ode.time_vec = [t]
     shock_vec = pd.Series(data = np.zeros(len(A)), index = sectors)
     for _sector_idx, _shock_attrs in external_shock_vec_dict.items():
-        if (t>=_shock_attrs[0]) & (t<=_shock_attrs[1]):
-            shock_vec[_sector_idx] = _shock_attrs[2]    
-
+        if (t>=_shock_attrs[0]) & (t<=_shock_attrs[1]) & (_sector_idx in shock_vec.index):
+            shock_vec[_sector_idx] = _shock_attrs[2]  
+    #print(len(shock_vec),len(y),A.shape)            
     return np.dot(A-np.eye(A.shape[0]),y) + shock_vec
 
 # Propagation dynamics with recovery
@@ -158,35 +196,42 @@ def total_out_loss(sol,time_vec, by_sector = True, sectors = None, GVA_vec = Non
         num_sectors = sol.shape[1]
         tot_out_loss = 0
         for n in range(num_sectors):
+            #print(GVA_vec.iloc[n],GVA_vec.sum())
             tot_out_loss += simps(sol[:,n],time_vec) * GVA_vec.iloc[n] / GVA_vec.sum()
     
     return tot_out_loss
+    
+    
+def generate_shock_profiles(shockdescriptionfile):
+    with open(shockdescriptionfile,'r') as fh:
+        shock_dat = fh.readlines()
+    
+    shock_dict = {}
+    for _ in shock_dat:
+        try:
+            sdat = json.loads(_)
+            shock_dict[sdat['sector']] = (sdat['start']/12,sdat['end']/12,sdat['val']/100)
+        except:
+            print(_)
+    print(shock_dict)
+    return shock_dict
+    
+        
 
-# READ DATA IN
-# Read A matrix locally
-df_lev = read_data(path = '.')
-# Read GVA matrix 
-GVA_vec = read_GVA(path = '.')
-
-# Can also read from Db2 database if preferred
-# string = "------"
-# engine = create_engine(string)
-# table = 'a_uk'
-# df_lev = read_data(engine = engine, table = table)
-# table = 'gva_uk'
-# GVA_vec = read_GVA(engine = engine, table = table)
 
 # UI SET UP
 # Initial header
 st.title('Emergent Economic Engine')
-st.write('This app allows you to see how a shock to one sector of the UK economy [1] propagates throughout the national economic network and how it is eventually absorbed over time. \
+st.write('This app allows you to see how a shock to one sector of a national economy [1,2] propagates throughout the national economic network and how it is eventually absorbed over time. \
     You can think of it as a *what-if* type of simulation.')
-st.write('**:point_left: To start, use the menu on the left to choose the parameters of the shock.**')
+st.write('**To start, use the menu on the left to choose the parameters of the shock.**')
 
 # Model parameter selection using UI - Sidebar set up
 st.sidebar.markdown("# Model parameters")
 st.sidebar.markdown('Use this menu to tailor your *what-if* scenario. You can choose the sectors that you want to shock, the magnitude of the shock and when it happens. \
     You will also be able to choose the parameters of your recovery path.')
+st.sidebar.markdown('## Choose the jurisdiction')
+region_name = st.sidebar.selectbox(label = 'Region of shock', options = ['UK', 'US','DE','CN','IN'], index = 0, key = 'updown')
 st.sidebar.markdown('## Lever 1. Choose your shocks')
 
 # Define time frame and stream of propagation
@@ -197,6 +242,23 @@ months = years * 12
 
 type_shock = st.sidebar.selectbox(label = 'Do you want your shock to propagate upstream or downstream the supply chain?', options = ['Upstream', 'Downstream'], index = 0, key = 'updown')
 
+# READ DATA IN
+# Read A matrix locally
+df_lev = read_data(path = '.',region=region_name)
+# Read GVA matrix 
+GVA_vec = read_GVA(path = '.',region=region_name)
+# Need to reform GVA_vec for the US, where more gva"s present
+GVA_vec = GVA_vec.loc[df_lev.index.get_level_values(0).unique().values]
+
+# Can also read from Db2 database if preferred
+# string = "------"
+# engine = create_engine(string)
+# table = 'a_uk'
+# df_lev = read_data(engine = engine, table = table)
+# table = 'gva_uk'
+# GVA_vec = read_GVA(engine = engine, table = table)
+
+
 # Economy-wide shock
 if st.sidebar.checkbox(label = 'Add an economy-wide shock (e.g. general for all sectors)', key = 'genshock'):
     st.sidebar.markdown("### Economy-wide initial shock")
@@ -206,52 +268,61 @@ if st.sidebar.checkbox(label = 'Add an economy-wide shock (e.g. general for all 
 else:
      general_shock_list = [0, 0, 0]
 
-# Define shocks (up to 5)
-st.sidebar.markdown("### Sector 1")
-sector_1 = st.sidebar.selectbox(label = 'What sector do you want to start by shocking?', options = df_lev.index, key = 'sect1')
-shock_val_1 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect1')
-start_sector_1, end_sector_1 = st.sidebar.slider("How many months would you like your initial shock to persist?", min_value = 0, max_value = months, value = [0, 6], key = 'sect1')
+# Define shocks (up to 5). Could be shock profiles (According to ILO/IMF/other institutions) or user defined
 
-shocked_sectors = [sector_1]
+st.sidebar.markdown('## Choose shock profiles')
+shock_profile = st.sidebar.selectbox(label = 'Shock options', options = ['Custom','Preloaded*'], index = 0, key = 'updown')
+if shock_profile == 'Custom':
+    st.sidebar.markdown("### Sector 1")
+    sector_1 = st.sidebar.selectbox(label = 'What sector do you want to start by shocking?', options = np.sort(df_lev.index), key = 'sect1')
+    shock_val_1 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect1')
+    start_sector_1, end_sector_1 = st.sidebar.slider("How many months would you like your initial shock to persist?", min_value = 0, max_value = months, value = [0, 6], key = 'sect1')
 
-sector_2, shock_val_2, start_sector_2, end_sector_2 = 0, 0, 0, 0
-sector_3, shock_val_3, start_sector_3, end_sector_3 = 0, 0, 0, 0
-sector_4, shock_val_4, start_sector_4, end_sector_4 = 0, 0, 0, 0
-sector_5, shock_val_5, start_sector_5, end_sector_5 = 0, 0, 0, 0
+    shocked_sectors = [sector_1]
 
-if st.sidebar.checkbox(label = 'Add another sector', key = 'sect2'):
-    st.sidebar.markdown("### Sector 2")
-    sector_2 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect2')
-    shock_val_2 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect2')
-    start_sector_2, end_sector_2 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect2')
-    shocked_sectors.append(sector_2)
+    sector_2, shock_val_2, start_sector_2, end_sector_2 = 0, 0, 0, 0
+    sector_3, shock_val_3, start_sector_3, end_sector_3 = 0, 0, 0, 0
+    sector_4, shock_val_4, start_sector_4, end_sector_4 = 0, 0, 0, 0
+    sector_5, shock_val_5, start_sector_5, end_sector_5 = 0, 0, 0, 0
 
-    if st.sidebar.checkbox(label = 'Add another sector', key = 'sect3'):
-        st.sidebar.markdown("### Sector 3")
-        sector_3 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect3')
-        shock_val_3 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect3')
-        start_sector_3, end_sector_3 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect3')
-        shocked_sectors.append(sector_3)
+    if st.sidebar.checkbox(label = 'Add another sector', key = 'sect2'):
+        st.sidebar.markdown("### Sector 2")
+        sector_2 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect2')
+        shock_val_2 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect2')
+        start_sector_2, end_sector_2 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect2')
+        shocked_sectors.append(sector_2)
 
-        if st.sidebar.checkbox(label = 'Add another sector', key = 'sect4'):
-            st.sidebar.markdown("### Sector 4")
-            sector_4 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect4')
-            shock_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 1.0, value = 100.00, key = 'sect4')
-            start_sector_4, end_sector_4 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect4')
-            shocked_sectors.append(sector_4)
+        if st.sidebar.checkbox(label = 'Add another sector', key = 'sect3'):
+            st.sidebar.markdown("### Sector 3")
+            sector_3 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect3')
+            shock_val_3 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect3')
+            start_sector_3, end_sector_3 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect3')
+            shocked_sectors.append(sector_3)
 
-            if st.sidebar.checkbox(label = 'Add another sector', key = 'sect5'):
-                st.sidebar.markdown("### Sector 5")
-                sector_5 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = df_lev.index, key = 'sect5')
-                shock_val_5 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect5')
-                start_sector_5, end_sector_5 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect5')
-                shocked_sectors.append(sector_5)
+            if st.sidebar.checkbox(label = 'Add another sector', key = 'sect4'):
+                st.sidebar.markdown("### Sector 4")
+                sector_4 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect4')
+                shock_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect4')
+                start_sector_4, end_sector_4 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect4')
+                shocked_sectors.append(sector_4)
 
-sectors_n_shocks = {sector_1: (start_sector_1 / 12, end_sector_1 / 12, shock_val_1 / 100),
-                    sector_2: (start_sector_2 / 12, end_sector_2 / 12, shock_val_2 / 100),
-                    sector_3: (start_sector_3 / 12, end_sector_3 / 12, shock_val_3 / 100),
-                    sector_4: (start_sector_4 / 12, end_sector_4 / 12, shock_val_4 / 100),
-                    sector_5: (start_sector_5 / 12, end_sector_5 / 12, shock_val_5 / 100)}
+                if st.sidebar.checkbox(label = 'Add another sector', key = 'sect5'):
+                    st.sidebar.markdown("### Sector 5")
+                    sector_5 = st.sidebar.selectbox(label = 'What other sector do you want to shock?', options = np.sort(df_lev.index), key = 'sect5')
+                    shock_val_5 = st.sidebar.slider(label = 'What will be the relative magnitude of this shock (percentage)?', min_value = -100.0, max_value = 100.0, value = 1.0, key = 'sect5')
+                    start_sector_5, end_sector_5 = st.sidebar.slider("Between what months do you want this shock to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'sect5')
+                    shocked_sectors.append(sector_5)
+
+    sectors_n_shocks = {sector_1: (start_sector_1 / 12, end_sector_1 / 12, shock_val_1 / 100),
+                        sector_2: (start_sector_2 / 12, end_sector_2 / 12, shock_val_2 / 100),
+                        sector_3: (start_sector_3 / 12, end_sector_3 / 12, shock_val_3 / 100),
+                        sector_4: (start_sector_4 / 12, end_sector_4 / 12, shock_val_4 / 100),
+                        sector_5: (start_sector_5 / 12, end_sector_5 / 12, shock_val_5 / 100)}
+
+elif shock_profile == 'Preloaded*':
+    sectors_n_shocks = generate_shock_profiles('iloshock_%s'%(region_name))
+    shocked_sectors = list(sectors_n_shocks.keys())
+
 
 # Choose a recovery path
 st.sidebar.markdown('## Lever 2. Choose your recovery strategy (optional)')
@@ -272,7 +343,7 @@ if want_recovery:
     if st.sidebar.checkbox(label = 'Do you want to target any specific sectors?', key = 'specstim'):
         
         st.sidebar.markdown("### Sector 1")
-        rec_1 = st.sidebar.selectbox(label = 'What sector do you want to start by stimulate?', options = df_lev.index, key = 'rec1')
+        rec_1 = st.sidebar.selectbox(label = 'What sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec1')
         rec_val_1 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec1')
         start_rec_1, end_rec_1 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec1')
         
@@ -285,7 +356,7 @@ if want_recovery:
 
         if st.sidebar.checkbox(label = 'Add another sector', key = 'rec2'):
             st.sidebar.markdown("### Sector 2")
-            rec_2 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = df_lev.index, key = 'rec2')
+            rec_2 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec2')
             rec_val_2 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec2')
             start_rec_2, end_rec_2 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec2')
             
@@ -293,7 +364,7 @@ if want_recovery:
 
             if st.sidebar.checkbox(label = 'Add another sector', key = 'rec3'):
                 st.sidebar.markdown("### Sector 3")
-                rec_2 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = df_lev.index, key = 'rec3')
+                rec_3 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec3')
                 rec_val_3 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec3')
                 start_rec_3, end_rec_3 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec3')
                 
@@ -301,7 +372,7 @@ if want_recovery:
 
                 if st.sidebar.checkbox(label = 'Add another sector', key = 'rec4'):
                     st.sidebar.markdown("### Sector 4")
-                    rec_4 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = df_lev.index, key = 'rec4')
+                    rec_4 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec4')
                     rec_val_4 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec4')
                     start_rec_4, end_rec_4 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec4')
                     
@@ -309,7 +380,7 @@ if want_recovery:
 
                     if st.sidebar.checkbox(label = 'Add another sector', key = 'rec5'):
                         st.sidebar.markdown("### Sector 5")
-                        rec_5 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = df_lev.index, key = 'rec5')
+                        rec_5 = st.sidebar.selectbox(label = 'What other sector do you want to start by stimulate?', options = np.sort(df_lev.index), key = 'rec5')
                         rec_val_5 = st.sidebar.slider(label = 'What will be the relative magnitude of this stimulus (percentage)?', min_value = 0.0, max_value = 100.0, value = 1.0, key = 'rec5')
                         start_rec_5, end_rec_5 = st.sidebar.slider("Between what months do you want this stimulus to happen?", min_value = 0, max_value = months, value = [0, 6], key = 'rec5')
                         
@@ -346,7 +417,7 @@ if want_recovery:
 
 # VISUALISATION
 # Time dynamics with no recovery
-st.write(' ### ** Impact of shock on the economy ** \
+st.write(' ### ** Lever 1 - Impact of shock on the economy ** \
         \n In the chart below we can how the shock is propagated throughout the different sectors of the economy and it is absorbed as time passes. \
         \n \n Hover over the chart to see what sectors are the most affected at each point in time.')
 
@@ -379,9 +450,10 @@ xtick = x_max if x_max > x_min else x_min
 
 fig = px.bar(x = total_change.drop(index = shocked_sectors).sort_values(ascending=True),
             # y = total_change.drop(index = sectors).index,
-            color=total_change.drop(index = shocked_sectors).index,
+            color=total_change.drop(index = shocked_sectors).sort_values(ascending=True).index,
             color_discrete_sequence=px.colors.sequential.Redor
             )
+#print(total_change.drop(index = shocked_sectors).sort_values(ascending=True))
 fig.layout.update(showlegend = False, width = 800, height = 800, template = 'simple_white', 
                 yaxis = dict(showline = False, showticklabels = False, color = 'white'),
                 xaxis = dict(title_text = '% change', range = [-xtick, xtick]))
@@ -391,7 +463,7 @@ if want_recovery:
 
     change_intervention = round(total_out_loss(sol_rec, np.linspace(0,years,months), by_sector = False, GVA_vec= GVA_vec) * 100, 2)
 
-    st.write(' ### ** Countermeasuring the shock ** ', \
+    st.write(' ### ** Lever 2 - Countermeasuring the shock ** ', \
             "\n In case of no intervention, the output change would be", change_no_intervention.iloc[0], "%." 
             "\n The selected intervention strategy would yield a change in total output of", change_intervention.iloc[0], "%.")
     
@@ -433,6 +505,9 @@ st.markdown("We are a team of data scientists from [IBM's Data Science & AI Elit
 st.markdown("_______")
 st.markdown("[1] Office for National Statistics (2020), *UK input-output analytical tables - industry by industry*, URL: \
      https://www.ons.gov.uk/economy/nationalaccounts/supplyandusetables/datasets/ukinputoutputanalyticaltablesindustrybyindustry, last accessed: \
-     27 August 2020. Contains public sector information licensed under the Open Government License v3.0. http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/")
+     27 August 2020. Contains public sector information licensed under the Open Government License v3.0. http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/ ")
+
+st.markdown("[2] http://wiod.org/database/wiots16")
+st.markdown("-- * Typical data listing sectorial shocks available at for example, https://www.ilo.org/global/topics/coronavirus/sectoral/lang--en/index.htm. Simulation parameters considered here are for illustrative purposes only. Authors do not assume resposibility for accuracy. Please contact the authors for integrating other shock sources or regarding technical improvements")
 
 # Copyright © IBM Corp. 2020. Licensed under the Apache License, Version 2.0. Released as licensed Sample Materials.
