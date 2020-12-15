@@ -1,57 +1,56 @@
-0,1,2
-0,"Crop and animal production, hunting and related service activities",149825.5544961481
-1,Forestry and logging,13210.729571928514
-2,Fishing and aquaculture,3544.915298394938
-3,Mining and quarrying,42809.88279189875
-4,"Manufacture of food products, beverages and tobacco products",48584.35190183864
-5,"Manufacture of textiles, wearing apparel and leather products",42978.13450882731
-6,"Manufacture of wood and of products of wood and cork, except furniture; manufacture of articles of straw and plaiting materials",16626.87277143517
-7,Manufacture of paper and paper products,11614.885915301636
-8,Printing and reproduction of recorded media,6118.19448705626
-9,Manufacture of coke and refined petroleum products ,65836.48918467287
-10,Manufacture of chemicals and chemical products ,89672.4785531511
-11,Manufacture of basic pharmaceutical products and pharmaceutical preparations,3580.5388570498258
-12,Manufacture of rubber and plastic products,27301.192969083262
-13,Manufacture of other non-metallic mineral products,43704.98828212623
-14,Manufacture of basic metals,112982.77668822989
-15,"Manufacture of fabricated metal products, except machinery and equipment",40214.04864451342
-16,"Manufacture of computer, electronic and optical products",13547.496595210865
-17,Manufacture of electrical equipment,20502.186648589675
-18,Manufacture of machinery and equipment n.e.c.,27905.25561982166
-19,"Manufacture of motor vehicles, trailers and semi-trailers",29228.1979020962
-20,Manufacture of other transport equipment,4112.566312873185
-21,Manufacture of furniture; other manufacturing,52900.96970793749
+0,"Crop and animal production, hunting and related service activities",357008.1202902328
+1,Forestry and logging,28000.034029887636
+2,Fishing and aquaculture,15885.474336916011
+3,Mining and quarrying,42643.57131543966
+4,"Manufacture of food products, beverages and tobacco products",181063.1710463986
+5,"Manufacture of textiles, wearing apparel and leather products",119559.43469113208
+6,"Manufacture of wood and of products of wood and cork, except furniture; manufacture of articles of straw and plaiting materials",25860.155582947384
+7,Manufacture of paper and paper products,16262.371236043768
+8,Printing and reproduction of recorded media,14125.05191695856
+9,Manufacture of coke and refined petroleum products ,107530.35185579564
+10,Manufacture of chemicals and chemical products ,105910.67750102459
+11,Manufacture of basic pharmaceutical products and pharmaceutical preparations,18237.459146416815
+12,Manufacture of rubber and plastic products,44836.54482011945
+13,Manufacture of other non-metallic mineral products,51143.26515049021
+14,Manufacture of basic metals,146238.16012260996
+15,"Manufacture of fabricated metal products, except machinery and equipment",58175.10670280461
+16,"Manufacture of computer, electronic and optical products",24476.798976685277
+17,Manufacture of electrical equipment,40052.583936050534
+18,Manufacture of machinery and equipment n.e.c.,59368.7782760848
+19,"Manufacture of motor vehicles, trailers and semi-trailers",88441.3036008024
+20,Manufacture of other transport equipment,8332.740025565425
+21,Manufacture of furniture; other manufacturing,106910.97914769198
 22,Repair and installation of machinery and equipment,0.0
-23,"Electricity, gas, steam and air conditioning supply",59286.159423715246
-24,"Water collection, treatment and supply",1820.417459492861
+23,"Electricity, gas, steam and air conditioning supply",71867.40528961527
+24,"Water collection, treatment and supply",6834.598207584138
 25,"Sewerage; waste collection, treatment and disposal activities; materials recovery; remediation activities and other waste management services ",0.0
-26,Construction,87328.45120065862
-27,Wholesale and retail trade and repair of motor vehicles and motorcycles,10386.948489994784
-28,"Wholesale trade, except of motor vehicles and motorcycles",80699.9816946097
-29,"Retail trade, except of motor vehicles and motorcycles",131777.41434682097
-30,Land transport and transport via pipelines,121092.82388373841
-31,Water transport,226.9116878175912
-32,Air transport,117.02268707711187
-33,Warehousing and support activities for transportation,7602.574054466279
+26,Construction,392119.88304893614
+27,Wholesale and retail trade and repair of motor vehicles and motorcycles,18926.65753672966
+28,"Wholesale trade, except of motor vehicles and motorcycles",147048.08811033174
+29,"Retail trade, except of motor vehicles and motorcycles",240119.22219701484
+30,Land transport and transport via pipelines,263329.1105005442
+31,Water transport,502.3062857301976
+32,Air transport,2649.5879006436508
+33,Warehousing and support activities for transportation,12828.690300994316
 34,Postal and courier activities,0.0
-35,Accommodation and food service activities,35843.3472588879
+35,Accommodation and food service activities,87535.17511874644
 36,Publishing activities,0.0
 37,"Motion picture, video and television programme production, sound recording and music publishing activities; programming and broadcasting activities",0.0
-38,Telecommunications,14645.057087748599
-39,"Computer programming, consultancy and related activities; information service activities",19085.569615454177
-40,"Financial service activities, except insurance and pension funding",75592.32935513736
-41,"Insurance, reinsurance and pension funding, except compulsory social security",16811.384548706606
+38,Telecommunications,25216.853223750502
+39,"Computer programming, consultancy and related activities; information service activities",41452.96211513245
+40,"Financial service activities, except insurance and pension funding",109664.85773024564
+41,"Insurance, reinsurance and pension funding, except compulsory social security",26304.678353168245
 42,Activities auxiliary to financial services and insurance activities,0.0
-43,Real estate activities,2825.6833012372736
-44,Legal and accounting activities; activities of head offices; management consultancy activities,4218.9310901749395
-45,Architectural and engineering activities; technical testing and analysis,16996.713181677864
+43,Real estate activities,140571.58300499452
+44,Legal and accounting activities; activities of head offices; management consultancy activities,8014.671897197822
+45,Architectural and engineering activities; technical testing and analysis,22952.841650545033
 46,Scientific research and development,0.0
 47,Advertising and market research,0.0
 48,"Other professional, scientific and technical activities; veterinary activities",0.0
-49,Administrative and support service activities,958.2672584634817
-50,Public administration and defence; compulsory social security,0.0
-51,Education,2188.2932668019757
-52,Human health and social work activities,1428.0442598708796
-53,Other service activities,16733.307164219474
+49,Administrative and support service activities,2227.1893840352873
+50,Public administration and defence; compulsory social security,141013.3694736066
+51,Education,92531.9418451466
+52,Human health and social work activities,47796.30446236601
+53,Other service activities,52500.550189436995
 54,Activities of households as employers; undifferentiated goods- and services-producing activities of households for own use,0.0
 55,Activities of extraterritorial organizations and bodies,0.0
