@@ -47,6 +47,13 @@ The Airbnb folder contains the analysis done on the InsideAirbnb data: http://in
 
 The meltwater folder is a Python package that provides a client to access the Export APIs from Meltwater: https://developer.meltwater.com. Note that we do not provide an interface to all the endpoints exposed by API. We only provide an interface to two groups of endpoints: the "searches" endpoints and the "One-time export" endpoints. However, the client can easily be extended to include the other groups of endpoints. 
 
+## Social Media
+The Social Media forlder contains our analysis of Twitter data in the local areas of Nottingham and Liverpool. Twitter data allows us to monitor what type of information around Covid-19 is being shared in a local area. Some of the work we’ve done so far includes:
+* Analyse the content of tweets. We can infer the sentiment and emotions associated to a body of text. Based on its content, we can also classify it with similar tweets that share a common “topic” using Topic Modelling techniques.
+* Identify what type information is more popular in an area (viral tweets).
+* Identify who are key spreaders of such information - or influencers.
+
+
 ## Our Results
 The following blog posts can provide more information on the analysis and results of our work:
 
@@ -61,10 +68,12 @@ The following blog posts can provide more information on the analysis and result
 ## Team
 
 IBM:
-* Mehrnoosh Vahdat is Data Scientist with Data Science & AI Elite team where she specializes in Data Science, Analytics platforms, and Machine Learning solutions.
-* Vincent Nelis is Senior Data Scientist with Data Science & AI Elite team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.
-* Anthony Ayanwale is Data Scientist with CPAT team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.   
+* **Mehrnoosh Vahdat** is Data Scientist with Data Science & AI Elite team where she specializes in Data Science, Analytics platforms, and Machine Learning solutions.
+* **Vincent Nelis** is Senior Data Scientist with Data Science & AI Elite team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.
+* **Anthony Ayanwale** is Data Scientist with CPAT team where he specializes in Data Science, Analytics platforms, and Machine Learning solutions.   
+* **Álvaro Corrales Cano** is a Data Scientist within IBM's Cloud Pak Acceleration team. With a background in Economics, Álvaro specialises in a wide array Econometric techniques and causal inference, including regression, discrete choice models, time series and duration analysis.
+* **Ananda Pal** is a Data Scientist and Performance Test Analyst at IBM, where he specialises in Data Science and Machine Learning Solutions.
 
 Rolls Royce:
-* Shri Nishanth Rajendran - AI Development Specialist, R² Data Labs, Rolls Royce
-* Maria Ivanciu is AI Developer in R2 Data Labs, Rolls-Royce. 
+* **Shri Nishanth Rajendran** - AI Development Specialist, R² Data Labs, Rolls Royce
+* **Maria Ivanciu** is AI Developer in R2 Data Labs, Rolls-Royce. 
