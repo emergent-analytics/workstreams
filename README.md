@@ -57,11 +57,11 @@ The folder - airport_restrictions contain the analysis done on NOTAM data and tr
 
 Named Entity Recognizer was used to identify country names mentioned in the data.
 
-![NER]("Mobility and Toursim - WS2"/airport_restrictions/restrictions_ner.png)
+![NER](workstreams/Mobility and Toursim - WS2/airport_restrictions/restrictions_ner.png)
 
 Part of speech tagging was used to identify the verbs in the sentences and rules were used to determine if the verb had a positive or negative connotation.
 
-![POS tagging]("Mobility and Toursim - WS2"/airport_restrictions/restrictions_pos_tagging.png)
+![POS tagging](workstreams/Mobility and Toursim - WS2/airport_restrictions/restrictions_pos_tagging.png)
 
 ### Airbnb
 The Airbnb folder contains the analysis done on the InsideAirbnb data: http://insideairbnb.com/get-the-data.html. The aim of this analysis is to offer data-driven insights into the new trends in tourism and hospitality. The following summarises the content of Airbnb notebooks.
@@ -81,8 +81,8 @@ The following blog posts can provide more information on the analysis and result
 # WS3 - Economic Scenario Modelling
 We create an economic scenario modelling tool, the Emergent Economic Engine, to simulate how shocks to some industries may propagate to the rest of a networked economy. These shocks can be in the form of sectorial shutdowns, travel restrictions. The tool also offeres the possibility of counteracting these measures by injecting resources into the economy. The folder is organised into two subfolders:
 
-* [Economic documentation](("Economic Scenario Modelling - WS3"/"Economic documentation")), where we explain the basics of the Leontief Input-Output model and how we can shock it from a dynamic and a static point of view. 
-* [Simulation engine app]("Economic Scenario Modelling - WS3"/"Simulation engine app"), where we have the source code of the Emergent Economic Engine and the associated Input-Output tables.
+* [Economic documentation](workstreams/Economic Scenario Modelling - WS3/Economic documentation), where we explain the basics of the Leontief Input-Output model and how we can shock it from a dynamic and a static point of view. 
+* [Simulation engine app](workstreams/Economic Scenario Modelling - WS3/Simulation engine app), where we have the source code of the Emergent Economic Engine and the associated Input-Output tables.
 
 ## Our Results
 In the following posts we explain the theory behind our model and the Emergent Economic Engine. 
