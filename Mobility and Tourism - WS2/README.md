@@ -33,8 +33,17 @@ The Airbnb folder contains the analysis done on the InsideAirbnb data: http://in
 
 ## Mobility estimator analysis
 
+Causal inference of stringency measures on mobility. We use Microsoft's DoWhy library to carry out the causal inference analysis. The following gives an overview of the notebooks:
 
+* CA_Mobility_Weather_Countermeasures.ipynb - Investigate the effect of countermeasures /lockdown on mobility data.
+* CA_dowhy multiple scenarios_weekend_encoding.ipynb - Try out different hypothesis to investigate the effect of lockdown measures on mobility
+* CA_dowhy_validation_weekend_encoding.ipynb - Build a mobility estimator model using the causal estimator function and validate the model
 
+## CA_Causal_structure_discovery_economic_impact.ipynb
+
+Investigate the effect of lockdown measures on economy. We consider electricity consumption and heavy truck toll movement data as proxies for economic activity
+
+![Causal_graph](../images/causal_graph_economy.png)
 
 ## Team
 
