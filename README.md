@@ -15,12 +15,12 @@ A geospatial knowledge of the world with respect to neighbourhood relationships 
 
 ## Labelling tool
 A tagging tool for humans to annotate infection waves.
-![Cookiecutter Preview](cookiecutter.select.gif)
+![Cookiecutter Preview](images/cookiecutter.select.gif)
 
 # WS2 - Emergent Pulse
 The aim of this workstream is to create a series of index that can describe the status of a region, for example: What is the sentiment of the population of that region? How are they behaving? How are the news and social media changing? How is the tourism industry being affected?. This image gives an overview of some of the topics covered in this workstream.
 
-![Workstream 2 topics](ws2_overview.png)
+![Workstream 2 topics](images/ws2_overview.png)
 
 ## News Analysis
 The News Analysis folder contain the analysis done on a corpus of news articles to understand the trends of frequency and sentiment of articles over time, and to perform binary classification on a topic of interest. Please note that this folder contains only code and the news data need to be provided by the user.  The following provides a brief overview of the different notebooks available in the folder:
@@ -57,11 +57,11 @@ The folder - airport_restrictions contain the analysis done on NOTAM data and tr
 
 Named Entity Recognizer was used to identify country names mentioned in the data.
 
-![NER](https://github.com/emergent-analytics/workstreams/tree/reorganise_folders/Mobility%20and%20Tourism%20-%20WS2/airport_restrictions/restrictions_ner.png)
+![NER](images/restrictions_ner.png)
 
 Part of speech tagging was used to identify the verbs in the sentences and rules were used to determine if the verb had a positive or negative connotation.
 
-![POS tagging](https://github.com/emergent-analytics/workstreams/tree/reorganise_folders/Mobility%20and%20Tourism%20-%20WS2/airport_restrictions/restrictions_pos_tagging.png)
+![POS tagging](images/restrictions_pos_tagging.png)
 
 ### Airbnb
 The Airbnb folder contains the analysis done on the InsideAirbnb data: http://insideairbnb.com/get-the-data.html. The aim of this analysis is to offer data-driven insights into the new trends in tourism and hospitality. The following summarises the content of Airbnb notebooks.
@@ -91,4 +91,4 @@ In the following posts we explain the theory behind our model and the Emergent E
 * [Modelling Economic Interventions to Fight Covid-19](https://emergentalliance.org/?p=1832)
 
 
-![Emergent Economic Engine](e3.png)
+![Emergent Economic Engine](images/e3.png)
