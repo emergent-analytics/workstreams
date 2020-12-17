@@ -84,11 +84,10 @@ We create an economic scenario modelling tool, the Emergent Economic Engine, to 
 * [Economic documentation](https://github.com/emergent-analytics/workstreams/tree/reorganise_folders/Economic%20Scenario%20Modelling%20-%20WS3/Economic%20documentation), where we explain the basics of the Leontief Input-Output model and how we can shock it from a dynamic and a static point of view. 
 * [Simulation engine app](https://github.com/emergent-analytics/workstreams/tree/reorganise_folders/Economic%20Scenario%20Modelling%20-%20WS3/Simulation%20engine%20app), where we have the source code of the Emergent Economic Engine and the associated Input-Output tables.
 
+![Emergent Economic Engine](images/e3.png)
+
 ## Our Results
 In the following posts we explain the theory behind our model and the Emergent Economic Engine. 
 
 * [Input-Output Economics and the Impact of Covid-19](https://emergentalliance.org/?p=1689)
 * [Modelling Economic Interventions to Fight Covid-19](https://emergentalliance.org/?p=1832)
-
-
-![Emergent Economic Engine](images/e3.png)
