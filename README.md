@@ -81,7 +81,7 @@ Causal inference of stringency measures on mobility. We use Microsoft's DoWhy li
 
 Investigate the effect of lockdown measures on economy. To identify economic activity we consider data sets such as electricity consumption and heavy truck toll movement data. As trucks are mainly used to transport goods their movement data helps in estimating the current economic activity.
 
-![Causal_graph](../images/causal_graph_economy.png)
+![Causal_graph](images/causal_graph_economy.png)
 
 ## Our Results
 The following blog posts can provide more information on the analysis and results of our work:
