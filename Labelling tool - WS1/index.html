@@ -1,12 +1,184 @@
 <!DOCTYPE html>
 <html>
-<head>CookieCutter</head>
-<body style="background-color:#00498f;">
-Redirecting to main application...
-<script>
+<head>
+<title>CookieCutter</title>
+<style type="text/css">
+	@font-face {
+		font-family: "IBM-plex-sans";
+		src: local('☺'), url('IBMPlexSans-Regular.woff2') format('woff2');
+		font-weight: 900;
+		font-style: normal;
+	}
+	body {
+		font-family: "IBM-plex-sans"  !important;
+		-webkit-font-smoothing: antialiased;
+		text-rendering: optimizeLegibility;
+		color: #fff;
+		background: #252425;
+		height: 100%;
+		width: 100%;
+		box-sizing: border-box
+	}
+	* {
+		font-family: "IBM-plex-sans" !important;
+		-webkit-font-smoothing: antialiased;
+		text-rendering: optimizeLegibility;
+	}
+
+	.intro-container {
+	  max-height: 40em;
+	  display: grid;
+	  grid-template: 1fr 1fr 1fr;
+	  /*grid-template-rows: 10vh 40vh 50vh;
+	  grid-template-columns: repeat(3, 1fr);*/
+	  grid-gap: 1em;
+	  padding:1em;
+	  grid-template-areas:
+	  "d d d"
+	  "a b c"
+	}
+
+	.intro_health {
+	  grid-area: a;
+	}
+
+	.intro_whatif {
+	  grid-area: b;
+	}
+
+	.intro_economy {
+	  grid-area: c;
+	}
+
+	.intro_title {
+		grid-area: d;
+	}
+
+	.intro-container div{
+	  overflow:hidden;
+	}
+
+	.film > img {
+		object-fit:cover;
+		width: 20%;
+		max-height: 20%;
+	}
+
+	.takeme {
+	  background-color: #0068D3; /* Blue */
+	  border: none;
+	  color: white;
+	  padding: 15px 32px;
+	  text-align: center;
+	  text-decoration: none;
+	  display: inline-block;
+	  font-size: 16px;
+	}
+
+	.showme {
+	  background-color: #4CAF50; /* Green */
+	  border: none;
+	  color: white;
+	  padding: 15px 32px;
+	  text-align: center;
+	  text-decoration: none;
+	  display: inline-block;
+	  font-size: 16px;
+	}
+
+	.forkme {
+		position:absolute;
+		float:right;
+		right:0;
+		top:0;
+	}
+
+	.footer {
+	    position: fixed;
+	    bottom: 0;
+	    width: 100%;
+	}
+
+	a:visited {
+	  color: white;
+	}
+	a:link {
+	  color: white;
+	}
+
+</style>
+</head>
+<body style="background-color:#343A3F;">
+	<a class="forkme" href="https://github.com/emergent-analytics/workstreams/tree/master/Labelling%20tool%20-%20WS1"><img loading="lazy" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+<!--<script>
 new_url = window.location.href+"cookiecutter";
 window.location.replace(new_url);
-</script>
+</script>-->
+
+
+<div class="intro-container">
+  <div class="intro_title">
+  	<h1>Cookiecutter</h1>
+  	To familiarize yourself with the tool functionality, we suggest you click on the show me buttons first.
+  	For more information, see our <a href="https://github.com/emergent-analytics/workstreams/tree/master/Labelling%20tool%20-%20WS1">github repository</a> and the <a href="https://emergentalliance.org/">blog entries
+  	(Insights) on the Emergent Alliance page.</a>
+  </div>
+  <div class="intro_health">
+    <div style="text-align:center">
+    	<button class="takeme" onclick="window.location.href='/cookiecutter?tab=health'">Take me to the labelling tool &raquo;</button>
+    </div>
+    <p>
+    <a href="/cookiecutter?tab=health"><img  src="intro/cookiecutter.small.gif" alt=""></a>
+    <div style="text-align:center">
+    	<h3>Cookiecutter Introduction</h3>
+		<p>There is a lot to be said about using the cookiecutter tool. Familiarize yourself with its features.</p>
+		<button class="showme" onclick="window.location.href='intro/cookiecutter.gif'">Show Me How To Use It &raquo;</button>
+	</div>
+  </div>
+  <div class="intro_whatif">
+    <div style="text-align:center">
+    	<button class="takeme" onclick="window.location.href='/cookiecutter?tab=whatif'">Take me to the whatif tool &raquo;</button>
+    </div>
+    <p>
+    <a href="/cookiecutter?tab=whatif"><img class="film" src="intro/cookiecutter.whatif.small.gif" alt=""></a>
+    <div style="text-align:center">
+	    <h3>What-if fly forward Introduction</h3>
+		<p>While we cannot predict the future, use your labelled data to perform what-if scenario planning.</p>
+		<button class="showme" onclick="window.location.href='intro/cookiecutter.whatif.gif'">Show Me How To Use It &raquo;</button>
+	</div>
+  </div>
+  <div class="intro_economy">
+    <div style="text-align:center">
+    	<button class="takeme" onclick="window.location.href='/cookiecutter?tab=economy'">Take me to the economy proxy modelling tool &raquo;</button>
+    </div>
+    <p>
+    <a href="/cookiecutter?tab=economy"><img class="film" src="intro/cookiecutter.eco.small.gif" alt=""></a>
+    <div style="text-align:center">
+	    <h3>Economic Proxy data Introduction</h3>
+		<p>Find out how to create shock profile data from economic indicators for use with the E³ engine.</p>
+		<button class="showme" onclick="window.location.href='intro/cookiecutter.eco.gif'">Show Me How To Use It &raquo;</button>
+	</div>
+  </div>
+</div>
+
+
+<div class="footer">
+	Author <a href="https://github.com/KlausGPaul">Klaus G. Paul</a>, Rolls-Royce Deutschland 2020 for <a href="https://emergentalliance.org">Emergent Alliance</a>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "SoftwareApplication",
+      "applicationCategory": "Labelling Tool",
+      "author": {
+        "@type": "Person",
+        "name": "Klaus G. Paul",
+        "knowsAbout": "Analytics, Machine Learning, Artificial Intelligence"
+      },
+      "datePublished": "2018-03-10",
+      "description": "Suite of labelling tools to study COVID-19 impact."
+    }
+	</script>
+<div>
 </body>
 </html>
 

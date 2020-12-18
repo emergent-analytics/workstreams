@@ -17,6 +17,8 @@
     text-rendering: optimizeLegibility;
     color: #fff;
     background: #252425;
+    height: 100%;
+    width: 100%;
   }
   body.fade {
     opacity: 0.5;
@@ -191,6 +193,20 @@
     fill: #ff4136;
   }
 }
+
+div[class*="dim_screen"] {
+    position:fixed;
+    padding:0;
+    margin:0;
+
+    top:0;
+    left:0;
+    color: #FF0000;
+    width: 100vh;
+    height: 100vw;
+    background:rgba(255,255,255,0.5);
+}
+
 </style>
 <script>
   console.log(document.cookie);

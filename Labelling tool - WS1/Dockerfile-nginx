@@ -7,5 +7,9 @@ RUN mkdir -p /var/log/nginx/logs
 # copy a config file from current dir
 ADD nginx.conf /etc/nginx/
 RUN mkdir -p /www/data/cookiecutter/static
+RUN mkdir -p /www/data/intro
+ADD intro/*.gif /www/data/intro/
+RUN wget -O IBMPlexSans-Regular.woff2 https://github.com/IBM/plex/blob/master/IBM-Plex-Sans/fonts/complete/woff2/IBMPlexSans-Regular.woff2?raw=true
+RUN mv IBMPlexSans-Regular.woff2 /www/data
 ADD index.html /www/data
 ADD cookiecutter/static/NotoSans-Regular.ttf /www/data/cookiecutter/static

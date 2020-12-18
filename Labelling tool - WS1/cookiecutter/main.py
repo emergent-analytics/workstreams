@@ -639,7 +639,11 @@ class GUIHealth():
         df["from_dt"] = df.datetime_date.min()
         df["to_dt"] = df.datetime_date.max()
         df["duration"] = (pd.to_datetime(df.datetime_date.max())-pd.to_datetime(df.datetime_date.min())).total_seconds()/86400
-        df["user"] = self.user_id.value ### change to user_name
+        # make SQL injection safe
+        user_id = self.user_id.value.replace("'","").replace('"','').replace("=","").replace(";","").replace("*","")
+        user_id = user_id.replace(" ","_")
+        user_id = user_id[:40]
+        df["user"] = user_id
         #ADM0_A3 = self.adm0_a3 #dfMapping[self.dfMapping.name == self.country_select.value].adm0_a3.values[0]
         df["identifier"] = self.identifier
         df["vote_datetime"] = datetime.datetime.now()
@@ -1624,9 +1628,18 @@ class GUIEconomy():
 
     def save_scenario_callback(self,event):
         df = self.cds_drawn_polyline.to_df()
-        df["user_id"] = self.user_id.value
+
+        # make SQL injection safe
+        user_id = self.user_id.value.replace("'","").replace('"','').replace("=","").replace(";","").replace("*","")
+        user_id = user_id[:40]
+        df["user_id"] = user_id
         df["datetime_vote"] = datetime.datetime.now()
-        df["scenario_name"] = self.scenario_name.value
+
+        scenario_name = self.scenario_name.value.replace("'","").replace('"','').replace("=","").replace(";","").replace("*","")
+        scenario_name = scenario_name.replace(" ","_")
+        scenario_name = scenario_name[:80]
+        df["scenario_name"] = self.scenario_name
+
         df["category"] = self.category_select.value
         df["parameter_name"] = self.key_select.value
         df = df.rename(columns={"value":"parameter_value","datetime":"datetime_date","class":"shock_recovery"}) # db2 does not like value in SQL statements
@@ -1668,10 +1681,12 @@ class GUIEconomy():
 
     def scenario_name_callback(self,attr,old,new): #################
         print("SCENARIO_NAME_CALLBACK",old,new)
+        new = new.replace("'","").replace('"','').replace("=","").replace(";","").replace("*","")
         if len(new)>0:
             self.save_scenario.disabled = False
         else:
             self.save_scenario.disabled = True
+        self.scenario_name.value = new
 
 
     def create(self):
@@ -1965,7 +1980,20 @@ class GUIwhatif():
         self.cds_cassandra = ColumnDataSource({"category":[],"from_dt":[],"to_dt":[]})
         self.cassandra_table = DataTable(source=self.cds_cassandra,columns=columns,width=400,height=300,index_position=None)
 
-        self.sql_connect = Div(text="<small>{}</small>".format(self.engine))
+        connect_string = "{}".format(self.engine)
+        e,u,h,p = connect_string.split(":")
+        e = e.replace("Engine(","")
+        u = list(u.replace("/",""))
+        for i in range(2,len(u)-2):
+            u[i] = "*"
+        u = ''.join(u)
+        p,hh = h.split("@")
+        hh = list(hh)
+        for i in range(4,len(hh)-4):
+            hh[i] = "*"
+        hh = ''.join(hh)
+        
+        self.sql_connect = Div(text="<small>{}</small>".format("{}-{}-{}".format(e,u,hh)))
 
         return (column([row([
                                 self.select_continent,self.select_subregion,self.select_country,self.end_of_wave_2,
@@ -1978,20 +2006,34 @@ class GUIwhatif():
                         ]))
 
 
+tabs = {
+    "health":0,
+    "whatif":1,
+    "economy":2
+}
+active_tab = 0
+for k,v in curdoc().session_context.request.arguments.items():
+    if k.lower() == "tab":
+        value = v[0].decode("ascii").lower()
+        if value in tabs.keys():
+            active_tab = tabs[value]
+print("ARGS {} ACTIVE TAB {}".format(curdoc().session_context.request.arguments,active_tab))
 # just to be safe
 #Path("./data").mkdir(exist_ok=True,parents=True)
 # instantiate main class
 gui_health = GUIHealth()
 # create widgets which will not have data to be displayed just yet
-content_health = Panel(child=gui_health.create(),title="Health and Stringency")
+content_health = Panel(child=gui_health.create(),title="Health and Stringency",closable=True)
 
 gui_economy = GUIEconomy()
-content_economy = Panel(child=gui_economy.create(),title="Economy and Economic Proxies")
+content_economy = Panel(child=gui_economy.create(),title="Economy and Economic Proxies",closable=True)
 
 gui_whatif = GUIwhatif()
-content_whatif = Panel(child=gui_whatif.create(),title="Fly-Forward Modeller")
+content_whatif = Panel(child=gui_whatif.create(),title="Fly-Forward Modeller",closable=True)
 
-content = Tabs(tabs=[content_health,content_economy,content_whatif])
+content = Tabs(tabs=[content_health,content_whatif,content_economy])
+content.active = active_tab
+print("ACTIVE TAB {}".format(content.active))
 
 #print("gui_economy.load_data()")
 gui_economy.load_data()
@@ -1999,6 +2041,7 @@ gui_whatif.load_data()
 gui_whatif.prepopulate()
 # put it on the canvas/web browser
 curdoc().add_root(content)
+
 # check if we have data...
 gui_health.compute_data_status()
 # load it and map it onto the plots. The latter is done by selecting a default country, which triggers the country callback
