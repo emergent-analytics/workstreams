@@ -69,6 +69,20 @@ The Airbnb folder contains the analysis done on the InsideAirbnb data: http://in
 * Predictive_Model.ipynb - Predictive model using FBProphet that characterizes the expected Airbnb demand if Covid-19 pandemic did not happen. 
 * Geo_Distribution_Tourism.ipynb - Geo distribution of the Airbnb demand in cities around the world.
 
+### Mobility estimator analysis
+
+Causal inference of stringency measures on mobility. We use Microsoft's DoWhy library to carry out the causal inference analysis. The following gives an overview of the notebooks:
+
+* CA_Mobility_Weather_Countermeasures.ipynb - Investigate the effect of countermeasures /lockdown on mobility data.
+* CA_dowhy multiple scenarios_weekend_encoding.ipynb - Try out different hypothesis to investigate the effect of lockdown measures on mobility
+* CA_dowhy_validation_weekend_encoding.ipynb - Build a mobility estimator model using the causal estimator function and validate the model
+
+### CA_Causal_structure_discovery_economic_impact.ipynb
+
+Investigate the effect of lockdown measures on economy. To identify economic activity we consider data sets such as electricity consumption and heavy truck toll movement data. As trucks are mainly used to transport goods their movement data helps in estimating the current economic activity.
+
+![Causal_graph](images/causal_graph_economy.png)
+
 ## Our Results
 The following blog posts can provide more information on the analysis and results of our work:
 
