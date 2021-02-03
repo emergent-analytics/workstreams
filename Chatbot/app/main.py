@@ -2,6 +2,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.security.api_key import APIKey
 from pydantic import BaseModel
+from typing import List, Optional
 
 # Local application specific imports
 from security import get_api_key
@@ -23,6 +24,13 @@ class Item(BaseModel):
     lockdown_measures: str=None
     country_origin: str=None
     country_dest: str=None
+    feedback: str=None
+    node_name: str=None
+    user_input: str=None
+    output: List[str]=None
+    entities: List[dict]=None
+    intents: List[dict] = None
+    helpful: str=None
 
 
 #---------
@@ -58,6 +66,9 @@ async def create_item(item: Item, api_key: APIKey = Depends(get_api_key)):
         8: Return information about the all lockdown measures of a specific country.
         9: Return information about a specific lockdown measure of a specific country
         10: Return a traveling advice for journey within UK.
+        20: Sends feedback in the DB2 table - CHATBOT_FEEDBACK
+        21: Variables being saved to DB2 table - CHATBOT_LOGS_POC2
+        31: Print variables and logs for debug
     """
     
     # Return the overall number of deaths/cases of a country
@@ -110,6 +121,21 @@ async def create_item(item: Item, api_key: APIKey = Depends(get_api_key)):
         result = func.lockdown_measures_extended(item.country, item.lockdown_measures)
     elif item.func_number == 10:
         result = func.travel_risk(item.areadestination, item.areaorigin)
+    elif item.func_number == 20:
+        func.push_db2(item.feedback)
+        result = "Feedback pushed on Db2"
+    elif item.func_number == 21:
+        func.push_logs_db2(item.node_name, item.user_input, item.output, item.entities, item.intents, item.helpful)
+        #Add the code for the logs to send to db2.
+        result="Push successfully"
+    elif item.func_number == 31:
+        print("node_name: ",item.node_name)
+        print("user_input: ",item.user_input)
+        print("output: ",item.output)
+        print("entities: ",item.entities)
+        print("intents: ",item.intents)
+        print("helpful: ",item.helpful)
+        result="variables send successful!!"
     else:
         result = "Not Found"
 

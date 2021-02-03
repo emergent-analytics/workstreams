@@ -2,7 +2,8 @@
 import os
 import pandas as pd
 import numpy as np
-from datetime import timedelta
+from datetime import timedelta, datetime
+
 import re
 
 # Related third party imports
@@ -41,6 +42,34 @@ Returns:
     list: a list of strings representing the header columns
 """
 
+
+def push_db2(feedback=None):   
+    # 'feedback' will come from webhoo
+    now = datetime.now()
+    date = now.strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute("INSERT INTO \"CHATBOT_FEEDBACK\" (FEEDBACK, DATE) VALUES ('{}', '{}')".format(feedback[:1020], date))
+
+def push_logs_db2(node_name=None, user_input=None, output=None, entities=None, intents=None, helpful=None):   
+    
+    def ListToStr(list_):
+        str_val = ""
+        for ind_, item in enumerate(list_):
+            if ind_ == len(list_)-1:
+                str_val += item
+            else:
+                str_val += item + ", "
+        return str_val
+
+    entt_ = []
+    vals_ = []
+
+    for i in entities:
+        entt_.append(i["entity"])
+        vals_.append(i["value"])
+    
+    now = datetime.now()
+    date = now.strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute("INSERT INTO \"CHATBOT_LOGS_POC2\" (DATE, NODE_NAME, USER_INPUT, OUTPUT, INTENTS, ENTITIES, ENTITIES_VAL, HELPFULNESS) VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(date, node_name, user_input, output[0], intents[0]["intent"], ListToStr(entt_), ListToStr(vals_), helpful))
 
 
 def overall_confirmed_cases(country):
@@ -124,16 +153,17 @@ def infection_risk(ltla_name):
     df = df[df.DATE == latest]
     
     risk_index = df.risk_index.values[0]
+
     if risk_index < 20:
-        return "very low risk of infection (risk = {} - on a scale from 0 to 100)".format(risk_index)
+        return "very low health risk index (risk = {} - on a scale from 0 to 100)".format(risk_index)
     elif risk_index >= 20 and risk_index < 50:
-        return "low risk of infection (risk = {} - on a scale from 0 to 100)".format(risk_index)
+        return "low health risk index (risk = {} - on a scale from 0 to 100)".format(risk_index)
     elif risk_index >= 50 and risk_index < 70:
-        return "medium risk of infection (risk = {} - on a scale from 0 to 100)".format(risk_index)
+        return "medium health risk index (risk = {} - on a scale from 0 to 100)".format(risk_index)
     elif risk_index >=70 and risk_index < 90:
-        return "high risk of infection (risk = {} - on a scale from 0 to 100)".format(risk_index)
+        return "high health risk index (risk = {} - on a scale from 0 to 100)".format(risk_index)
     else:
-        return "very high risk of infection (risk = {} - on a scale from 0 to 100)".format(risk_index)
+        return "very high health risk index (risk = {} - on a scale from 0 to 100)".format(risk_index)
 
     
     
@@ -166,11 +196,9 @@ def travel_risk(ltla_destination, ltla_origin):
     
     def safe_or_not_v2(ltla_destination, dest_risk, ltla_origin, origin_risk):
         if dest_risk >= 50:
-            return "It is not recommneded to travel to {} as the area has a high risk of infections".format(ltla_destination)
-        elif dest_risk < 50 and origin_risk < 50:
-            return "It is safe to travel to {} from {}. Both areas have a low risk of infections".format(ltla_destination, ltla_origin)
-        elif dest_risk < 50 and origin_risk >=50:
-            return "Although it's safe to travel to {}, it is not recommended to travel away from {} as it is an area with high risk of infection.".format(ltla_destination, ltla_origin)
+            return "It is not recommneded to travel to {} tomorrow as we predicting a high risk index in the area (Risk index = {})".format(ltla_destination, dest_risk)
+        elif dest_risk < 50:
+            return "It is okay to travel to {} tomorrow as we predicting a low risk index in the area (Risk index = {})".format(ltla_destination, dest_risk)
 
     return safe_or_not_v2(ltla_destination,dest_risk, ltla_origin, origin_risk)
 
