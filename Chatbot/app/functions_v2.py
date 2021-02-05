@@ -229,8 +229,8 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
     
 
     if(data_riskidx == None):
-        
-        df_data_link = pd.read_sql("SELECT \"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME = '{}'".format(latest_date, country_dest.title()),conn)
+
+        df_data_link = pd.read_sql("SELECT \"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
         data_link = df_data_link.iloc[0].values[0]
 
         url_find = re.findall(r'<a href[A-Za-z0-9 \s\S]*</a>/', data_link)
@@ -245,7 +245,7 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
         return "You are allowed to enter {} when you travel from {}".format(country_dest.title(),country_origin.title()),""
     elif(int(float(data_riskidx)) == 2 or int(float(data_riskidx)) == 1):
 
-        df_data_link = pd.read_sql("SELECT \"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME = '{}'".format(latest_date, country_dest.title()),conn)
+        df_data_link = pd.read_sql("SELECT \"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
         data_link = df_data_link.iloc[0].values[0]
         url_find = re.findall(r'<a href[A-Za-z0-9 \s\S]*</a>/', data_link)
         
