@@ -215,44 +215,67 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
     
     username = "EALUSER"
     
+    def get_links(df, country):
+        if len(df) == 1:
+            data_link = df['sources'].values[0]
+            url_find = re.findall(r'<a href[A-Za-z0-9 \s\S]*</a>/', data_link)
+            return url_find
+        else:
+            df = df[df["adm0_name"] == country]
+            data_link = df['sources'].values[0]
+            url_find = re.findall(r'<a href[A-Za-z0-9 \s\S]*</a>/', data_link)
+            return url_find
+    
+    in_db = True
+    
     df_data_src = pd.read_sql("SELECT \"ADM0_A3\" FROM {}.JOHNS_HOPKINS_COUNTRY_MAPPING WHERE \"NAME\" = '{}'".format(username.upper(), country_origin.title()),conn)
-    data_src = df_data_src.iloc[0].values[0]
+    try:
+        data_src = df_data_src.iloc[0].values[0]
+    except IndexError:
+        in_db = False
+        country_not_db = str(country_origin)
     
     df_data_dst = pd.read_sql("SELECT \"ADM0_A3\" FROM {}.JOHNS_HOPKINS_COUNTRY_MAPPING WHERE \"NAME\" = '{}'".format(username.upper(), country_dest.title()),conn)
-    data_dst = df_data_dst.iloc[0].values[0]
+    try:
+        data_dst = df_data_dst.iloc[0].values[0]
+    except IndexError:
+        in_db = False
+        country_not_db = str(country_dest)
 
-    df_latest_date = pd.read_sql("SELECT MAX(DOWNLOAD_DATE) FROM TRAVEL_RESTRICTIONS_RESULTS WHERE \"HOME\" = '{}' AND \"OTHER\" = '{}'".format(data_src, data_dst),conn)
-    latest_date = df_latest_date.iloc[0].values[0]
+    if in_db:
+        df_latest_date = pd.read_sql("SELECT MAX(DOWNLOAD_DATE) FROM TRAVEL_RESTRICTIONS_RESULTS WHERE \"HOME\" = '{}' AND \"OTHER\" = '{}'".format(data_dst, data_src),conn)
+        latest_date = df_latest_date.iloc[0].values[0]
 
-    df_data_riskidx = pd.read_sql("SELECT \"RESTRICTION\" FROM TRAVEL_RESTRICTIONS_RESULTS WHERE \"DOWNLOAD_DATE\" = '{}' AND \"HOME\" = '{}' AND \"OTHER\" = '{}'".format(latest_date,data_src, data_dst),conn)
-    data_riskidx = df_data_riskidx.iloc[0].values[0]
-    
+        df_data_riskidx = pd.read_sql("SELECT \"RESTRICTION\" FROM TRAVEL_RESTRICTIONS_RESULTS WHERE \"DOWNLOAD_DATE\" = '{}' AND \"HOME\" = '{}' AND \"OTHER\" = '{}'".format(latest_date,data_dst, data_src),conn)
+        data_riskidx = df_data_riskidx.iloc[0].values[0]
+        print(df_data_riskidx)
 
-    if(data_riskidx == None):
+        if(data_riskidx == None):
 
-        df_data_link = pd.read_sql("SELECT \"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
-        data_link = df_data_link.iloc[0].values[0]
+            df_data_link = pd.read_sql("SELECT \"ADM0_NAME\",\"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
 
-        url_find = re.findall(r'<a href[A-Za-z0-9 \s\S]*</a>/', data_link)
+            url_find = get_links(df_data_link,country_dest)
 
-        response = "We couldn't identify the travel restrictions from {} to {}. Please check the following links for more information".format(country_origin.title(), country_dest.title())
-        links = "For more Information: <br> {} <br>".format(str(np.squeeze(url_find)).replace("\n", "<br>").replace("</a>/<br>", "</a> <br>").replace("\"\"", "\"").replace("</a>/ <br>", "</a> <br>").replace("<br>\"<a", "<br> <a").replace("</a>/\"<br>", "</a> <br>").replace("</a>/\"", "</a>").replace("</a>/", "</a>"))
-        return response, links
-    
-    elif(int(float(data_riskidx)) == 0):
-        return "You are not allowed to enter {} when you travel from {} because of travel restrictions".format(country_dest.title(),country_origin.title()),""
-    elif(int(float(data_riskidx)) == 3):
-        return "You are allowed to enter {} when you travel from {}".format(country_dest.title(),country_origin.title()),""
-    elif(int(float(data_riskidx)) == 2 or int(float(data_riskidx)) == 1):
-
-        df_data_link = pd.read_sql("SELECT \"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
-        data_link = df_data_link.iloc[0].values[0]
-        url_find = re.findall(r'<a href[A-Za-z0-9 \s\S]*</a>/', data_link)
+            response = "We could not identify the travel restrictions from {} to {}. Please check the following links for more information".format(country_origin.title(), country_dest.title())
+            links = "For more Information: <br> {} <br>".format(str(np.squeeze(url_find)).replace("\n", "<br>").replace("</a>/<br>", "</a> <br>").replace("\"\"", "\"").replace("</a>/ <br>", "</a> <br>").replace("<br>\"<a", "<br> <a").replace("</a>/\"<br>", "</a> <br>").replace("</a>/\"", "</a>").replace("</a>/", "</a>"))
+            return response, links
         
-        response = "There are some restrictions applied regarding traveling to {} from {}. Please check the following links for more information".format(country_dest.title(),country_origin.title())
-        links = "For more Information: <br> {} <br>".format(str(np.squeeze(url_find)).replace("\n", "<br>").replace("</a>/<br>", "</a> <br>").replace("\"\"", "\"").replace("</a>/ <br>", "</a> <br>").replace("<br>\"<a", "<br> <a").replace("</a>/\"<br>", "</a> <br>").replace("</a>/\"", "</a>").replace("</a>/", "</a>"))
+        elif(int(float(data_riskidx)) == 0):
+            return "You are not allowed to enter {} when you travel from {} because of travel restrictions".format(country_dest.title(),country_origin.title()),""
+        elif(int(float(data_riskidx)) == 3):
+            return "You are allowed to enter {} when you travel from {}".format(country_dest.title(),country_origin.title()),""
+        elif(int(float(data_riskidx)) == 2 or int(float(data_riskidx)) == 1):
 
-        return response, links
+            df_data_link = pd.read_sql("SELECT \"ADM0_NAME\",\"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
+            url_find = get_links(df_data_link,country_dest)
+            
+            response = "There are some restrictions applied regarding traveling to {} from {}. Please check the following links for more information".format(country_dest.title(),country_origin.title())
+            links = "For more Information: <br> {} <br>".format(str(np.squeeze(url_find)).replace("\n", "<br>").replace("</a>/<br>", "</a> <br>").replace("\"\"", "\"").replace("</a>/ <br>", "</a> <br>").replace("<br>\"<a", "<br> <a").replace("</a>/\"<br>", "</a> <br>").replace("</a>/\"", "</a>").replace("</a>/", "</a>"))
+
+            return response, links
+    else: 
+        response = "Unfortunately {} is not in our database".format(country_not_db)
+        return response, ""
 
 
     
