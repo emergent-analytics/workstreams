@@ -31,6 +31,7 @@ sql_url = "db2+ibm_db://{}:{}@{}:{}/{};Security=ssl;".format(SQL_USERNAME,
                                                              )
 conn = create_engine(sql_url)
 
+secondary_country_list = ["England","Scotland","Wales","Northern Ireland"]
 
 """
 Args:
@@ -73,17 +74,24 @@ def push_logs_db2(node_name=None, user_input=None, output=None, entities=None, i
 
 
 def overall_confirmed_cases(country):
-    lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND ConfirmedCases IS NOT NULL".format(country),conn)
-    overall_cases = pd.read_sql("SELECT ConfirmedCases FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}' AND jurisdiction = '{}'".format(country,lastentry_date.iloc[0].values[0],"NAT_TOTAL"),conn)
-    
-    return int(overall_cases.iloc[0].values[0]), lastentry_date.iloc[0].values[0]
-
+    if country in secondary_country_list:
+        lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE regionname='{}' AND ConfirmedCases IS NOT NULL AND ConfirmedDeaths IS NOT NULL".format(country),conn)
+        overall_cases = pd.read_sql("SELECT ConfirmedCases FROM oxford_stringency_index WHERE regionname='{}' AND datetime_date='{}'".format(country,lastentry_date.iloc[0].values[0]),conn)
+        return int(overall_cases.iloc[0].values[0]), lastentry_date.iloc[0].values[0]
+    else:
+        lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND ConfirmedCases IS NOT NULL AND ConfirmedDeaths IS NOT NULL AND jurisdiction = '{}'".format(country, "NAT_TOTAL"),conn)
+        overall_cases = pd.read_sql("SELECT ConfirmedCases FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}' AND jurisdiction = '{}'".format(country,lastentry_date.iloc[0].values[0],"NAT_TOTAL"),conn)
+        return int(overall_cases.iloc[0].values[0]), lastentry_date.iloc[0].values[0]
 
 def overall_confirmed_deaths(country):
-    lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND ConfirmedCases IS NOT NULL".format(country),conn)
-    overall_deaths = pd.read_sql("SELECT ConfirmedDeaths FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}' AND jurisdiction = '{}'".format(country,lastentry_date.iloc[0].values[0],"NAT_TOTAL"),conn)
- 
-    return int(overall_deaths.iloc[0].values[0]), lastentry_date.iloc[0].values[0]
+    if country in secondary_country_list:
+        lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE regionname='{}' AND ConfirmedDeaths IS NOT NULL AND ConfirmedCases IS NOT NULL".format(country),conn)
+        overall_deaths = pd.read_sql("SELECT ConfirmedDeaths FROM oxford_stringency_index WHERE regionname='{}' AND datetime_date='{}'".format(country,lastentry_date.iloc[0].values[0]),conn)
+        return int(overall_deaths.iloc[0].values[0]), lastentry_date.iloc[0].values[0]
+    else:
+        lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND ConfirmedDeaths IS NOT NULL AND ConfirmedCases IS NOT NULL AND jurisdiction = '{}'".format(country, "NAT_TOTAL"),conn)
+        overall_deaths = pd.read_sql("SELECT ConfirmedDeaths FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}' AND jurisdiction = '{}'".format(country,lastentry_date.iloc[0].values[0],"NAT_TOTAL"),conn)
+        return int(overall_deaths.iloc[0].values[0]), lastentry_date.iloc[0].values[0]
 
 
 def deathrate(country):
@@ -214,6 +222,8 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
     """
     
     username = "EALUSER"
+    text_user_origin = ""
+    text_user_dest = ""
     
     def get_links(df, country):
         if len(df) == 1:
@@ -225,6 +235,22 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
             data_link = df['sources'].values[0]
             url_find = re.findall(r'<a href[A-Za-z0-9 \s\S]*</a>/', data_link)
             return url_find
+    
+    if country_origin in secondary_country_list:
+        user_origin = country_origin
+        text_user_origin = "We don't have the travel restrictions for {} but I can give you information regarding United Kingdom: <br>".format(user_origin)
+        country_origin = "United Kingdom"
+    
+    if country_dest in secondary_country_list:
+        user_dest = country_dest
+        text_user_dest = "We don't have the travel restrictions for {} but I can give you information regarding United Kingdom: <br>".format(user_dest)
+        country_dest = "United Kingdom"
+    
+    if (country_origin == country_dest):
+        if (country_origin=="United Kingdom"):
+            return "Unfortunately we don't support domestic traveling within United Kingdom",""
+        else:
+            return "Unfortunately we don't support domestic traveling",""
     
     in_db = True
     
@@ -242,39 +268,38 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
         in_db = False
         country_not_db = str(country_dest)
 
+
     if in_db:
         df_latest_date = pd.read_sql("SELECT MAX(DOWNLOAD_DATE) FROM TRAVEL_RESTRICTIONS_RESULTS WHERE \"HOME\" = '{}' AND \"OTHER\" = '{}'".format(data_dst, data_src),conn)
         latest_date = df_latest_date.iloc[0].values[0]
 
         df_data_riskidx = pd.read_sql("SELECT \"RESTRICTION\" FROM TRAVEL_RESTRICTIONS_RESULTS WHERE \"DOWNLOAD_DATE\" = '{}' AND \"HOME\" = '{}' AND \"OTHER\" = '{}'".format(latest_date,data_dst, data_src),conn)
         data_riskidx = df_data_riskidx.iloc[0].values[0]
-        print(df_data_riskidx)
+        #print(df_data_riskidx)
 
         if(data_riskidx == None):
 
             df_data_link = pd.read_sql("SELECT \"ADM0_NAME\",\"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
 
             url_find = get_links(df_data_link,country_dest)
-
-            response = "We could not identify the travel restrictions from {} to {}. Please check the following links for more information".format(country_origin.title(), country_dest.title())
+            response = text_user_origin + text_user_dest + "We couldn't identify the travel restrictions from {} to {}. Please check the following links for more information".format(country_origin.title(), country_dest.title())
             links = "For more Information: <br> {} <br>".format(str(np.squeeze(url_find)).replace("\n", "<br>").replace("</a>/<br>", "</a> <br>").replace("\"\"", "\"").replace("</a>/ <br>", "</a> <br>").replace("<br>\"<a", "<br> <a").replace("</a>/\"<br>", "</a> <br>").replace("</a>/\"", "</a>").replace("</a>/", "</a>"))
             return response, links
-        
+
         elif(int(float(data_riskidx)) == 0):
-            return "You are not allowed to enter {} when you travel from {} because of travel restrictions".format(country_dest.title(),country_origin.title()),""
+            return text_user_origin + text_user_dest + "You are not allowed to enter {} when you travel from {} because of travel restrictions".format(country_dest.title(),country_origin.title()),""
         elif(int(float(data_riskidx)) == 3):
-            return "You are allowed to enter {} when you travel from {}".format(country_dest.title(),country_origin.title()),""
+            return text_user_origin + text_user_dest + "You are allowed to enter {} when you travel from {}".format(country_dest.title(),country_origin.title()),""
         elif(int(float(data_riskidx)) == 2 or int(float(data_riskidx)) == 1):
 
             df_data_link = pd.read_sql("SELECT \"ADM0_NAME\",\"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
-            url_find = get_links(df_data_link,country_dest)
-            
-            response = "There are some restrictions applied regarding traveling to {} from {}. Please check the following links for more information".format(country_dest.title(),country_origin.title())
+            url_find = get_links(df_data_link,country_dest)            
+            response = text_user_origin + text_user_dest + "There are some restrictions applied regarding traveling to {} from {}. Please check the following links for more information".format(country_dest.title(),country_origin.title())
             links = "For more Information: <br> {} <br>".format(str(np.squeeze(url_find)).replace("\n", "<br>").replace("</a>/<br>", "</a> <br>").replace("\"\"", "\"").replace("</a>/ <br>", "</a> <br>").replace("<br>\"<a", "<br> <a").replace("</a>/\"<br>", "</a> <br>").replace("</a>/\"", "</a>").replace("</a>/", "</a>"))
 
             return response, links
-    else: 
-        response = "Unfortunately {} is not in our database".format(country_not_db)
+    else:
+        response = "Unfortunately {} is not in our database.".format(country_not_db)
         return response, ""
 
 
@@ -294,25 +319,35 @@ def lockdown_measures(country):
     """
 
     df_data_1 = pd.read_csv('./chatbot_lockdown_measures.csv') #Csv file containing responses
-     
+
     # Pull the data from database
-    lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND \"c1_school closing\" IS NOT NULL".format(country),conn)
-    df = pd.read_sql("SELECT * FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}'".format(country,lastentry_date.iloc[0].values[0]),conn)
+    if country in secondary_country_list:
+        lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE regionname='{}' AND \"c1_school closing\" IS NOT NULL".format(country),conn)
+        df = pd.read_sql("SELECT * FROM oxford_stringency_index WHERE regionname='{}' AND datetime_date='{}'".format(country,lastentry_date.iloc[0].values[0]),conn)       
+    else:
+        lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND \"c1_school closing\" IS NOT NULL AND jurisdiction = '{}'".format(country, "NAT_TOTAL"),conn)
+        df = pd.read_sql("SELECT * FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}' AND jurisdiction = '{}'".format(country,lastentry_date.iloc[0].values[0], "NAT_TOTAL"),conn)
+        print("df ",df)
+
+    if df.empty:
+        text = "There are no recorded lockdown measures for {}".format(country)
+        return text, lastentry_date, 0, [],{}
     
-    #lockdown measures of interest
-    df_CONTAINMENT = df[['c1_school closing','c2_workplace closing',
+
+    df_CONTAINMENT = df[['c1_school closing','c2_workplace closing', 
                      'c3_cancel public events','c4_restrictions on gatherings', 'c5_close public transport',
-                     'c6_stay at home requirements', 'c7_restrictions on internal movement', 'c8_international travel controls']] 
+                     'c6_stay at home requirements', 'c7_restrictions on internal movement', 'c8_international travel controls']]
     df_CONTAINMENT = df_CONTAINMENT.transpose()
     df_important = df_CONTAINMENT[df_CONTAINMENT > 1]
     df_important.dropna(inplace=True)
-  
+    print("df_important ",df_important)
     num_of_measures = df_important.shape[0]
+    print("num_of_measures: ", num_of_measures)
     
     lock_measures_list = df_important.index.values
     response = []
-    
-    # For loop to return the most important lockdown measures in a sentence. 
+
+    # For loop to return the most important lockdown measures in a sentence
     for lock_measure in lock_measures_list:
         value = int(df_important.loc[lock_measure].values)
         data = df_data_1['name'].loc[(df_data_1['stringency index'] == lock_measure) & (df_data_1['value'] == value)].iloc[0]
@@ -323,6 +358,7 @@ def lockdown_measures(country):
     
     index_list = ["measure"+str(i+1) for i in range(len(lock_measures_list))]
     options_result = dict(zip(index_list, response)) # convert dictionary to list
+    print(options_result)
     
     return text, lastentry_date, num_of_measures, response, options_result
 
@@ -337,18 +373,22 @@ def lockdown_measures_extended(country, measure):
 
     #Read csv file with responses:
     df_data_1 = pd.read_csv('./chatbot_lockdown_measures.csv')
-    
-    # Pull the data from database
-    lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND \"c1_school closing\" IS NOT NULL".format(country),conn)
-    df = pd.read_sql("SELECT * FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}'".format(country,lastentry_date.iloc[0].values[0]),conn)
+
+    if country in secondary_country_list:
+        lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE regionname='{}' AND \"c1_school closing\" IS NOT NULL".format(country),conn)
+        df = pd.read_sql("SELECT * FROM oxford_stringency_index WHERE regionname='{}' AND datetime_date='{}'".format(country,lastentry_date.iloc[0].values[0]),conn)       
+    else:
+        lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND \"c1_school closing\" IS NOT NULL AND jurisdiction = '{}'".format(country, "NAT_TOTAL"),conn)
+        df = pd.read_sql("SELECT * FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}' AND jurisdiction = '{}'".format(country,lastentry_date.iloc[0].values[0], "NAT_TOTAL"),conn)
     
     stringency_index = df_data_1['stringency index'].loc[(df_data_1['name'] == measure)].iloc[0]
-    df_CONTAINMENT = df[stringency_index]
     
+    df_CONTAINMENT = df[stringency_index]
     value = int(df_CONTAINMENT.values[0])
     
     response = df_data_1['Description'].loc[(df_data_1['stringency index'] == stringency_index) & (df_data_1['value'] == value)].iloc[0]
 
     return response
+
 
  

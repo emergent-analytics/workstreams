@@ -79,7 +79,7 @@ async def create_item(item: Item, api_key: APIKey = Depends(get_api_key)):
                 result = {"response": response,
                         "lastentry_date": "(Last update: {})".format(lastentry_date)}
             except IndexError:
-                response = "not in database"
+                response = "not in our database unfortunately."
                 result = {"response": response,
                         "lastentry_date": ""}
         elif item.casesvsdeaths == "Cases":
@@ -88,7 +88,7 @@ async def create_item(item: Item, api_key: APIKey = Depends(get_api_key)):
                 result = {"response": response,
                         "lastentry_date": "(Last update: {})".format(lastentry_date)}
             except IndexError:
-                response = "not in database"
+                response = "not in our database unfortunately."
                 result = {"response": response,
                         "lastentry_date": ""}
         else:
@@ -97,10 +97,10 @@ async def create_item(item: Item, api_key: APIKey = Depends(get_api_key)):
         try:
             response, lastentry_date = func.deathrate(item.country)
             response = round(response,3)
-            result = {"response": response,
+            result = {"response": str(response)+"%",
                     "lastentry_date": "(Last update: {})".format(lastentry_date)}
         except IndexError:
-            response = "not in database"
+            response = "not in our database unfortunately."
             result = {"response": response,
                         "lastentry_date": ""}
     elif item.func_number == 4:
