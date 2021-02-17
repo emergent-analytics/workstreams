@@ -238,12 +238,14 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
     
     if country_origin in secondary_country_list:
         user_origin = country_origin
-        text_user_origin = "We don't have the travel restrictions for {} but I can give you information regarding United Kingdom: <br>".format(user_origin)
+        text_user_origin = "{} is not in our database so we will provide information for United Kingdom: <br><br>".format(user_origin)
+        #text_user_origin = "We don't have the travel restrictions for {} but I can give you information regarding United Kingdom: <br>".format(user_origin)
         country_origin = "United Kingdom"
     
     if country_dest in secondary_country_list:
         user_dest = country_dest
-        text_user_dest = "We don't have the travel restrictions for {} but I can give you information regarding United Kingdom: <br>".format(user_dest)
+        text_user_dest = "{} is not in our database so we will provide information for United Kingdom: <br><br>".format(user_dest)
+        #text_user_dest = "We don't have the travel restrictions for {} but I can give you information regarding United Kingdom: <br>".format(user_dest)
         country_dest = "United Kingdom"
     
     if (country_origin == country_dest):
