@@ -284,7 +284,7 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
             df_data_link = pd.read_sql("SELECT \"ADM0_NAME\",\"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
 
             url_find = get_links(df_data_link,country_dest)
-            response = text_user_origin + text_user_dest + "We couldn't identify the travel restrictions from {} to {}. Please check the following links for more information".format(country_origin.title(), country_dest.title())
+            response = text_user_origin + text_user_dest + "The data provided by {} does not provide any information regarding travelling from {}. Please check the following links for more information".format(country_dest.title(), country_origin.title())
             links = "For more Information: <br> {} <br>".format(str(np.squeeze(url_find)).replace("\n", "<br>").replace("</a>/<br>", "</a> <br>").replace("\"\"", "\"").replace("</a>/ <br>", "</a> <br>").replace("<br>\"<a", "<br> <a").replace("</a>/\"<br>", "</a> <br>").replace("</a>/\"", "</a>").replace("</a>/", "</a>"))
             return response, links
 
@@ -329,7 +329,7 @@ def lockdown_measures(country):
     else:
         lastentry_date = pd.read_sql("SELECT max(datetime_date) FROM oxford_stringency_index WHERE countryname='{}' AND \"c1_school closing\" IS NOT NULL AND jurisdiction = '{}'".format(country, "NAT_TOTAL"),conn)
         df = pd.read_sql("SELECT * FROM oxford_stringency_index WHERE countryname='{}' AND datetime_date='{}' AND jurisdiction = '{}'".format(country,lastentry_date.iloc[0].values[0], "NAT_TOTAL"),conn)
-        print("df ",df)
+        #print("df ",df)
 
     if df.empty:
         text = "There are no recorded lockdown measures for {}".format(country)
@@ -342,9 +342,9 @@ def lockdown_measures(country):
     df_CONTAINMENT = df_CONTAINMENT.transpose()
     df_important = df_CONTAINMENT[df_CONTAINMENT > 1]
     df_important.dropna(inplace=True)
-    print("df_important ",df_important)
+    #print("df_important ",df_important)
     num_of_measures = df_important.shape[0]
-    print("num_of_measures: ", num_of_measures)
+    #print("num_of_measures: ", num_of_measures)
     
     lock_measures_list = df_important.index.values
     response = []
