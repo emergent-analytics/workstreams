@@ -279,6 +279,9 @@ def international_travel_risk(country_origin, country_dest): # ANANDA TO FILL TH
         data_riskidx = df_data_riskidx.iloc[0].values[0]
         #print(df_data_riskidx)
 
+        df_latest_date_links = pd.read_sql("SELECT MAX(DOWNLOAD_DATE) FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE ADM0_NAME LIKE '%{}%'".format(country_dest.title()),conn)
+        latest_date = df_latest_date_links.iloc[0].values[0] #latest date for links is different that the restrictions value (from 3 lines before)
+
         if(data_riskidx == None):
 
             df_data_link = pd.read_sql("SELECT \"ADM0_NAME\",\"SOURCES\" FROM EALUSER.TRAVEL_RESTRICTIONS_COUNTRY WHERE DOWNLOAD_DATE = '{}' AND ADM0_NAME LIKE '%{}%'".format(latest_date, country_dest.title()),conn)
