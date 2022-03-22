@@ -4,7 +4,7 @@ ibm-db-sa==0.3.5
 Jinja2==2.11.2
 joblib==0.17.0
 MarkupSafe==1.1.1
-numpy==1.19.4
+numpy==1.21.0
 packaging==20.4
 pandas==1.1.4
 patsy==0.5.1
